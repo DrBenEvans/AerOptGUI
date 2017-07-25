@@ -1197,16 +1197,23 @@ bool TreeView::createGeoFile(const std::string& meshGeoFile, ProjectData& data)
 	int noPoints = 0;
 	int noSegments = 6;
 	int noDomainPoints = 4;
+    int nViscSegments = 0;
 
 	std::ofstream outfile(meshGeoFile, std::ofstream::out);
 	r &= outfile.is_open();
 
 	noPoints = data.getProfile().size();
+    int nLayers = data.getNumBoundaryLayers();
+    bool hasBoundaryLayer = data.getBoundaryLayerFlag();
+
+    if(hasBoundaryLayer) {
+        nViscSegments = 2;
+    };
 
 	if (r)
 	{
 		outfile << "npoin nseg nvseg nlayer hmin" << std::endl;
-		outfile << int(noPoints + noDomainPoints) << "	  " << noSegments <<  "	  0	   0	    0.000" << std::endl;
+        outfile << int(noPoints + noDomainPoints) << "	  " << noSegments <<  "	  " << nViscSegments << "	  " << nLayers << "   0.000" << std::endl;
 
 		outfile.precision(7);
 //		outfile << std::scientific;
@@ -1267,6 +1274,16 @@ bool TreeView::createGeoFile(const std::string& meshGeoFile, ProjectData& data)
 		outfile << seg << " " << 2 << " " << 3 << std::endl;
 		outfile << i << " " << i-3 << std::endl;
 	}
+
+    if(hasBoundaryLayer) {
+        qreal thickness = data.getBoundaryLayerThickness();
+        qreal dist = thickness;
+        for(int i=0; i<nLayers; i++) {
+            dist += thickness;
+            outfile << dist << std::endl;
+        }
+    }
+
 	outfile.close();
 
 	return r;

@@ -23,6 +23,10 @@ MeshDialog::MeshDialog(ProjectData& data, QWidget *parent) :
 			ui->fine->setChecked(true);
 			break;
 	}
+
+    ui->viscous->setChecked(mData.getBoundaryLayerFlag());
+    ui->layers->setValue(mData.getNumBoundaryLayers());
+    ui->thickness->setValue(mData.getBoundaryLayerThickness());
 }
 
 MeshDialog::~MeshDialog()
@@ -32,7 +36,15 @@ MeshDialog::~MeshDialog()
 
 void MeshDialog::accept()
 {
-	mData.setMeshDensity(mMeshDensity);
+    mData.setMeshDensity(mMeshDensity);
+
+    bool hasBoundaryLayer = ui->viscous->isChecked();
+    mData.setBoundaryLayerFlag(hasBoundaryLayer);
+
+    if(hasBoundaryLayer) {
+        mData.setNumBoundaryLayers(ui->layers->value());
+        mData.setBoundaryLayerThickness(ui->thickness->value());
+    }
 
 	QDialog::accept();
 }
@@ -51,4 +63,12 @@ void MeshDialog::on_medium_toggled(bool checked)
 void MeshDialog::on_fine_toggled(bool checked)
 {
 	if (checked) mMeshDensity = Enum::Mesh::FINE;
+}
+
+void MeshDialog::on_viscous_toggled(bool checked)
+{
+    ui->layers->setEnabled(checked);
+    ui->layers_label->setEnabled(checked);
+    ui->thickness->setEnabled(checked);
+    ui->thickness_label->setEnabled(checked);
 }

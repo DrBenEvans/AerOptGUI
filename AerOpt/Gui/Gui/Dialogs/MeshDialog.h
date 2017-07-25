@@ -27,6 +27,8 @@ private slots:
 
 	void on_fine_toggled(bool checked);
 
+    void on_viscous_toggled(bool checked);
+
 private:
 	Ui::MeshDialog *ui;
 	Enum::Mesh mMeshDensity;

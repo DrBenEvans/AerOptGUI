@@ -401,6 +401,13 @@ public:
     int getNoTop() const;
     void setNoTop(int noTop);
 
+    bool getBoundaryLayerFlag();
+    int getNumBoundaryLayers();
+    qreal getBoundaryLayerThickness();
+    void setBoundaryLayerFlag(bool hasBoundaryLayer);
+    void setNumBoundaryLayers(int num_layers);
+    void setBoundaryLayerThickness(qreal layer_thickness);
+
 private:
     bool mProfileSet;
     bool mProjectPathSet;
@@ -442,6 +449,11 @@ private:
 	int mNoAgents;
 	int mNoGens;
     int mNoTop;
+
+    // boundary layer parameters
+    bool mHasBoundaryLayer;
+    int mNumBoundaryLayers;
+    qreal mBoundaryLayerThickness;
 
 };
 

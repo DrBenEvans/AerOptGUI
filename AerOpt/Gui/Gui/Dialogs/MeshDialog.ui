@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>295</width>
-    <height>192</height>
+    <height>316</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -23,7 +23,7 @@
    <property name="geometry">
     <rect>
      <x>60</x>
-     <y>150</y>
+     <y>280</y>
      <width>221</width>
      <height>32</height>
     </rect>
@@ -40,8 +40,8 @@
     <rect>
      <x>20</x>
      <y>10</y>
-     <width>181</width>
-     <height>131</height>
+     <width>261</width>
+     <height>121</height>
     </rect>
    </property>
    <property name="title">
@@ -84,6 +84,93 @@
     </property>
     <property name="text">
      <string>Fine</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_2">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>140</y>
+     <width>261</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Boundary Layers</string>
+   </property>
+   <widget class="QSpinBox" name="layers">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>60</y>
+      <width>111</width>
+      <height>24</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="layers_label">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>65</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Number of layers</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="thickness_label">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>95</y>
+      <width>111</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Layer thickness</string>
+    </property>
+   </widget>
+   <widget class="QDoubleSpinBox" name="thickness">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
+    <property name="geometry">
+     <rect>
+      <x>140</x>
+      <y>90</y>
+      <width>111</width>
+      <height>24</height>
+     </rect>
+    </property>
+    <property name="decimals">
+     <number>7</number>
+    </property>
+   </widget>
+   <widget class="QCheckBox" name="viscous">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>30</y>
+      <width>86</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Viscous</string>
     </property>
    </widget>
   </widget>

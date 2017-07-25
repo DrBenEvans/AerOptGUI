@@ -58,6 +58,10 @@ void ProjectData::clearProject()
 	mNoAgents = 4;
 	mNoGens = 3;
     mNoTop = 75;
+
+    mHasBoundaryLayer = false;
+    mNumBoundaryLayers = 10;
+    mBoundaryLayerThickness = 0.001;
 }
 
 //Profile Attributes
@@ -364,6 +368,34 @@ int ProjectData::getNoTop() const
 void ProjectData::setNoTop(int noTop)
 {
     mNoTop = noTop;
+}
+
+void ProjectData::setBoundaryLayerFlag(bool hasBoundaryLayer) {
+    mHasBoundaryLayer = hasBoundaryLayer;
+}
+
+void ProjectData::setNumBoundaryLayers(int num) {
+    mNumBoundaryLayers = num;
+}
+
+void ProjectData::setBoundaryLayerThickness(qreal thickness) {
+    mBoundaryLayerThickness = thickness;
+}
+
+bool ProjectData::getBoundaryLayerFlag() {
+    return mHasBoundaryLayer;
+}
+
+int ProjectData::getNumBoundaryLayers() {
+    if(mHasBoundaryLayer) {
+        return mNumBoundaryLayers;
+    } else {
+        return 0;
+    }
+}
+
+qreal ProjectData::getBoundaryLayerThickness() {
+    return mBoundaryLayerThickness;
 }
 
 
