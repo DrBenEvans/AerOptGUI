@@ -1742,6 +1742,7 @@ bool TreeView::createAerOptInFile(const std::string& filePath, ProjectData& data
 		outfile << "IV%angle = 0.0" << std::endl;
 		outfile << "IV%Cnconnecttrans = 0" << std::endl;
 		outfile << "IV%CNconnectangle = 0" << std::endl;
+        outfile << "IV%Optimiser = " << std::to_string( data.getOptimisationMethod() + 1 ) << std::endl;
 		outfile << "IV%engFMF = 1.0" << std::endl;
 		outfile << "IV%AlphaInflowDirection = " << std::to_string( data.freeAlpha() ) << std::endl;// < angle of attack
 		outfile << "IV%turbulencemodel = 0" << std::endl;
