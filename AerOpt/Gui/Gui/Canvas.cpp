@@ -147,8 +147,8 @@ void Canvas::drawLogos(QPainter& painter)
 	QImage flag(":/images/AerOpt.png");
 	painter.drawImage(QRect(1, 1, 105, 87), flag);
 
-	QImage coleg(":/images/ColegCenedlaetholCymraeg.png");
-	painter.drawImage(QRect(width()-150-1, height()-87-1, 150, 87), coleg);
+    //QImage coleg(":/images/ColegCenedlaetholCymraeg.png");
+    //painter.drawImage(QRect(width()-150-1, height()-87-1, 150, 87), coleg);
 
 	QImage sulogo(":/images/SULogo.png");
 	painter.drawImage(QRect(width()-158-1, 1, 158, 100), sulogo);
