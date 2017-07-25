@@ -1,0 +1,5 @@
+ cd 
+ cd ..
+ cd egnaumann/AerOpt/2DEngInletSnapshots_2.3_150903_1804/Mesh_Data
+  chmod 777 Geometry4.e*
+  rm Geometry4.e*
