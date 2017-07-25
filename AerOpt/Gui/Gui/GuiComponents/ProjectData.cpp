@@ -383,7 +383,7 @@ void ProjectData::setBoundaryLayerThickness(qreal thickness) {
 }
 
 bool ProjectData::getBoundaryLayerFlag() {
-    return mHasBoundaryLayer;
+    return mHasBoundaryLayer && mNumBoundaryLayers != 0;
 }
 
 int ProjectData::getNumBoundaryLayers() {
