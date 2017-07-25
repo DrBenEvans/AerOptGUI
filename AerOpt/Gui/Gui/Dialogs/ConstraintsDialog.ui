@@ -197,6 +197,12 @@
       <height>27</height>
      </rect>
     </property>
+    <property name="decimals">
+     <number>0</number>
+    </property>
+    <property name="maximum">
+     <double>10.000000000000000</double>
+    </property>
    </widget>
   </widget>
  </widget>

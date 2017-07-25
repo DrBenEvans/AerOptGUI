@@ -31,6 +31,7 @@ public:
     void setBoundCoords(qreal x1,qreal y1,qreal x2,qreal y2);
     bool isControlPoint();
     uint getSmoothing();
+    uint getSmoothFactor();
     void setSmoothing(uint smoothing);
 
 private:

@@ -1732,7 +1732,7 @@ bool TreeView::createAerOptInFile(const std::string& filePath, ProjectData& data
 			myrange += std::to_string(y1);
 
             smoothing_str += " ";
-            smoothing_str += std::to_string(point->getSmoothing());
+            smoothing_str += std::to_string(point->getSmoothFactor());
 		}
 
 		outfile << "&inputVariables" << std::endl;
@@ -1745,6 +1745,7 @@ bool TreeView::createAerOptInFile(const std::string& filePath, ProjectData& data
 		outfile << "IV%xrange =" << xrange << mxrange << std::endl;
 		outfile << "IV%yrange =" << yrange << myrange << std::endl;
 		outfile << "IV%zrange = 0.00" << std::endl;
+        outfile << "IV%smoothfactor =" << smoothing_str << std::endl;
 		outfile << "IV%angle = 0.0" << std::endl;
 		outfile << "IV%Cnconnecttrans = 0" << std::endl;
 		outfile << "IV%CNconnectangle = 0" << std::endl;

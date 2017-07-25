@@ -57,6 +57,10 @@ uint BoundaryPoint::getSmoothing() {
     return mSmooth;
 }
 
+uint BoundaryPoint::getSmoothFactor() {
+    return mSmooth / 10;
+}
+
 void BoundaryPoint::setSmoothing(uint smoothing) {
     mSmooth = smoothing;
 }

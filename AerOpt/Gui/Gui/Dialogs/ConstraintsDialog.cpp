@@ -38,6 +38,7 @@ void ConstraintsDialog::setConstraint(const unsigned int index)
 	ui->xMax->setValue( x2 );
 	ui->yMin->setValue( y1 );
 	ui->yMax->setValue( y2 );
+    ui->smoothing->setValue( point->getSmoothing() );
 }
 
 void ConstraintsDialog::accept()
@@ -48,6 +49,8 @@ void ConstraintsDialog::accept()
 						   ui->yMin->value(),
 						   ui->xMax->value(),
 						   ui->yMax->value());
+
+    point->setSmoothing(ui->smoothing->value());
 
 	QDialog::accept();
 }
