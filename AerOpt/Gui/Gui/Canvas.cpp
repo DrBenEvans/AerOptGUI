@@ -106,8 +106,8 @@ bool Canvas::eventFilter(QObject* object, QEvent* event)
 		{
 			//store id here in data object
 			mData.selectControlPoint(loc);
-			auto& point = mData.getControlPoint(0, loc);
-			point.second.setCoords(0, 0, 0, 0);
+            BoundaryPoint  *point = mData.getControlPoint(0, loc);
+            point->setBoundCoords(0, 0, 0, 0);
 
 			repaint();
 		}
@@ -309,7 +309,7 @@ void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
 	for (auto& boundary : boundaries)
 	for (auto& p : boundary)
 	{
-		rect.moveCenter( QPoint( w(p.first.x()), h(p.first.y()) ) );
+        rect.moveCenter( QPoint( w(p->x()), h(p->y()) ) );
 		rect.setWidth( 7 );
 		rect.setHeight( 7 );
 		painter.drawRect( rect );
@@ -330,10 +330,10 @@ void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
 			uint b = bConnects.at(i).at(j).second - 1;
 
 			painter.drawLine(
-				w( boundaries.at(i).at(a).first.x() ),
-				h( boundaries.at(i).at(a).first.y() ),
-				w( boundaries.at(i).at(b).first.x() ),
-				h( boundaries.at(i).at(b).first.y() )
+                w( boundaries.at(i).at(a)->x() ),
+                h( boundaries.at(i).at(a)->y() ),
+                w( boundaries.at(i).at(b)->x() ),
+                h( boundaries.at(i).at(b)->y() )
 				);
 		}
 	}
@@ -362,10 +362,10 @@ void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
 				boundaries.at(o).at(i);
 
 				painter.drawLine(
-							w( boundaries.at(o-1).at(i).first.x() ),
-							h( boundaries.at(o-1).at(i).first.y() ),
-							w( boundaries.at(o  ).at(i).first.x() ),
-							h( boundaries.at(o  ).at(i).first.y() )
+                            w( boundaries.at(o-1).at(i)->x() ),
+                            h( boundaries.at(o-1).at(i)->y() ),
+                            w( boundaries.at(o  ).at(i)->x() ),
+                            h( boundaries.at(o  ).at(i)->y() )
 							);
 			}
 		}
@@ -383,7 +383,7 @@ void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
 			auto& p = boundary.at(i);
 
 			//Set here red if selected, and green if fully constrained.
-			if (p.second.width() == 0 && p.second.height() == 0)// << this is bug when select 0 for width and height
+            if (p->isControlPoint())
 			{
 				painter.setBrush(QBrush(QColor(255, 0, 0, 255)));
 			}
@@ -392,7 +392,7 @@ void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
 				painter.setBrush(QBrush(QColor(0, 255, 0, 255)));
 			}
 
-			rect.moveCenter( QPoint( w(p.first.x()), h(p.first.y()) ) );
+            rect.moveCenter( QPoint( w(p->x()), h(p->y()) ) );
 			rect.setWidth( 7 );
 			rect.setHeight( 7 );
 			painter.drawRect( rect );
@@ -401,12 +401,12 @@ void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
 		for (auto& i : control)
 		{
 			auto& p = boundary.at(i);
-			if (!(p.second.width() == 0 && p.second.height() == 0))
+            if (!(p->isControlPoint()))
 			{
 				qreal x1,y1,x2,y2;
-				p.second.getCoords(&x1,&y1,&x2,&y2);
+                p->getBoundCoords(&x1,&y1,&x2,&y2);
 
-				constraint.setCoords( w(p.first.x()+x1), h(p.first.y()+y1), w(p.first.x()+x2), h(p.first.y()+y2) );
+                constraint.setCoords( w(p->x()+x1), h(p->y()+y1), w(p->x()+x2), h(p->y()+y2) );
 
 				painter.setBrush(QBrush(QColor(255, 0, 0, 69)));
 				painter.drawRect( constraint );
@@ -418,7 +418,7 @@ void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
 			auto& p = boundary.at(mHighlight);
 //			painter.setBrush(QBrush(QColor(255, 215, 0, 180)));
 			painter.setBrush(QBrush(QColor(255, 215, 0, 220)));
-			rect.moveCenter( QPoint( w(p.first.x()), h(p.first.y()) ) );
+            rect.moveCenter( QPoint( w(p->x()), h(p->y()) ) );
 			rect.setWidth( 7 );
 			rect.setHeight( 7 );
 			painter.drawRect( rect );
@@ -493,7 +493,7 @@ int Canvas::pickNodeCheck(const QPoint& pos, const ProjectData& data)
 	{
 		r = true;
 
-		rect.moveCenter( QPoint( w(point.first.x()), h(point.first.y()) ) );
+        rect.moveCenter( QPoint( w(point->x()), h(point->y()) ) );
 		rect.setWidth( 13 );
 		rect.setHeight( 13 );
 		r &= rect.contains( pos );
@@ -566,8 +566,8 @@ void Canvas::setConstraints(const unsigned int index)
 
 void Canvas::resetConstraints(const unsigned int index)
 {
-	auto& point = mData.getControlPoint(0, index);
-	point.second.setCoords(0.0, 0.0, 0.0, 0.0);
+    BoundaryPoint *point = mData.getControlPoint(0, index);
+    point->setBoundCoords(0.0, 0.0, 0.0, 0.0);
 }
 
 //Getters and Setters

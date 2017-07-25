@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QPointF>
 #include <iostream>
+#include "BoundaryPoint.h"
 #include "ProjectData.h"
 
 ProjectData::ProjectData()
@@ -120,15 +121,17 @@ void ProjectData::clearMesh()
 //mesh boundary points
 void ProjectData::addBoundaryPoint(const uint& gen, const float& x, const float& y)
 {
-	if  ( gen < mMeshProfile.size() )
-	{
-		mMeshProfile.at(gen).emplace_back( QPointF(x,y), QRectF(0,0,0,0) );
-	}
-	else if ( gen == mMeshProfile.size() )
-	{
-		mMeshProfile.push_back( std::vector<std::pair<QPointF, QRectF>>() );
-		mMeshProfile.at(gen).emplace_back( QPointF(x,y), QRectF(0,0,0,0) );
-	}
+    BoundaryPoint *point = new BoundaryPoint(x,y,0,0,0,0);
+
+    if ( gen == mMeshProfile.size() )
+    {
+        mMeshProfile.push_back( std::vector<BoundaryPoint*>() );
+    }
+
+    if  ( gen < mMeshProfile.size() )
+    {
+        mMeshProfile.at(gen).emplace_back(point);
+    }
 }
 
 void ProjectData::addBConnectivity(const uint& gen, const uint& a, const uint& b)
@@ -144,7 +147,7 @@ void ProjectData::addBConnectivity(const uint& gen, const uint& a, const uint& b
 	}
 }
 
-std::pair<QPointF, QRectF>& ProjectData::getControlPoint(const uint& genNo, const uint& index)
+BoundaryPoint* ProjectData::getControlPoint(const uint& genNo, const uint& index)
 {
 	return mMeshProfile.at(genNo).at(index);
 }

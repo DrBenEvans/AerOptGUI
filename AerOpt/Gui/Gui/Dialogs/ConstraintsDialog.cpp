@@ -29,10 +29,10 @@ void ConstraintsDialog::setConstraint(const unsigned int index)
 {
 	mIndex = index;
 
-	auto& point = mData.getControlPoint(0, index);
+    BoundaryPoint *point = mData.getControlPoint(0, index);
 
 	qreal x1,y1,x2,y2;
-	point.second.getCoords(&x1,&y1,&x2,&y2);
+    point->getBoundCoords(&x1,&y1,&x2,&y2);
 
 	ui->xMin->setValue( x1 );
 	ui->xMax->setValue( x2 );
@@ -42,9 +42,9 @@ void ConstraintsDialog::setConstraint(const unsigned int index)
 
 void ConstraintsDialog::accept()
 {
-	auto& point = mData.getControlPoint(0, mIndex);
+    BoundaryPoint *point = mData.getControlPoint(0, mIndex);
 
-	point.second.setCoords(ui->xMin->value(),
+    point->setBoundCoords(ui->xMin->value(),
 						   ui->yMin->value(),
 						   ui->xMax->value(),
 						   ui->yMax->value());

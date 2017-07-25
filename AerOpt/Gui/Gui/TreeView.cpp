@@ -1710,11 +1710,14 @@ bool TreeView::createAerOptInFile(const std::string& filePath, ProjectData& data
 		std::string mxrange;
 		std::string yrange;
 		std::string myrange;
+        std::string smoothing_str;
 
-		for (auto& i : cpoints)
+        for (auto& i : cpoints)
 		{
 			qreal x1,y1,x2,y2;
-			data.getControlPoint(0, i).second.getCoords(&x1,&y1,&x2,&y2);//<< the control point and range
+            BoundaryPoint *point = data.getControlPoint(0, i);
+
+            point->getBoundCoords(&x1,&y1,&x2,&y2);//<< the control point and range
 
 			xrange += " ";
 			xrange += std::to_string(x2);
@@ -1727,6 +1730,9 @@ bool TreeView::createAerOptInFile(const std::string& filePath, ProjectData& data
 
 			myrange += " ";
 			myrange += std::to_string(y1);
+
+            smoothing_str += " ";
+            smoothing_str += std::to_string(point->getSmoothing());
 		}
 
 		outfile << "&inputVariables" << std::endl;
@@ -1829,9 +1835,9 @@ bool TreeView::createAerOptNodeFile(const std::string& filePath, ProjectData& da
 		auto& cpoints = data.getControlPoints();
 		for (auto& i : cpoints)
 		{
-			outfile << std::to_string(data.getControlPoint(0, i).first.x())
+            outfile << std::to_string(data.getControlPoint(0, i)->x())
 					<< "	"
-					<< std::to_string(data.getControlPoint(0, i).first.y())
+                    << std::to_string(data.getControlPoint(0, i)->y())
 					<< std::endl;
 		}
 	}
@@ -1967,18 +1973,18 @@ bool TreeView::saveCurrentProfile(const QString& path, const ProjectData& data)
 
 		for (uint j = 0; j < size; ++j)
 		{
-			for (auto& pair : currbconn)
+            for (auto& point : currbconn)
 			{
-				if (pair.first == i)
+                if (point.first == i)
 				{
-					x = currbpoints.at(pair.first-1).first.x();
-					y = currbpoints.at(pair.first-1).first.y();
+                    x = currbpoints.at(point.first-1)->x();
+                    y = currbpoints.at(point.first-1)->y();
 					outfile << x
 							<< "     "
 							<< y
 							<< std::endl;
 
-					i = pair.second;
+                    i = point.second;
 					break;
 				}
 			}

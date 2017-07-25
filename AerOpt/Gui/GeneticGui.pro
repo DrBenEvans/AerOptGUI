@@ -62,7 +62,8 @@ SOURCES += \
     Gui/Dialogs/MeshDialog.cpp \
     Gui/Plotter/qcustomplot.cpp \
     Gui/Plotter/PlotterDialog.cpp \
-    Gui/GuiComponents/Arrow.cpp
+    Gui/GuiComponents/Arrow.cpp \
+    Gui/GuiComponents/BoundaryPoint.cpp
 
 HEADERS  += \
     Gui/MainWindow.h \
@@ -79,7 +80,8 @@ HEADERS  += \
     Gui/Dialogs/MeshDialog.h \
     Gui/Plotter/qcustomplot.h \
     Gui/Plotter/PlotterDialog.h \
-    Gui/GuiComponents/Arrow.h
+    Gui/GuiComponents/Arrow.h \
+    Gui/GuiComponents/BoundaryPoint.h
 
 FORMS    += \
     Gui/MainWindow.ui \

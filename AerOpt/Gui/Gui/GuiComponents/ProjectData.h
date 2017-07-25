@@ -15,9 +15,10 @@
 #include <QRectF>
 
 #include "Enumerations.h"
+#include "BoundaryPoint.h"
 
 //Abbreviate long type names
-typedef std::vector<std::vector<std::pair<QPointF,QRectF>>> Boundaries;
+typedef std::vector<std::vector<BoundaryPoint*>> Boundaries;
 typedef std::vector<std::vector<std::pair<uint,uint>>> BConnectivities;
 typedef std::vector<std::pair<float,float>> MeshPoints;
 typedef std::vector<std::tuple<uint,uint,uint>> MeshConnectivities;
@@ -105,7 +106,7 @@ public:
 	 * This function returns a reference to the control
 	 * point of interest.
 	 */
-	std::pair<QPointF, QRectF>& getControlPoint(const uint& genNo, const uint& index);
+    BoundaryPoint *getControlPoint(const uint& genNo, const uint& index);
 	/**
 	 * @brief checkBoundaryIntegrity
 	 * @return True if the boundary integrity is OK.
