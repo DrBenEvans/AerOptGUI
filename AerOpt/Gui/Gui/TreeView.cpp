@@ -802,7 +802,7 @@ void TreeView::processError()
 
 void TreeView::meshingStarted()
 {
-    qInfo() << "Process started normally";
+    qInfo() << "Meshing process started normally";
 }
 
 void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -859,7 +859,7 @@ void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void TreeView::optimiserStarted()
 {
-    qInfo() << "Process started normally";
+    qInfo() << "Optimiser process started normally";
 	mPlotter->clearData();
 	mPlotter->show();
 }
