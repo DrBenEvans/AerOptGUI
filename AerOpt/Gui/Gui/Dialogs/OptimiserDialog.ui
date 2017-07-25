@@ -51,7 +51,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>30</y>
+      <y>80</y>
       <width>231</width>
       <height>27</height>
      </rect>
@@ -64,7 +64,7 @@
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>70</y>
+      <y>120</y>
       <width>221</width>
       <height>27</height>
      </rect>
@@ -77,7 +77,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>30</y>
+      <y>80</y>
       <width>61</width>
       <height>27</height>
      </rect>
@@ -87,7 +87,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>70</y>
+      <y>120</y>
       <width>61</width>
       <height>27</height>
      </rect>
@@ -97,7 +97,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>110</y>
+      <y>160</y>
       <width>61</width>
       <height>27</height>
      </rect>
@@ -109,11 +109,11 @@
      <number>75</number>
     </property>
    </widget>
-   <widget class="QLabel" name="label_3">
+   <widget class="QLabel" name="method_label">
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>110</y>
+      <y>160</y>
       <width>271</width>
       <height>27</height>
      </rect>
@@ -121,6 +121,31 @@
     <property name="text">
      <string>Percentage of eggs discarded</string>
     </property>
+   </widget>
+   <widget class="QComboBox" name="method">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>40</y>
+      <width>311</width>
+      <height>26</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>Modified Cuckoo Search</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Differential Evolution</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Particle Swarm Optimisation</string>
+     </property>
+    </item>
    </widget>
   </widget>
  </widget>

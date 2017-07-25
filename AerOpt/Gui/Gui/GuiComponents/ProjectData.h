@@ -255,6 +255,11 @@ public:
 	 * @brief setOptimiser
 	 * @param optimiser Sets optimiser.
 	 */
+    void setOptimisationMethod(int method_index);
+    /**
+     * @brief setOptimisation method
+     * @param method_index is the method index as defined by ordering in OptimiserDialog.ui.
+     */
 	void setOptimiser(bool optimiser);
 	/**
 	 * @brief runTime
@@ -387,6 +392,11 @@ public:
 	 */
 	void setProjectPathSet(bool projectPathSet);
 
+    int getOptimisationMethod() const;
+    /**
+     * @brief getOptimisation method
+     * @param returns the method index as defined by ordering in OptimiserDialog.ui.
+     */
     int getNoTop() const;
     void setNoTop(int noTop);
 
@@ -427,6 +437,7 @@ private:
 	float mFreeTemp;
 
 	//Optimiser parameters
+    int mOptimisationMethod;
 	int mNoAgents;
 	int mNoGens;
     int mNoTop;

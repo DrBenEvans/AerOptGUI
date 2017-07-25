@@ -35,11 +35,14 @@ private slots:
 
     void on_PercentTop_valueChanged(int arg1);
 
+    void on_method_currentIndexChanged(int index);
+
 private:
 	Ui::OptimiserDialog *ui;
 	int mNoAgents;
 	int mNoGens;
     int mNoTop;
+    int mMethod;
 	ProjectData& mData;
 };
 

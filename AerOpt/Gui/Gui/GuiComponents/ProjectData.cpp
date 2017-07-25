@@ -53,6 +53,7 @@ void ProjectData::clearProject()
 	mFreePress = 101325;
 	mFreeTemp = 303.15;
 
+    mOptimisationMethod = 0;
 	mNoAgents = 4;
 	mNoGens = 3;
     mNoTop = 75;
@@ -346,6 +347,12 @@ bool ProjectData::checkNormalised()
 
 	return r;
 }
+
+int ProjectData::getOptimisationMethod() const
+{
+    return mOptimisationMethod;
+}
+
 int ProjectData::getNoTop() const
 {
     return mNoTop;
@@ -407,6 +414,11 @@ bool ProjectData::optimiser() const
 void ProjectData::setOptimiser(bool optimiser)
 {
 	mOptimiserSet = optimiser;
+}
+
+void ProjectData::setOptimisationMethod(int method_index)
+{
+    mOptimisationMethod = method_index;
 }
 
 bool ProjectData::runTime() const
