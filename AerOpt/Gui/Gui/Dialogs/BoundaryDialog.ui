@@ -173,7 +173,7 @@
      </rect>
     </property>
     <property name="maximum">
-     <number>9000000</number>
+     <number>20000000</number>
     </property>
    </widget>
    <widget class="QDoubleSpinBox" name="mach">
