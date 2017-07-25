@@ -132,18 +132,26 @@ TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(d
 //		qDebug() << aeroptExe;
 		mAerOptPath = aeroptExe;
 
-		bool c = true;
-		QFileInfo checkMesher(mMesherPath);
+        QFileInfo checkMesher(mMesherPath);
 		QFileInfo checkAerOpt(mAerOptPath);
-		c &= checkMesher.exists();
+
+        bool c = true;
+        c &= checkMesher.exists();
 		c &= checkMesher.isFile();
+        if (!c)
+        {
+            qCritical() << "Mesher executables not found at: " << mMesherPath;
+        }
+
+        c = true;
 		c &= checkAerOpt.exists();
 		c &= checkAerOpt.isFile();
+        if (!c)
+        {
+            qCritical() << "AerOpt executables not found at: " << mAerOptPath;
+        }
 
-		if (!c)
-		{
-			qCritical() << "Application executables not available!";
-		}
+
 	}
 	else
 	{
@@ -176,8 +184,8 @@ TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(d
 	addBoundaryObject();
 	addOptimiserObject();
 	addRuntimeObject();
-	qDebug() << " *** Welcome to AerOpt ***";
-	qDebug() << " ***     Have a nice day     ***";
+    qInfo() << " *** Welcome to AerOpt ***";
+    qInfo() << " ***     Have a nice day     ***";
 
 	mPlotter = new PlotterDialog(this);
 	mPlotter->hide();
@@ -272,7 +280,7 @@ void TreeView::addFunctionObject()
 
 		if ( b )
 		{
-            qDebug() << "Item 'Fitness Function' already exists";
+            qInfo() << "Item 'Fitness Function' already exists";
 		}
 		else
 		{
@@ -303,7 +311,7 @@ void TreeView::addBoundaryObject()
 
 		if ( b )
 		{
-            qDebug() << "Item 'Flow Conditions' already exists";
+            qInfo() << "Item 'Flow Conditions' already exists";
 		}
 		else
 		{
@@ -334,7 +342,7 @@ void TreeView::addOptimiserObject()
 
 		if ( b )
 		{
-			qDebug() << "Item 'Optimiser Parameters' already exists";
+            qInfo() << "Item 'Optimiser Parameters' already exists";
 		}
 		else
 		{
@@ -365,7 +373,7 @@ void TreeView::addRuntimeObject()
 
 		if ( b )
 		{
-			qDebug() << "Item 'Runtime Monitoring' already exists";
+            qInfo() << "Item 'Runtime Monitoring' already exists";
 		}
 		else
 		{
@@ -385,14 +393,14 @@ void TreeView::deleteObject()
 
 	for (QTreeWidgetItem* node : selectedList)
 	{
-		qDebug() << "Deleted " << node->text(0);
+        qInfo() << "Deleted " << node->text(0);
 		delete node;
 	}
 }
 
 void TreeView::clearProject()
 {
-	qDebug() << "Project data cleared!";
+    qInfo() << "Project data cleared!";
     mRoot->setText(1, "No");
 
     //All sub items set to 'No'
@@ -422,7 +430,7 @@ void TreeView::loadProject()
 	mData.setProjectPathSet(true);
     mRoot->setText(1, "Yes");
 
-	qDebug() << "Project directory set: " << mProjectDirectory;
+    qInfo() << "Project directory set: " << mProjectDirectory;
 }
 
 //Sub menus
@@ -463,7 +471,7 @@ void TreeView::importProfile()
 			fileName = f;
 		}
 
-		qDebug() << "File selected: " << fileName;
+        qInfo() << "File selected: " << fileName;
 
 		success &= loadProfile(fileName.toStdString(), mData);
 
@@ -477,7 +485,7 @@ void TreeView::importProfile()
 				mData.setRenderProfile(true);
 				mData.setRenderMesh(false);
 			}
-			qDebug() << "File successfully loaded.";
+            qInfo() << "File successfully loaded.";
 		}
 		else
 		{
@@ -708,7 +716,7 @@ void TreeView::runAerOpt()
 void TreeView::stopMesher()
 {
 	myMeshProcess.kill();
-	qDebug() << "Any running mesh jobs have been stopped!";
+    qInfo() << "Any running mesh jobs have been stopped!";
 
 	mMenusSet = true;
 }
@@ -716,7 +724,7 @@ void TreeView::stopMesher()
 void TreeView::stopAerOpt()
 {
 	myOptProcess.kill();
-	qDebug() << "Any running AerOpt jobs have been stopped!";
+    qInfo() << "Any running AerOpt jobs have been stopped!";
 
 	mMenusSet = true;
 }
@@ -758,7 +766,7 @@ void TreeView::meshOutput()
 	QStringList strLines = QString(byteArray).split("\n");
 
 	foreach (QString line, strLines){
-		qDebug() << line;
+        qInfo() << line;
 	}
 }
 
@@ -778,7 +786,7 @@ void TreeView::processOutput()
 	QStringList strLines = QString(byteArray).split("\n");
 
 	foreach (QString line, strLines){
-		qDebug() << line;
+        qInfo() << line;
 	}
 }
 
@@ -794,7 +802,7 @@ void TreeView::processError()
 
 void TreeView::meshingStarted()
 {
-	qDebug() << "Process started normally";
+    qInfo() << "Process started normally";
 }
 
 void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
@@ -803,7 +811,7 @@ void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 	{
 		bool r = true;
 
-		qDebug() << "Process finished normally";
+        qInfo() << "Process finished normally";
 
 		//Set and/or check existance of output data file
 
@@ -829,7 +837,7 @@ void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 			mData.setMesh(true);
 			mData.setRenderMesh(true);
 			mData.setRenderProfile(false);
-			qDebug() << "Mesh successfully created.";
+            qInfo() << "Mesh successfully created.";
 		}
 		else
 		{
@@ -851,7 +859,7 @@ void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void TreeView::optimiserStarted()
 {
-	qDebug() << "Process started normally";
+    qInfo() << "Process started normally";
 	mPlotter->clearData();
 	mPlotter->show();
 }
@@ -949,7 +957,7 @@ void TreeView::readFitness(const QString& path)
 		plotData = output;
 		output.prepend( " >  " );
 		output.prepend( "Generation: " );
-		qDebug() << output;
+        qInfo() << output;
 
 
 		//Extract from plotData gen no. and then nest values
@@ -1006,7 +1014,7 @@ void TreeView::optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
 	if (exitStatus == QProcess::NormalExit && exitCode == 0)
 	{
-		qDebug() << "Process finished normally";
+        qInfo() << "Process finished normally";
 
 		bool r = true;
 

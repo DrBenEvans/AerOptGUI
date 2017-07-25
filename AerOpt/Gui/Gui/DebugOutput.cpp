@@ -14,6 +14,9 @@ DebugOutput* DebugOutput::sDebug = nullptr;
 void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
 	switch (type) {
+    case QtInfoMsg:
+        DebugOutput::Instance().printInfoMsg(msg);
+        break;
 	case QtDebugMsg:
 		DebugOutput::Instance().printDebugMsg(msg);
 		break;
@@ -56,9 +59,20 @@ DebugOutput::~DebugOutput()
 	}
 }
 
+void DebugOutput::printInfoMsg(const QString &msg)
+{
+    QString m("Info: ");
+    m += msg;
+
+    this->textBrowser->setTextColor( QColor( "black" ) );
+    this->textBrowser->setFontItalic(false);
+    this->textBrowser->append(m);
+
+}
+
 void DebugOutput::printDebugMsg(const QString &msg)
 {
-	QString m("Info: ");
+    QString m("Debug: ");
 	m += msg;
 
 	this->textBrowser->setTextColor( QColor( "black" ) );

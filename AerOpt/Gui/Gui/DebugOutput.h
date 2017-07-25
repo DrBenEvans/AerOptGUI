@@ -30,6 +30,11 @@ public:
 	 */
 	static DebugOutput& Instance();
 
+    /**
+     * @brief printInfoMsg
+     * @param msg Message to be printed.
+     */
+    void printInfoMsg(const QString &msg);
 	/**
 	 * @brief printDebugMsg
 	 * @param msg Message to be printed.
