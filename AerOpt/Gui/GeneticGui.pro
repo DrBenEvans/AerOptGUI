@@ -6,7 +6,8 @@
 
 QT  += \
     core \
-    gui
+    widgets \
+    printsupport
 
 CONFIG(debug, debug|release) {
     DESTDIR = build/debug-gcc
@@ -30,6 +31,11 @@ CONFIG(debug, debug|release) {
     win32:QMAKE_LFLAGS += -static-libgcc
 }
 
+#QMAKE_CC = /usr/local/Cellar/gcc@6/6.4.0/bin/gcc-6
+#QMAKE_CXX = /usr/local/Cellar/gcc@6/6.4.0/bin/g++-6
+#QMAKE_LINK = /usr/local/Cellar/gcc@6/6.4.0/bin/g++-6
+QMAKE_MAC_SDK = macosx10.12
+
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
 QMAKE_CXXFLAGS += -std=c++11
@@ -37,9 +43,6 @@ QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-deprecated
 QMAKE_CXXFLAGS += -Wno-unused-function
 QMAKE_CXXFLAGS += -fmessage-length=0
-QMAKE_CXXFLAGS += -fopenmp
-QMAKE_LFLAGS += -Wl,--no-as-needed
-LIBS += -fopenmp
 
 TARGET = AerOptGui
 TEMPLATE = app

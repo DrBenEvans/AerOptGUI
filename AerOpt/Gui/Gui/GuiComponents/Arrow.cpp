@@ -1,10 +1,11 @@
 #include "Arrow.h"
-#include <QtGui>
+#include <QtWidgets>
+#include <QGraphicsLineItem>
 #include <cmath>
 
 const qreal Pi = 3.14;
 
-Arrow::Arrow(QPointF startItem, QPointF endItem, QGraphicsItem *parent, QGraphicsScene *scene) : QGraphicsLineItem(parent, scene)
+Arrow::Arrow(QPointF startItem, QPointF endItem, QGraphicsItem *parent, QGraphicsScene *scene) : QGraphicsLineItem(parent)
 {
 	myStartItem = startItem;
 	myEndItem = endItem;

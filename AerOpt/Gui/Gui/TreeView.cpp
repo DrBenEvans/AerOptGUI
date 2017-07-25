@@ -19,6 +19,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <tuple>
+#include <cmath>
 
 #include "TreeView.h"
 #include "Canvas.h"

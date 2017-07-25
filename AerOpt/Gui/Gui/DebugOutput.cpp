@@ -11,7 +11,7 @@
 
 DebugOutput* DebugOutput::sDebug = nullptr;
 
-void myMessageOutput(QtMsgType type, const char *msg)
+void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
 	switch (type) {
 	case QtDebugMsg:
@@ -42,12 +42,12 @@ DebugOutput::DebugOutput()
 {
 	setupUi(this);
 
-	qInstallMsgHandler(myMessageOutput);
+    qInstallMessageHandler(myMessageOutput);
 }
 
 DebugOutput::~DebugOutput()
 {
-	qInstallMsgHandler(0);
+    qInstallMessageHandler(0);
 
 	if (sDebug != nullptr)
 	{
@@ -56,7 +56,7 @@ DebugOutput::~DebugOutput()
 	}
 }
 
-void DebugOutput::printDebugMsg(const char *msg)
+void DebugOutput::printDebugMsg(const QString &msg)
 {
 	QString m("Info: ");
 	m += msg;
@@ -67,7 +67,7 @@ void DebugOutput::printDebugMsg(const char *msg)
 
 }
 
-void DebugOutput::printWarningMsg(const char *msg)
+void DebugOutput::printWarningMsg(const QString &msg)
 {
 	QString m("Warning: ");
 	m += msg;
@@ -78,7 +78,7 @@ void DebugOutput::printWarningMsg(const char *msg)
 
 }
 
-void DebugOutput::printCriticalMsg(const char *msg)
+void DebugOutput::printCriticalMsg(const QString &msg)
 {
 	QString m("Critical: ");
 	m += msg;
@@ -89,7 +89,7 @@ void DebugOutput::printCriticalMsg(const char *msg)
 
 }
 
-void DebugOutput::printFatalMsg(const char *msg)
+void DebugOutput::printFatalMsg(const QString &msg)
 {
 	QString m("Fatal: ");
 	m += msg;

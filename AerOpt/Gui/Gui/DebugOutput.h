@@ -34,22 +34,22 @@ public:
 	 * @brief printDebugMsg
 	 * @param msg Message to be printed.
 	 */
-	void printDebugMsg(const char *msg);
+    void printDebugMsg(const QString &msg);
 	/**
 	 * @brief printWarningMsg
 	 * @param msg Message to be printed.
 	 */
-	void printWarningMsg(const char *msg);
+    void printWarningMsg(const QString &msg);
 	/**
 	 * @brief printCriticalMsg
 	 * @param msg Message to be printed.
 	 */
-	void printCriticalMsg(const char *msg);
+    void printCriticalMsg(const QString &msg);
 	/**
 	 * @brief printFatalMsg
 	 * @param msg Message to be printed.
 	 */
-	void printFatalMsg(const char *msg);
+    void printFatalMsg(const QString &msg);
 
 private:
 	/**

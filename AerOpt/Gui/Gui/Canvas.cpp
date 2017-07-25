@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QPainter>
 #include <QMouseEvent>
+#include <cmath>
 
 #include "Canvas.h"
 #include "ProjectData.h"
