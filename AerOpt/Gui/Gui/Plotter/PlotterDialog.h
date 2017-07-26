@@ -9,14 +9,12 @@ namespace Ui {
 class PlotterDialog;
 }
 
-class ProjectData;
-
 class PlotterDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	explicit PlotterDialog(QWidget *parent = 0);
+    explicit PlotterDialog(QWidget *parent = 0);
 	~PlotterDialog();
 	void setData(const int gen, const QVector<double> nests);
 	void clearData();

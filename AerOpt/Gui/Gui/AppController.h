@@ -12,70 +12,35 @@
 #include "ui_TreeView.h"
 #include <QProcess>
 #include <QFileSystemWatcher>
+#include <QDialog>
 
 //Forward declarations
 class Menu;
-class ProjectData;
+class OptimisationRun;
 class QTreeWidgetItem;
 class Canvas;
 class PlotterDialog;
 
 /**
- * @brief The TreeView class
+ * @brief The AppController class
  * This class ised used for interecting with the
  * user via a tree type menu structure.
  */
-class TreeView : public QWidget, private Ui::TreeView
+class AppController : public QDialog
 {
-	Q_OBJECT
+    Q_OBJECT
 	
 public:
 	/**
 	 * @brief TreeView
-	 * @param data A reference to the ProjectData class.
+     * @param data A reference to the OptimisationRun class.
 	 * @param canvas A reference to the Canvas class.
-	 * This class depends on the ProjectData and Canvas classes.
+     * This class depends on the OptimisationRun and Canvas classes.
 	 */
-	explicit TreeView(ProjectData& data, Canvas& canvas);
-	TreeView() = delete;
-	~TreeView();
+    AppController(OptimisationRun& data, Canvas& canvas, QWidget *parent = 0);
+    ~AppController();
 
 public slots:
-	//Main menus
-	/**
-	 * @brief addProfileObject
-	 * Adds the treeview profile entry.
-	 */
-	void addProfileObject();
-	/**
-	 * @brief addMeshObject
-	 * Adds the treeview mesh entry.
-	 */
-	void addMeshObject();
-    /**
-	 * @brief addBoundaryObject
-	 * Adds the treeview boundary condition entry.
-	 */
-	void addBoundaryObject();
-	/**
-	 * @brief addOptimiserObject
-	 * Adds the treeview optimiser parameters entry.
-	 */
-	void addOptimiserObject();
-	/**
-	 * @brief addRuntimeObject
-	 * Adds the treeview run aeropt entry.
-	 */
-	void addRuntimeObject();
-	/**
-	 * @brief deleteObject
-	 * Deletes the currently selected treeview node.
-	 */
-	void deleteObject();
-	/**
-	 * @brief clearProject
-	 * Clears the current project.
-	 */
 	void clearProject();
 	/**
 	 * @brief loadProject
@@ -84,11 +49,6 @@ public slots:
 	void loadProject();
 
 	//Sub menus
-	/**
-	 * @brief importProfile
-	 * Imports a profile from a file set by the user.
-	 */
-	void importProfile();//1
 	/**
 	 * @brief runMesher
 	 * Runs the mesher tool to generate an initial mesh
@@ -128,14 +88,18 @@ public slots:
 	 * Displays the fitness graph.
 	 */
 	void showGraph();
+    /**
+     * @brief createNewSimulationObject
+     * @return
+     */
+    void new_simulation();
+    /**
+     * @brief configureCurrentSimulationObject
+     * @return
+     */
+    void configure_current_simulation();
 
 private slots:
-	/**
-	 * @brief showContextMenu
-	 * @param point Mouse curser location.
-	 * Shows a context menu based on the curser location.
-	 */
-	void showContextMenu(const QPoint &point);
 	/**
 	 * @brief meshOutput
 	 * Outputs mesher std out.
@@ -191,7 +155,7 @@ private slots:
 	 * @param exitCode Optimiser exit code.
 	 * @param exitStatus Optimiser exit status.
 	 */
-	void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
 private:
 	/**
@@ -200,9 +164,9 @@ private:
 	 * @param data
 	 * @return True if file loaded sucsessfully.
 	 * Loads the profile data from file specified by path,
-	 * and stores the data in ProjectData.
+     * and stores the data in OptimisationRun.
 	 */
-	bool loadProfile(const std::string& filePath, ProjectData& data);
+    bool loadProfile(const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief createInputFile
 	 * @param meshInFile
@@ -227,7 +191,7 @@ private:
 	 * @param data
 	 * @return
 	 */
-	bool createGeoFile(const std::string& meshGeoFile, ProjectData& data);
+    bool createGeoFile(const std::string& meshGeoFile, OptimisationRun& data);
 	/**
 	 * @brief loadMeshProfile
 	 * @param genNo
@@ -235,7 +199,7 @@ private:
 	 * @param data
 	 * @return
 	 */
-	bool loadMeshProfile(const uint genNo, const std::string& filePath, ProjectData& data);
+    bool loadMeshProfile(const uint genNo, const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief loadMeshProfileType1
 	 * @param genNo
@@ -243,7 +207,7 @@ private:
 	 * @param data
 	 * @return
 	 */
-	bool loadMeshProfileType1(const uint genNo, const std::string& filePath, ProjectData& data);
+    bool loadMeshProfileType1(const uint genNo, const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief loadMeshProfileType2
 	 * @param genNo
@@ -251,49 +215,49 @@ private:
 	 * @param data
 	 * @return
 	 */
-	bool loadMeshProfileType2(const uint genNo, const std::string& filePath, ProjectData& data);
+    bool loadMeshProfileType2(const uint genNo, const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief loadMesh
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-	bool loadMesh(const std::string& filePath, ProjectData& data);
+    bool loadMesh(const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief loadMeshType1
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-	bool loadMeshType1(const std::string& filePath, ProjectData& data);
+    bool loadMeshType1(const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief loadMeshType2
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-	bool loadMeshType2(const std::string& filePath, ProjectData& data);
+    bool loadMeshType2(const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief loadResults
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-	bool loadResults(const std::string& filePath, ProjectData& data);
+    bool loadResults(const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief createAerOptInFile
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-	bool createAerOptInFile(const std::string& filePath, ProjectData& data);
+    bool createAerOptInFile(const std::string& filePath, OptimisationRun& data);
 	/**
 	 * @brief createAerOptNodeFile
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-	bool createAerOptNodeFile(const std::string& filePath, ProjectData& data);
+    bool createAerOptNodeFile(const std::string& filePath, OptimisationRun& data);
 
 	/**
 	 * @brief emptyFolder
@@ -328,14 +292,14 @@ private:
 	 * @param data
 	 * @return
 	 */
-	bool saveCurrentProfile(const QString& path, const ProjectData& data);
+    bool saveCurrentProfile(const QString& path, const OptimisationRun& data);
 
 
 	QTreeWidgetItem* mRoot;
-	std::map<int,Menu*> mMenus;
 
 	uint sGenNo;
-	bool mMenusSet;
+
+    QObject* mParent;
 
 	QProcess myMeshProcess;
 	QProcess myOptProcess;
@@ -350,7 +314,7 @@ private:
 	PlotterDialog* mPlotter;
 
 	Canvas& mCanvas;
-	ProjectData& mData;
+    OptimisationRun& mData;
 };
 
 #endif // TREEVIEW_H

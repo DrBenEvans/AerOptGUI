@@ -1,8 +1,8 @@
 #include "MeshDialog.h"
 #include "ui_MeshDialog.h"
-#include "ProjectData.h"
+#include "OptimisationRun.h"
 
-MeshDialog::MeshDialog(ProjectData& data, QWidget *parent) :
+MeshDialog::MeshDialog(OptimisationRun& data, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::MeshDialog),
 	mData(data)

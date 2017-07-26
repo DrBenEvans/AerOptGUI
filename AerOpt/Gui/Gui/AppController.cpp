@@ -21,76 +21,25 @@
 #include <tuple>
 #include <cmath>
 
-#include "TreeView.h"
+#include "AppController.h"
 #include "Canvas.h"
 #include "Menu.h"
-#include "ProjectData.h"
+#include "OptimisationRun.h"
 #include "Enumerations.h"
-#include "BoundaryDialog.h"
-#include "OptimiserDialog.h"
 #include "MeshDialog.h"
 #include "PlotterDialog.h"
+#include "ConfigSimulationDialog.h"
 
-TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(data)
+AppController::AppController(OptimisationRun& data, Canvas& canvas, QWidget *parent) : QDialog(parent), mCanvas(canvas), mData(data)
 {
-	setupUi(this);
+    mParent = parent;
+    myMeshProcess.setParent(mParent);
+    myOptProcess.setParent(mParent);
+    myDirWatcher.setParent(mParent);
 
-	myMeshProcess.setParent(this);
-	connect (&myMeshProcess, SIGNAL(finished(int,QProcess::ExitStatus)), this, SLOT(meshingFinished(int,QProcess::ExitStatus)));
-	connect (&myMeshProcess, SIGNAL(started()), this, SLOT(meshingStarted()));
-//	connect (myMeshProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(meshOutput()));
-	connect (&myMeshProcess, SIGNAL(readyReadStandardError()), this, SLOT(meshError()));
-	mProjectDirectory = "";
+    mProjectDirectory = "";
 
-	myOptProcess.setParent(this);
-	connect (&myOptProcess, SIGNAL(finished(int,QProcess::ExitStatus)),
-			 this, SLOT(optimiserFinished(int,QProcess::ExitStatus)));
-	connect (&myOptProcess, SIGNAL(started()), this, SLOT(optimiserStarted()));
-//	connect (myOptProcess, SIGNAL(readyReadStandardOutput()), this, SLOT(processOutput()));
-//	connect (myOptProcess, SIGNAL(readyReadStandardError()), this, SLOT(processError()));
-
-	myDirWatcher.setParent(this);
-//	QObject::connect(&myDirWatcher, SIGNAL(fileChanged(const QString&)), this, SLOT(readFitness(const QString&)));
-	QObject::connect(&myDirWatcher, SIGNAL(directoryChanged(const QString&)), this, SLOT(readDirectory(const QString&)));
-
-	treeWidget->setIndentation(20);
-	treeWidget->setRootIsDecorated(true);
-	treeWidget->setUniformRowHeights(true);
-	treeWidget->setItemsExpandable(true);
-	treeWidget->setAnimated(true);
-	treeWidget->setExpandsOnDoubleClick(true);
-	treeWidget->setColumnCount(3);
-	treeWidget->setContextMenuPolicy(Qt::CustomContextMenu);
-
-	QStringList headers;
-    headers << "AerOpt Settings";
-    headers << "Set";
-	headers << " ";
-	treeWidget->setHeaderLabels(headers);
-	treeWidget->setColumnWidth(0, 205);
-	treeWidget->setColumnWidth(1, 33);
-
-	mRoot = new QTreeWidgetItem(treeWidget, Enum::TreeType::ROOT);
-	mRoot->setText(0, "Aerofoil Project");
-    mRoot->setText(1, "No");
-	treeWidget->expandItem(mRoot);
-	treeWidget->setCurrentItem(mRoot);
-	mCurrentNode = mRoot;
-
-	mMenus.clear();
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::DEFAULT,   new Menu(mData, mCanvas, Enum::TreeType::DEFAULT,   this)) );
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::ROOT,      new Menu(mData, mCanvas, Enum::TreeType::ROOT,      this)) );
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::DATA,      new Menu(mData, mCanvas, Enum::TreeType::DATA,      this)) );
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::MESH,      new Menu(mData, mCanvas, Enum::TreeType::MESH,      this)) );
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::FUNCTION,  new Menu(mData, mCanvas, Enum::TreeType::FUNCTION,  this)) );
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::BOUNDARY,  new Menu(mData, mCanvas, Enum::TreeType::BOUNDARY,  this)) );
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::OPTIMISER, new Menu(mData, mCanvas, Enum::TreeType::OPTIMISER, this)) );
-	mMenus.insert( std::pair<int, Menu*>(Enum::TreeType::RUNTIME,   new Menu(mData, mCanvas, Enum::TreeType::RUNTIME,   this)) );
-
-	QObject::connect(treeWidget, SIGNAL( customContextMenuRequested(const QPoint &)), this, SLOT(showContextMenu(const QPoint &)));
-	mMenusSet = true;
-
-	//Determin application directory and binary locations.
+    //Determine application directory and binary locations.
 	int index = 0;
 	QString appPath;
 #ifdef Q_OS_UNIX
@@ -106,7 +55,7 @@ TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(d
 
 
 	appPath = QCoreApplication::applicationFilePath();
-//	qDebug() << appPath;
+    qDebug() << appPath;
 	appPath = QDir::fromNativeSeparators(QCoreApplication::applicationFilePath());
 
 	index = appPath.lastIndexOf("/AerOpt/");
@@ -116,19 +65,19 @@ TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(d
 		//Determin app path
 		appPath.remove(index, appPath.size() - index);
 		appPath = QDir::toNativeSeparators(appPath);
-//		qDebug() << appPath;
+        qDebug() << appPath;
 		mAppPath = appPath;
 
 		//Determin mesher path
 		mesherExe = QDir::toNativeSeparators(mesherExe);
 		mesherExe.prepend( appPath );
-//		qDebug() << mesherExe;
+        qDebug() << mesherExe;
 		mMesherPath = mesherExe;
 
 		//Determin flite path << lol
 		aeroptExe = QDir::toNativeSeparators(aeroptExe);
 		aeroptExe.prepend( appPath );
-//		qDebug() << aeroptExe;
+        qDebug() << aeroptExe;
 		mAerOptPath = aeroptExe;
 
         QFileInfo checkMesher(mMesherPath);
@@ -155,7 +104,7 @@ TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(d
 	else
 	{
 		qCritical() << "Application root directory could not be established!";
-	}
+    }
 
 	//Get source folders (input and output)
 	QDir path(mAppPath);
@@ -176,196 +125,17 @@ TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(d
 
 	sGenNo = 0;
 
-	//Set Defaults.
-	addProfileObject();
-	addMeshObject();
-	addBoundaryObject();
-	addOptimiserObject();
-	addRuntimeObject();
     qInfo() << " *** Welcome to AerOpt ***";
     qInfo() << " ***     Have a nice day     ***";
-
-	mPlotter = new PlotterDialog(this);
-	mPlotter->hide();
 }
 
-TreeView::~TreeView()
+AppController::~AppController()
 {
 	myMeshProcess.kill();
 	myOptProcess.kill();
 }
 
-//Public slots
-
-//Main menus
-
-void TreeView::addProfileObject()
-{
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-
-	for (QTreeWidgetItem* node : selectedList)
-	{
-		bool b = false;
-		int qty = node->childCount();
-
-		for (int i = 0; i < qty; ++i)
-		{
-			b |= node->child(i)->type() == Enum::TreeType::DATA;
-		}
-
-		if ( b )
-		{
-            qDebug() << "Item 'Profile' already exists: ";
-		}
-		else
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(node, Enum::TreeType::DATA);
-            QString name = "Profile";
-			item->setText(0, name);
-            item->setText(1, "No");
-			mData.setProfile(false);
-			treeWidget->expandItem(item);
-		}
-	}
-}
-
-void TreeView::addMeshObject()
-{
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-
-	for (QTreeWidgetItem* node : selectedList)
-	{
-		bool b = false;
-		int qty = node->childCount();
-
-		for (int i = 0; i < qty; ++i)
-		{
-			b |= node->child(i)->type() == Enum::TreeType::MESH;
-		}
-
-		if ( b )
-		{
-            qDebug() << "Item 'Mesher' already exists: ";
-		}
-		else
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(node, Enum::TreeType::MESH);
-            QString name = "Mesher";
-			item->setText(0, name);
-            item->setText(1, "No");
-			mData.setMesh(false);
-			treeWidget->expandItem(item);
-		}
-	}
-}
-
-void TreeView::addBoundaryObject()
-{
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-
-	for (QTreeWidgetItem* node : selectedList)
-	{
-		bool b = false;
-		int qty = node->childCount();
-
-		for (int i = 0; i < qty; ++i)
-		{
-			b |= node->child(i)->type() == Enum::TreeType::BOUNDARY;
-		}
-
-		if ( b )
-		{
-            qInfo() << "Item 'Flow Conditions' already exists";
-		}
-		else
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(node, Enum::TreeType::BOUNDARY);
-            QString name = "Flow Conditions";
-			item->setText(0, name);
-            item->setText(1, "No");
-			mData.setBoundary(false);
-			treeWidget->expandItem(item);
-		}
-	}
-}
-
-void TreeView::addOptimiserObject()
-{
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-
-	for (QTreeWidgetItem* node : selectedList)
-	{
-		bool b = false;
-		int qty = node->childCount();
-
-		for (int i = 0; i < qty; ++i)
-		{
-			b |= node->child(i)->type() == Enum::TreeType::OPTIMISER;
-		}
-
-		if ( b )
-		{
-            qInfo() << "Item 'Optimiser Parameters' already exists";
-		}
-		else
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(node, Enum::TreeType::OPTIMISER);
-			QString name = "Optimiser Parameters";
-			item->setText(0, name);
-            item->setText(1, "No");
-			mData.setOptimiser(false);
-			treeWidget->expandItem(item);
-		}
-	}
-}
-
-void TreeView::addRuntimeObject()
-{
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-
-	for (QTreeWidgetItem* node : selectedList)
-	{
-		bool b = false;
-		int qty = node->childCount();
-
-		for (int i = 0; i < qty; ++i)
-		{
-			b |= node->child(i)->type() == Enum::TreeType::RUNTIME;
-		}
-
-		if ( b )
-		{
-            qInfo() << "Item 'Runtime Monitoring' already exists";
-		}
-		else
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(node, Enum::TreeType::RUNTIME);
-			QString name = "Runtime Monitoring";
-			item->setText(0, name);
-            item->setText(1, "No");
-			mData.setRunTime(false);
-			treeWidget->expandItem(item);
-		}
-	}
-}
-
-void TreeView::deleteObject()
-{
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-
-	for (QTreeWidgetItem* node : selectedList)
-	{
-        qInfo() << "Deleted " << node->text(0);
-		delete node;
-	}
-}
-
-void TreeView::clearProject()
+void AppController::clearProject()
 {
     qInfo() << "Project data cleared!";
     mRoot->setText(1, "No");
@@ -380,21 +150,34 @@ void TreeView::clearProject()
 	mCanvas.update();
 }
 
-void TreeView::loadProject()
+void AppController::new_simulation() {
+    mData = OptimisationRun();
+    ConfigSimulationDialog diag(mData);
+    diag.show();
+    diag.exec();
+}
+
+void AppController::configure_current_simulation() {
+    ConfigSimulationDialog diag(mData);
+    diag.show();
+    diag.exec();
+}
+
+void AppController::loadProject()
 {
-	QDir projPath;
+    QDir projPath;
 
 #ifdef Q_OS_UNIX
-	// do fancy unix stuff
-	projPath = QFileDialog::getExistingDirectory(this, "Select Project Directory", QDir::homePath()+"/Documents/Projects/AerOptProject/");
+    // do fancy unix stuff
+    projPath = QFileDialog::getExistingDirectory(this, "Select Project Directory", QDir::homePath()+"/Documents/Projects/AerOptProject/");
 #endif
 #ifdef Q_OS_WIN32
-	// do windows stuff here
-	projPath = QFileDialog::getExistingDirectory(this, "Select Project Directory", QDir::homePath());
+    // do windows stuff here
+    projPath = QFileDialog::getExistingDirectory(this, "Select Project Directory", QDir::homePath());
 #endif
 
-	mProjectDirectory = projPath.path();
-	mData.setProjectPathSet(true);
+    mProjectDirectory = projPath.path();
+    mData.setProjectPathSet(true);
     mRoot->setText(1, "Yes");
 
     qInfo() << "Project directory set: " << mProjectDirectory;
@@ -402,110 +185,14 @@ void TreeView::loadProject()
 
 //Sub menus
 
-void TreeView::importProfile()
-{
-	if (!mData.projectPathSet())
-	{
-		qWarning() << "The Project directory is not set! Please set the Project directory.";
-		return;
-	}
-
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-
-	bool success = true;
-	QString fileName;
-	QStringList fileNames;
-
-
-#ifdef Q_OS_UNIX
-	// do fancy unix stuff
-	fileNames.append(
-        QFileDialog::getOpenFileName(this, "Select Profile File", QDir::homePath()+"/Documents/Projects/AerOptProject/", "Profile Files (*.prf)")
-					);
-#endif
-#ifdef Q_OS_WIN32
-	// do windows stuff here
-	fileNames.append(
-        QFileDialog::getOpenFileName(this, "Select Profile File", QDir::homePath(), "Profile Files (*.prf)")
-					);
-#endif
-
-	if (fileNames.size() > 0)
-	{
-		for (const QString &f: fileNames)
-		{
-			fileName = f;
-		}
-
-        qInfo() << "File selected: " << fileName;
-
-		success &= loadProfile(fileName.toStdString(), mData);
-
-		if (success)
-		{
-			//Set text OK here!
-			for (QTreeWidgetItem* node : selectedList)
-			{
-                node->setText(1, "Yes");
-				mData.setProfile(true);
-				mData.setRenderProfile(true);
-				mData.setRenderMesh(false);
-			}
-            qInfo() << "File successfully loaded.";
-		}
-		else
-		{
-			//Set text Not OK here!
-			for (QTreeWidgetItem* node : selectedList)
-			{
-                node->setText(1, "No");
-				mData.setProfile(false);
-				mData.setRenderProfile(false);
-				mData.setRenderMesh(true);
-			}
-			qWarning() << "File failed to load correctly.";
-		}
-	}
-	else
-	{
-		//Set text Not OK here!
-		for (QTreeWidgetItem* node : selectedList)
-		{
-            node->setText(1, "No");
-			mData.setProfile(false);
-			mData.setRenderProfile(false);
-			mData.setRenderMesh(true);
-		}
-		mData.clearProfile();
-		qWarning() << "Profile data not imported!";
-	}
-	mCanvas.update();
-}
-
-void TreeView::runMesher()
+void AppController::runMesher()
 {
 	sGenNo = 0;
 	//Clear mesh data first
-    //Set menu to 'No' here
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-	for (QTreeWidgetItem* node : selectedList)
-	{
-        node->setText(1, "No");
-		mData.setMesh(false);
-		mData.setRenderMesh(false);
-		mData.setRenderProfile(true);
-	}
+    mData.setMesh(false);
+    mData.setRenderMesh(false);
+    mData.setRenderProfile(true);
 	mData.clearMesh();
-
-	if (!mData.profile())
-	{
-		qWarning() << "Profile not loaded! Please load a valid profile.";
-		mData.setRenderProfile(false);
-		mCanvas.update();
-		return;
-	}
 
 	MeshDialog diag(mData, this);
 
@@ -549,40 +236,21 @@ void TreeView::runMesher()
 
 	if (r)
 	{
-		mMenusSet = false;
-
 		myMeshProcess.setWorkingDirectory( meshWorkDir );
 		myMeshProcess.setStandardInputFile( meshInFile );
 		myMeshProcess.start( mMesherPath );
 	}
 }
 
-void TreeView::setObjective()
+void AppController::setBoundary()
 {
 	bool r = true;
-	if (!mData.mesh())
+    if (!mData.mesh())
 	{
-		qWarning() << "Please first generate an initial mesh!";
+        qWarning() << "Please first set the mesh!";
 		return;
 	}
-	ObjectiveDialog diag(mData, this);
-
-	diag.show();
-	diag.exec();
-
-	r &= mData.function();
-    if (r) mCurrentNode->setText(1, "Yes");
-}
-
-void TreeView::setBoundary()
-{
-	bool r = true;
-	if (!mData.function())
-	{
-		qWarning() << "Please first set the objective function!";
-		return;
-	}
-	BoundaryDialog diag(mData, this);
+    ConfigSimulationDialog diag(mData, this);
 
 	diag.show();
 	diag.exec();
@@ -591,7 +259,7 @@ void TreeView::setBoundary()
     if (r) mCurrentNode->setText(1, "Yes");
 }
 
-void TreeView::setOptimiser()
+void AppController::setOptimiser()
 {
 	bool r = true;
 	if (!mData.boundary())
@@ -599,7 +267,7 @@ void TreeView::setOptimiser()
         qWarning() << "Please first set the flow conditions!";
 		return;
 	}
-	OptimiserDialog diag(mData, this);
+    ConfigSimulationDialog diag(mData, this);
 
 	diag.show();
 	diag.exec();
@@ -608,7 +276,7 @@ void TreeView::setOptimiser()
     if (r) mCurrentNode->setText(1, "Yes");
 }
 
-void TreeView::runAerOpt()
+void AppController::runAerOpt()
 {
 	bool r = true;
 
@@ -617,10 +285,8 @@ void TreeView::runAerOpt()
 		qWarning() << "Please first set the optimiser parameters!";
 		return;
 	}
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
 
-	QString AerOpt = mAerOptPath;
+    QString AerOpt = mAerOptPath;
 
 	QString AerOptWorkDir = mAppPath;
 	AerOptWorkDir += "/AerOpt/FLITE/";
@@ -669,7 +335,6 @@ void TreeView::runAerOpt()
 	//then run aeropt
 	if (r)
 	{
-		mMenusSet = false;
 		myDirWatcher.addPath(path);
 		myOptProcess.setWorkingDirectory( AerOptWorkDir );
 		myOptProcess.start( AerOpt );
@@ -680,54 +345,26 @@ void TreeView::runAerOpt()
 	}
 }
 
-void TreeView::stopMesher()
+void AppController::stopMesher()
 {
 	myMeshProcess.kill();
     qInfo() << "Any running mesh jobs have been stopped!";
-
-	mMenusSet = true;
 }
 
-void TreeView::stopAerOpt()
+void AppController::stopAerOpt()
 {
 	myOptProcess.kill();
     qInfo() << "Any running AerOpt jobs have been stopped!";
-
-	mMenusSet = true;
 }
 
-void TreeView::showGraph()
+void AppController::showGraph()
 {
 	mPlotter->show();
 	mPlotter->adjustSize();
 }
 
 //Private slots
-
-void TreeView::showContextMenu(const QPoint &point)
-{
-
-	if (!mMenusSet) return;
-
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-
-	if (treeWidget->indexAt(point).isValid())
-	if (selectedList.size() > 0)
-	{
-		mCurrentNode = selectedList.at(0);
-		try
-		{
-			mMenus.at( selectedList.at(0)->type() )->exec( treeWidget->mapToGlobal(point) );
-		}
-		catch (const std::out_of_range& oor)
-		{
-			qCritical() << "Out of Range error: " << oor.what()
-						<< " Location: 'void TreeView::showContextMenu(const QPoint &point)'";
-		}
-	}
-}
-
-void TreeView::meshOutput()
+void AppController::meshOutput()
 {
 	QByteArray byteArray = myMeshProcess.readAllStandardOutput();
 	QStringList strLines = QString(byteArray).split("\n");
@@ -737,7 +374,7 @@ void TreeView::meshOutput()
 	}
 }
 
-void TreeView::meshError()
+void AppController::meshError()
 {
 	QByteArray byteArray = myMeshProcess.readAllStandardError();
 	QStringList strLines = QString(byteArray).split("\n");
@@ -747,7 +384,7 @@ void TreeView::meshError()
 	}
 }
 
-void TreeView::processOutput()
+void AppController::processOutput()
 {
 	QByteArray byteArray = myOptProcess.readAllStandardOutput();
 	QStringList strLines = QString(byteArray).split("\n");
@@ -757,7 +394,7 @@ void TreeView::processOutput()
 	}
 }
 
-void TreeView::processError()
+void AppController::processError()
 {
 	QByteArray byteArray = myOptProcess.readAllStandardError();
 	QStringList strLines = QString(byteArray).split("\n");
@@ -767,12 +404,12 @@ void TreeView::processError()
 	}
 }
 
-void TreeView::meshingStarted()
+void AppController::meshingStarted()
 {
     qInfo() << "Meshing process started normally";
 }
 
-void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void AppController::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
 	if (exitStatus == QProcess::NormalExit && exitCode == 0)
 	{
@@ -821,17 +458,16 @@ void TreeView::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
 		qCritical() << "Process finished abnormally with exit code: " << exitCode;
 		//Definately set Y/N in treeview here!!
 	}
-	mMenusSet = true;
 }
 
-void TreeView::optimiserStarted()
+void AppController::optimiserStarted()
 {
     qInfo() << "Optimiser process started normally";
 	mPlotter->clearData();
 	mPlotter->show();
 }
 
-void TreeView::readDirectory(const QString& path)
+void AppController::readDirectory(const QString& path)
 {
 	//Read initial fitness
 	if (sGenNo == 0)
@@ -905,7 +541,7 @@ void TreeView::readDirectory(const QString& path)
 	mCanvas.update();
 }
 
-void TreeView::readFitness(const QString& path)
+void AppController::readFitness(const QString& path)
 {
 	bool r = true;
 	std::string line = "";
@@ -962,7 +598,7 @@ void TreeView::readFitness(const QString& path)
 	infile.close();
 }
 
-void TreeView::optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void AppController::optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
 
 	//Windows bug!! re read last file set if exists.
@@ -1045,38 +681,12 @@ void TreeView::optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
 	mCanvas.update();
 	myDirWatcher.removePaths( myDirWatcher.directories() );
-	mMenusSet = true;
 }
 
 
 //Private functions
 
-bool TreeView::loadProfile(const std::string& filePath, ProjectData& data)
-{
-	bool r = true;
-	float x, y;
-
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-
-	if (r)
-	{
-		data.clearProfile();
-		while (infile >> x >> y)
-		{
-			data.addPoint(x, y);
-		}
-	}
-	infile.close();
-
-	r &= data.checkProfileIntegrity();
-
-	if (!r) data.clearProfile();
-
-	return r;
-}
-
-bool TreeView::createInputFile(const std::string& meshInFile,
+bool AppController::createInputFile(const std::string& meshInFile,
 							   const std::string& meshBacFile,
 							   const std::string& meshGeoFile,
 							   const std::string& meshDatFile)
@@ -1106,7 +716,7 @@ bool TreeView::createInputFile(const std::string& meshInFile,
 	return r;
 }
 
-bool TreeView::createBacFile(const std::string& meshBacFile)
+bool AppController::createBacFile(const std::string& meshBacFile)
 {
 	bool r = true;
 
@@ -1158,7 +768,7 @@ bool TreeView::createBacFile(const std::string& meshBacFile)
 	return r;
 }
 
-bool TreeView::createGeoFile(const std::string& meshGeoFile, ProjectData& data)
+bool AppController::createGeoFile(const std::string& meshGeoFile, OptimisationRun& data)
 {
 	bool r = true;
 	int noPoints = 0;
@@ -1256,7 +866,7 @@ bool TreeView::createGeoFile(const std::string& meshGeoFile, ProjectData& data)
 	return r;
 }
 
-bool TreeView::loadMeshProfile(const uint genNo, const std::string &filePath, ProjectData &data)
+bool AppController::loadMeshProfile(const uint genNo, const std::string &filePath, OptimisationRun &data)
 {
 	bool r = true;
 	int type = 1;
@@ -1294,7 +904,7 @@ bool TreeView::loadMeshProfile(const uint genNo, const std::string &filePath, Pr
 	return r;
 }
 
-bool TreeView::loadMeshProfileType1(const uint genNo, const std::string& filePath, ProjectData& data)
+bool AppController::loadMeshProfileType1(const uint genNo, const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 
@@ -1382,7 +992,7 @@ bool TreeView::loadMeshProfileType1(const uint genNo, const std::string& filePat
 	return r;
 }
 
-bool TreeView::loadMeshProfileType2(const uint genNo, const std::string& filePath, ProjectData& data)
+bool AppController::loadMeshProfileType2(const uint genNo, const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 
@@ -1468,7 +1078,7 @@ bool TreeView::loadMeshProfileType2(const uint genNo, const std::string& filePat
 	return r;
 }
 
-bool TreeView::loadMesh(const std::string& filePath, ProjectData& data)
+bool AppController::loadMesh(const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 	int type = 1;
@@ -1506,7 +1116,7 @@ bool TreeView::loadMesh(const std::string& filePath, ProjectData& data)
 	return r;
 }
 
-bool TreeView::loadMeshType1(const std::string& filePath, ProjectData& data)
+bool AppController::loadMeshType1(const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 
@@ -1582,7 +1192,7 @@ bool TreeView::loadMeshType1(const std::string& filePath, ProjectData& data)
 	return r;
 }
 
-bool TreeView::loadMeshType2(const std::string& filePath, ProjectData& data)
+bool AppController::loadMeshType2(const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 
@@ -1658,7 +1268,7 @@ bool TreeView::loadMeshType2(const std::string& filePath, ProjectData& data)
 	return r;
 }
 
-bool TreeView::loadResults(const std::string& filePath, ProjectData& data)
+bool AppController::loadResults(const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 
@@ -1678,7 +1288,7 @@ bool TreeView::loadResults(const std::string& filePath, ProjectData& data)
 	return r;
 }
 
-bool TreeView::createAerOptInFile(const std::string& filePath, ProjectData& data)
+bool AppController::createAerOptInFile(const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 
@@ -1803,7 +1413,7 @@ bool TreeView::createAerOptInFile(const std::string& filePath, ProjectData& data
 	return r;
 }
 
-bool TreeView::createAerOptNodeFile(const std::string& filePath, ProjectData& data)
+bool AppController::createAerOptNodeFile(const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
 
@@ -1831,7 +1441,7 @@ bool TreeView::createAerOptNodeFile(const std::string& filePath, ProjectData& da
 	return r;
 }
 
-bool TreeView::emptyFolder(const QString& path)
+bool AppController::emptyFolder(const QString& path)
 {
 	bool r = true;
 
@@ -1846,7 +1456,7 @@ bool TreeView::emptyFolder(const QString& path)
 	return r;
 }
 
-bool TreeView::copyFolder(const QString& source, const QString& dest)
+bool AppController::copyFolder(const QString& source, const QString& dest)
 {
 	bool r = true;
 
@@ -1895,7 +1505,7 @@ bool TreeView::copyFolder(const QString& source, const QString& dest)
 	return r;
 }
 
-bool TreeView::copyFile(const QString& source, const QString& dest)
+bool AppController::copyFile(const QString& source, const QString& dest)
 {
 	bool r = true;
 
@@ -1909,7 +1519,7 @@ bool TreeView::copyFile(const QString& source, const QString& dest)
 	return r;
 }
 
-bool TreeView::removeFolder(const QString& path)
+bool AppController::removeFolder(const QString& path)
 {
 	bool r = true;
 	QDir dir(path);
@@ -1937,7 +1547,7 @@ bool TreeView::removeFolder(const QString& path)
 	return r;
 }
 
-bool TreeView::saveCurrentProfile(const QString& path, const ProjectData& data)
+bool AppController::saveCurrentProfile(const QString& path, const OptimisationRun& data)
 {
 	bool r = true;
 

@@ -1,9 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <author/>
- <comment/>
- <exportmacro/>
  <class>MainWindow</class>
- <widget name="MainWindow" class="QMainWindow">
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -15,10 +13,74 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
-  <widget name="menubar" class="QMenuBar"/>
-  <widget name="centralwidget" class="QWidget"/>
-  <widget name="statusbar" class="QStatusBar"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="Canvas" name="canvas" native="true">
+      <layout class="QVBoxLayout" name="verticalLayout"/>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuOptimisations">
+    <property name="title">
+     <string>Optimisations</string>
+    </property>
+    <widget class="QMenu" name="menuSwitch_Optimisation">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Switch Optimisation</string>
+     </property>
+     <addaction name="separator"/>
+    </widget>
+    <addaction name="actionNewOptimisation"/>
+    <addaction name="menuSwitch_Optimisation"/>
+   </widget>
+   <widget class="QMenu" name="menuLog">
+    <property name="title">
+     <string>Log</string>
+    </property>
+    <addaction name="actionShowLog"/>
+   </widget>
+   <addaction name="menuOptimisations"/>
+   <addaction name="menuLog"/>
+  </widget>
+  <action name="actionNewOptimisation">
+   <property name="text">
+    <string>New...</string>
+   </property>
+   <property name="toolTip">
+    <string>New Optimisation</string>
+   </property>
+  </action>
+  <action name="actionShowLog">
+   <property name="text">
+    <string>Show...</string>
+   </property>
+   <property name="toolTip">
+    <string>ShowLog</string>
+   </property>
+  </action>
  </widget>
- <pixmapfunction/>
+ <customwidgets>
+  <customwidget>
+   <class>Canvas</class>
+   <extends>QWidget</extends>
+   <header>Canvas.h</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
+ <resources/>
  <connections/>
 </ui>

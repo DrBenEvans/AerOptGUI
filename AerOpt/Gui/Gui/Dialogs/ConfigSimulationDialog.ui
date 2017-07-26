@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ConfigureProjectDialog</class>
- <widget class="QDialog" name="ConfigureProjectDialog">
+ <class>ConfigSimulationDialog</class>
+ <widget class="QDialog" name="ConfigSimulationDialog">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
     <width>584</width>
-    <height>385</height>
+    <height>399</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Configure Simulation</string>
   </property>
   <widget class="QDialogButtonBox" name="buttonBox">
    <property name="geometry">
     <rect>
      <x>230</x>
-     <y>340</y>
+     <y>360</y>
      <width>341</width>
      <height>32</height>
     </rect>
@@ -33,7 +33,7 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>90</y>
+     <y>120</y>
      <width>281</width>
      <height>231</height>
     </rect>
@@ -41,7 +41,7 @@
    <property name="title">
     <string>Run Conditions</string>
    </property>
-   <widget class="QLabel" name="label">
+   <widget class="QLabel" name="label_7">
     <property name="geometry">
      <rect>
       <x>120</x>
@@ -189,23 +189,12 @@
      <double>0.500000000000000</double>
     </property>
    </widget>
-   <zorder>label</zorder>
-   <zorder>label_2</zorder>
-   <zorder>label_3</zorder>
-   <zorder>label_4</zorder>
-   <zorder>label_5</zorder>
-   <zorder>temp</zorder>
-   <zorder>pressure</zorder>
-   <zorder>angle</zorder>
-   <zorder>reynolds</zorder>
-   <zorder>mach</zorder>
-   <zorder>OptParamsGroup</zorder>
   </widget>
   <widget class="QGroupBox" name="OptParamsGroup">
    <property name="geometry">
     <rect>
      <x>300</x>
-     <y>90</y>
+     <y>120</y>
      <width>271</width>
      <height>231</height>
     </rect>
@@ -381,33 +370,20 @@
      <x>10</x>
      <y>10</y>
      <width>561</width>
-     <height>71</height>
+     <height>101</height>
     </rect>
    </property>
    <property name="title">
     <string>Project Options</string>
    </property>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="label">
     <property name="geometry">
      <rect>
-      <x>80</x>
+      <x>100</x>
       <y>35</y>
-      <width>351</width>
+      <width>441</width>
       <height>21</height>
      </rect>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="pushButton">
-    <property name="geometry">
-     <rect>
-      <x>440</x>
-      <y>30</y>
-      <width>113</width>
-      <height>32</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Browse...</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_14">
@@ -420,17 +396,47 @@
      </rect>
     </property>
     <property name="text">
-     <string>Directory</string>
+     <string>Label</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_15">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>75</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Initial Profile</string>
+    </property>
+   </widget>
+   <widget class="ProfileLibrarySelector" name="profile">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>70</y>
+      <width>441</width>
+      <height>26</height>
+     </rect>
     </property>
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ProfileLibrarySelector</class>
+   <extends>QComboBox</extends>
+   <header>ProfileLibrarySelector.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ConfigureProjectDialog</receiver>
+   <receiver>ConfigSimulationDialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -446,7 +452,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ConfigureProjectDialog</receiver>
+   <receiver>ConfigSimulationDialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">

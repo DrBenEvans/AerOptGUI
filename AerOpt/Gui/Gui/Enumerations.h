@@ -25,8 +25,17 @@ namespace Enum
 		MAXLIFT,
 		MINDRAG,
 		MAXDOWNFORCE,
-		MINLIFT
+        MINLIFT,
+        FUNCNOTSET
 	};
+
+    enum OptMethod
+    {
+        MCS = 0,
+        DE,
+        PSO,
+        METHODNOTSET
+    };
 
 	enum TreeType
 	{

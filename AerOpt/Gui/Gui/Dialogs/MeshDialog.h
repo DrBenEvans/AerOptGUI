@@ -8,14 +8,14 @@ namespace Ui {
 class MeshDialog;
 }
 
-class ProjectData;
+class OptimisationRun;
 
 class MeshDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	explicit MeshDialog(ProjectData& data, QWidget *parent = 0);
+    explicit MeshDialog(OptimisationRun& data, QWidget *parent = 0);
 	~MeshDialog();
 
 	void accept();
@@ -32,7 +32,7 @@ private slots:
 private:
 	Ui::MeshDialog *ui;
 	Enum::Mesh mMeshDensity;
-	ProjectData& mData;
+    OptimisationRun& mData;
 };
 
 #endif // MESHDIALOG_H

@@ -7,10 +7,10 @@
 **********************************************/
 
 #include "Menu.h"
-#include "ProjectData.h"
+#include "OptimisationRun.h"
 #include "Canvas.h"
 
-Menu::Menu(ProjectData& data, Canvas& canvas, Enum::TreeType type, QObject *parent) : QObject(parent), mCanvas(canvas), mData(data)
+Menu::Menu(OptimisationRun& data, Canvas& canvas, Enum::TreeType type, QObject *parent) : QObject(parent), mCanvas(canvas), mData(data)
 {
 	mIndex = 0;
 	switch (type)
@@ -84,7 +84,7 @@ void Menu::profile(QObject *parent)
 	mActions.append(showObject);
 	mActions.append(hideObject);
 
-	QObject::connect(importObject, SIGNAL( triggered() ), this->parent(), SLOT( importProfile() ));
+    //QObject::connect(importObject, SIGNAL( triggered() ), this->parent(), SLOT( importProfile() ));
 	QObject::connect(showObject, SIGNAL( triggered() ), this, SLOT( showProfile() ));
 	QObject::connect(hideObject, SIGNAL( triggered() ), this, SLOT( hideProfile() ));
 }

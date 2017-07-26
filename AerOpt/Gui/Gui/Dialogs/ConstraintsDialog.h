@@ -10,27 +10,26 @@
 #define CONSTRAINTSDIALOG_H
 
 #include <QDialog>
+#include <OptimisationRun.h>
 
 namespace Ui
 {
 	class ConstraintsDialog;
 }
 
-class ProjectData;
-
 class ConstraintsDialog : public QDialog
 {
 	Q_OBJECT
 
 public:
-	explicit ConstraintsDialog(ProjectData& data, QWidget *parent = 0);
+    explicit ConstraintsDialog(OptimisationRun& data, QWidget *parent = 0);
 	~ConstraintsDialog();
 	void setConstraint(const unsigned int index);
 
 private:
 	Ui::ConstraintsDialog *ui;
 	unsigned int mIndex;
-	ProjectData& mData;
+    OptimisationRun& mData;
 
 protected slots:
 	void accept();

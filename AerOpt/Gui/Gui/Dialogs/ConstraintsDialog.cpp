@@ -9,9 +9,9 @@
 #include <QDebug>
 #include "ConstraintsDialog.h"
 #include "ui_ConstraintsDialog.h"
-#include "ProjectData.h"
+#include "OptimisationRun.h"
 
-ConstraintsDialog::ConstraintsDialog(ProjectData& data, QWidget *parent) :
+ConstraintsDialog::ConstraintsDialog(OptimisationRun& data, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::ConstraintsDialog),
 	mData(data)

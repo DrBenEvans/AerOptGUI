@@ -16,13 +16,13 @@
 #include "Enumerations.h"
 
 class Canvas;
-class ProjectData;
+class OptimisationRun;
 
 class Menu : public QObject
 {
 	Q_OBJECT
 public:
-	explicit Menu(ProjectData& profile, Canvas& canvas, Enum::TreeType type, QObject* parent = 0);
+	explicit Menu(OptimisationRun& profile, Canvas& canvas, Enum::TreeType type, QObject* parent = 0);
 	Menu() = delete;
 	~Menu();
 	void exec(const QPoint& pos);
@@ -54,7 +54,7 @@ private:
 	QList<QAction*> mActions;
 	unsigned int mIndex;
 	Canvas& mCanvas;
-	ProjectData& mData;
+	OptimisationRun& mData;
 };
 
 #endif // MENU_H

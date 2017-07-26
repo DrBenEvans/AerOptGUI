@@ -49,54 +49,57 @@ TEMPLATE = app
 
 SOURCES += \
     main.cpp \
-    Gui/MainWindow.cpp \
     Gui/DebugOutput.cpp \
-    Gui/TreeView.cpp \
     Gui/Menus/Menu.cpp \
     Gui/Canvas.cpp \
-    Gui/GuiComponents/ProjectData.cpp \
     Gui/Dialogs/ConstraintsDialog.cpp \
-    Gui/Dialogs/BoundaryDialog.cpp \
-    Gui/Dialogs/OptimiserDialog.cpp \
     Gui/Dialogs/MeshDialog.cpp \
     Gui/Plotter/qcustomplot.cpp \
     Gui/Plotter/PlotterDialog.cpp \
     Gui/GuiComponents/Arrow.cpp \
-    Gui/GuiComponents/BoundaryPoint.cpp
+    Gui/GuiComponents/BoundaryPoint.cpp \
+    Gui/Dialogs/ConfigSimulationDialog.cpp \
+    Gui/AppController.cpp \
+    Gui/Dialogs/OptimisationManagerDialog.cpp \
+    Gui/MainWindow.cpp \
+    Gui/Models/OptimisationRun.cpp \
+    Gui/GuiComponents/ProfileLibrarySelector.cpp \
+    Gui/Models/Profile.cpp
 
 HEADERS  += \
-    Gui/MainWindow.h \
     Gui/DebugOutput.h \
-    Gui/TreeView.h \
     Gui/Menus/Menu.h \
     Gui/Canvas.h \
-    Gui/GuiComponents/ProjectData.h \
     Gui/Dialogs/ConstraintsDialog.h \
     Gui/Enumerations.h \
-    Gui/Dialogs/BoundaryDialog.h \
-    Gui/Dialogs/OptimiserDialog.h \
     Gui/Dialogs/MeshDialog.h \
     Gui/Plotter/qcustomplot.h \
     Gui/Plotter/PlotterDialog.h \
     Gui/GuiComponents/Arrow.h \
-    Gui/GuiComponents/BoundaryPoint.h
+    Gui/GuiComponents/BoundaryPoint.h \
+    Gui/Dialogs/ConfigSimulationDialog.h \
+    Gui/AppController.h \
+    Gui/Dialogs/OptimisationManagerDialog.h \
+    Gui/MainWindow.h \
+    Gui/Models/OptimisationRun.h \
+    Gui/GuiComponents/ProfileLibrarySelector.h \
+    Gui/Models/Profile.h
 
 FORMS    += \
-    Gui/MainWindow.ui \
     Gui/DebugOutput.ui \
-    Gui/TreeView.ui \
     Gui/Dialogs/ConstraintsDialog.ui \
-    Gui/Dialogs/ObjectiveDialog.ui \
-    Gui/Dialogs/BoundaryDialog.ui \
-    Gui/Dialogs/OptimiserDialog.ui \
-    Gui/Dialogs/MeshDialog.ui \
-    Gui/Plotter/PlotterDialog.ui
+    Gui/Plotter/PlotterDialog.ui \
+    Gui/Dialogs/ConfigSimulationDialog.ui \
+    Gui/Dialogs/OptimisationManagerDialog.ui \
+    Gui/MainWindow.ui \
+    Gui/Dialogs/MeshDialog.ui
 
 INCLUDEPATH += \
     Gui \
     Gui/Dialogs \
     Gui/Menus \
     Gui/GuiComponents \
+    Gui/Models \
     Gui/Plotter
 
 RESOURCES += \

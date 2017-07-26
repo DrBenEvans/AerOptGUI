@@ -7,34 +7,42 @@
 **
 **********************************************/
 
-#include "MainWindow.h"
 #include <iostream>
 #include <QApplication>
+#include <QCoreApplication>
 #include <QDir>
 #include <QDebug>
 
 #include "DebugOutput.h"
-#include "TreeView.h"
+#include "MainWindow.h"
+#include "AppController.h"
 #include "Canvas.h"
-#include "ProjectData.h"
+#include "OptimisationRun.h"
+#include "PlotterDialog.h"
 
 //Programme entry point.
 int main(int argc, char *argv[])
 {
 	//Initialises the QT library application event loops.
-	QApplication a(argc, argv);
-	a.setWindowIcon( QIcon(":/images/AerOpt.png") );
+    QApplication app(argc, argv);
+    app.setWindowIcon( QIcon(":/images/AerOpt.png") );
+    app.setAttribute(Qt::AA_DontUseNativeMenuBar);
 
 	//Application main interaction classes.
-	DebugOutput& debugOutput = DebugOutput::Instance();
-	ProjectData data;
-	Canvas canvas(data);
-	TreeView treeView(data, canvas);
+    DebugOutput& debugOutput = DebugOutput::Instance();
+    OptimisationRun data;
 
 	//Main window setup and show.
-	MainWindow w(debugOutput, treeView, canvas);
-	w.setWindowTitle("AerOpt");
-	w.show();
+    MainWindow w;
+    w.setWindowTitle("AerOpt");
+    w.show();
 
-	return a.exec();
+    //Debug output
+    qCritical() << "TEST";
+
+    //PlotterDialog* plotter = new PlotterDialog(w);
+    //plotter->hide();
+    //controller.mPlotter = plotter
+
+    return app.exec();
 }

@@ -17,7 +17,7 @@
  * and is used to redirect std QT output to the
  * text output pain.
  */
-class DebugOutput : public QWidget, private Ui::DebugOutput
+class DebugOutput : public QDialog, private Ui::DebugOutput
 {
 	Q_OBJECT
 	

@@ -16,7 +16,7 @@
 typedef std::tuple<int,int,int,int> rgba;
 
 //Forward declarations
-class ProjectData;
+class OptimisationRun;
 class Menu;
 
 /**
@@ -30,11 +30,12 @@ class Canvas : public QWidget
 public:
 	/**
 	 * @brief Canvas
-	 * @param data A reference to the ProjectData class.
-	 * This class depends on the ProjectData class.
+     * @param data A reference to the OptimisationRun class.
+     * This class depends on the OptimisationRun class.
 	 */
-	explicit Canvas(ProjectData &data);
+    explicit Canvas(QWidget *dialog);
 	~Canvas();
+    void setData(OptimisationRun& data);
 
 protected:
 	/**
@@ -72,15 +73,15 @@ private:
 	/**
 	 * @brief drawProfile
 	 * @param painter A reference to the current painter context.
-	 * @param data Read only reference to the ProjectData class.
+     * @param data Read only reference to the OptimisationRun class.
 	 */
-	void drawProfile(QPainter &painter, const ProjectData& data);
+    void drawProfile(QPainter &painter, const OptimisationRun& data);
 	/**
 	 * @brief drawMesh
 	 * @param painter A reference to the current painter context.
-	 * @param data Read only reference to the ProjectData class.
+     * @param data Read only reference to the OptimisationRun class.
 	 */
-	void drawMesh(QPainter &painter, const ProjectData& data);
+    void drawMesh(QPainter &painter, const OptimisationRun& data);
 
 	/**
 	 * @brief widthMin
@@ -140,10 +141,10 @@ private:
 	/**
 	 * @brief pickNodeCheck
 	 * @param pos The position of the mouse curser.
-	 * @param data Read only reference to the ProjectData class.
+     * @param data Read only reference to the OptimisationRun class.
 	 * @return The index of the node the mouse curser is over.
 	 */
-	int pickNodeCheck(const QPoint& pos, const ProjectData& data);
+    int pickNodeCheck(const QPoint& pos, const OptimisationRun& data);
 	/**
 	 * @brief getColour
 	 * @param min Range minimum.
@@ -189,7 +190,7 @@ private:
 
 	std::vector<std::tuple<float,float,float,float>> colourmap;
 
-	ProjectData& mData;
+    OptimisationRun* mData;
 
 signals:
 

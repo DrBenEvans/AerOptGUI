@@ -2,7 +2,7 @@
 **
 **	Created on: 	09/04/2015 2015
 **	Author: 	matt - Matt Edmunds
-**	File:		ProjectData.h
+**	File:		OptimisationRun.h
 **
 **********************************************/
 

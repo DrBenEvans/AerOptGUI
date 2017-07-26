@@ -159,6 +159,12 @@
     <property name="decimals">
      <number>7</number>
     </property>
+    <property name="singleStep">
+     <double>0.001000000000000</double>
+    </property>
+    <property name="value">
+     <double>0.001000000000000</double>
+    </property>
    </widget>
    <widget class="QCheckBox" name="viscous">
     <property name="geometry">

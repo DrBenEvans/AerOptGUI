@@ -2,12 +2,12 @@
 **
 **	Created on: 	09/04/2015 2015
 **	Author: 	matt - Matt Edmunds
-**	File:		ProjectData.h
+**	File:		OptimisationRun.h
 **
 **********************************************/
 
-#ifndef PROJECTDATA_H
-#define PROJECTDATA_H
+#ifndef OptimisationRun_H
+#define OptimisationRun_H
 
 #include <vector>
 #include <list>
@@ -15,6 +15,7 @@
 #include <QRectF>
 
 #include "Enumerations.h"
+#include "Profile.h"
 #include "BoundaryPoint.h"
 
 //Abbreviate long type names
@@ -25,53 +26,27 @@ typedef std::vector<std::tuple<uint,uint,uint>> MeshConnectivities;
 typedef std::vector<std::tuple<float,float,float,float,float>> MeshResults;
 
 /**
- * @brief The ProjectData class
+ * @brief The OptimisationRun class
  * This class stores all aspects of the
  * project data accessed from the treeview
  * and canvas classes.
  */
-class ProjectData
+class OptimisationRun
 {
 public:
 	/**
-	 * @brief ProjectData
+     * @brief OptimisationRun
 	 * Constructor and distructor for
-	 * the ProjectData class.
+     * the OptimisationRun class.
 	 */
-	ProjectData();
-	~ProjectData();
+    OptimisationRun();
+    ~OptimisationRun();
 
 	/**
 	 * @brief clearProject
 	 * Clears all project data.
 	 */
 	void clearProject();
-
-	//Profile Attributes
-	/**
-	 * @brief clearProfile
-	 * Clears the current profile data.
-	 */
-	void clearProfile();
-	/**
-	 * @brief addPoint
-	 * @param x Dimension x location of point.
-	 * @param y Dimension y location of point.
-	 * Adds points to the current profile.
-	 */
-	void addPoint(const float& x, const float& y);
-	/**
-	 * @brief checkProfileIntegrity
-	 * @return True if integrity of profile is OK.
-	 * Checks the integrity of the current profile.
-	 */
-	bool checkProfileIntegrity();
-	/**
-	 * @brief getProfile
-	 * @return A reference to the profile as a series of x y pairs.
-	 */
-	const std::list<std::pair<float,float>>& getProfile() const;
-
 
 	//Mesh Attributes
 	/**
@@ -207,17 +182,12 @@ public:
 	const MeshResults& getMeshData() const;
 
 	//Getters and Setters for the class variables
-	/**
-	 * @brief profile
-	 * @return True if profile is set.
-	 */
-	bool profile() const;
-	/**
-	 * @brief setProfile
-	 * @param profile Sets profile.
-	 */
-	void setProfile(bool profile);
-	/**
+    /**
+     * @brief setProfile
+     * @param Profile object to use
+     */
+    void setProfile(Profile* profile);
+    /**
 	 * @brief mesh
 	 * @return True if profile is set.
 	 */
@@ -251,7 +221,7 @@ public:
 	 * @brief setOptimiser
 	 * @param optimiser Sets optimiser.
 	 */
-    void setOptimisationMethod(int method_index);
+    void setOptimisationMethod(Enum::OptMethod method);
     /**
      * @brief setOptimisation method
      * @param method_index is the method index as defined by ordering in OptimiserDialog.ui.
@@ -388,7 +358,7 @@ public:
 	 */
 	void setProjectPathSet(bool projectPathSet);
 
-    int getOptimisationMethod() const;
+    Enum::OptMethod getOptimisationMethod() const;
     /**
      * @brief getOptimisation method
      * @param returns the method index as defined by ordering in OptimiserDialog.ui.
@@ -396,28 +366,28 @@ public:
     int getNoTop() const;
     void setNoTop(int noTop);
 
+    QString getLabel();
+    void setLabel(QString label);
+
     bool getBoundaryLayerFlag();
     int getNumBoundaryLayers();
     qreal getBoundaryLayerThickness();
     void setBoundaryLayerFlag(bool hasBoundaryLayer);
     void setNumBoundaryLayers(int num_layers);
     void setBoundaryLayerThickness(qreal layer_thickness);
+    const std::list<std::pair<float,float>> getProfile() const;
 
 private:
-    bool mProfileSet;
+    Profile* mProfile;
     bool mProjectPathSet;
-	bool mMeshSet;
+    bool mMeshSet;
 	bool mBoundarySet;
 	bool mOptimiserSet;
 	bool mRunTimeSet;
 	bool mRenderProfile;
 	bool mRenderMesh;
 
-	//Profile Attributes
-	bool checkDuplicates();
-	bool checkClockwise();
-	bool checkNormalised();
-	std::list<std::pair<float,float>> mProfile;
+    QString mLabel;
 
 	//Mesh Attributes
 	Boundaries mMeshProfile;
@@ -439,7 +409,7 @@ private:
 	float mFreeTemp;
 
 	//Optimiser parameters
-    int mOptimisationMethod;
+    Enum::OptMethod mOptimisationMethod;
 	int mNoAgents;
 	int mNoGens;
     int mNoTop;
@@ -451,4 +421,4 @@ private:
 
 };
 
-#endif // PROJECTDATA_H
+#endif // OptimisationRun_H

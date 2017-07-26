@@ -12,18 +12,19 @@
 #include <cmath>
 
 #include "Canvas.h"
-#include "ProjectData.h"
-#include "TreeView.h"
+#include "OptimisationRun.h"
+#include "AppController.h"
 #include "Menu.h"
 #include "ConstraintsDialog.h"
 #include "Arrow.h"
 
-Canvas::Canvas(ProjectData &data) : mChordLength(1.0),
+Canvas::Canvas(QWidget *parent) : mChordLength(1.0),
 									mWidthMin(-0.75),
 									mWidthMax(0.75),
 									mHeightMin(-0.5),
-									mHeightMax(0.5),
-									mData(data)
+                                    mHeightMax(0.5),
+                                    mData(nullptr),
+                                    QWidget(parent)
 {
 	colourmap.emplace_back( 0,         0,        0,        0.423499   );
 	colourmap.emplace_back( 0.0668895, 0,        0.119341, 0.529244   );
@@ -45,8 +46,7 @@ Canvas::Canvas(ProjectData &data) : mChordLength(1.0),
 	setMouseTracking(true);
 	installEventFilter(this);
 	setContextMenuPolicy(Qt::CustomContextMenu);
-	mNodeMenu = new Menu(mData, *this, Enum::TreeType::NODE, this);
-	//Calculate initial canvas coordinates here.
+    //Calculate initial canvas coordinates here.
 	mHeightScale = 0;
 	mWidthScale = 0;
 	mCurrentMinHeight = 0;
@@ -56,9 +56,13 @@ Canvas::Canvas(ProjectData &data) : mChordLength(1.0),
 	calcCanvasScale();
 }
 
+void Canvas::setData(OptimisationRun& data) {
+    mData = &data;
+}
+
 Canvas::~Canvas()
 {
-	delete mNodeMenu;
+    delete mNodeMenu;
 }
 
 void Canvas::paintEvent(QPaintEvent *event)
@@ -71,8 +75,10 @@ void Canvas::paintEvent(QPaintEvent *event)
 
 	//Draw first profile only - use 'if' to decide which to draw.
 	//Or, all profiles with same function?
-	if (mData.renderProfile()) drawProfile(painter, mData);
-	if (mData.renderMesh()) drawMesh(painter, mData);
+    if(mData) {
+        if (mData->renderProfile()) drawProfile(painter, *mData);
+        if (mData->renderMesh()) drawMesh(painter, *mData);
+    }
 
 	drawLogos(painter);
 	drawScale(painter);
@@ -81,6 +87,8 @@ void Canvas::paintEvent(QPaintEvent *event)
 
 bool Canvas::eventFilter(QObject* object, QEvent* event)
 {
+    if(!mData) return false;
+
 	bool r = false;
 	QPoint pos = {0,0};
 	int loc = -1;
@@ -89,7 +97,7 @@ bool Canvas::eventFilter(QObject* object, QEvent* event)
 	{
 		r = true;
 		pos = static_cast<QMouseEvent*>(event)->pos();
-		loc = pickNodeCheck(pos, mData);
+        loc = pickNodeCheck(pos, *mData);
 		if (loc != mHighlight)
 		{
 			mHighlight = loc;
@@ -101,12 +109,12 @@ bool Canvas::eventFilter(QObject* object, QEvent* event)
 	{
 		r = true;
 		pos = static_cast<QMouseEvent*>(event)->pos();
-		loc = pickNodeCheck(pos, mData);
+        loc = pickNodeCheck(pos, *mData);
 		if (loc != -1)
 		{
 			//store id here in data object
-			mData.selectControlPoint(loc);
-            BoundaryPoint  *point = mData.getControlPoint(0, loc);
+            mData->selectControlPoint(loc);
+            BoundaryPoint  *point = mData->getControlPoint(0, loc);
             point->setBoundCoords(0, 0, 0, 0);
 
 			repaint();
@@ -118,12 +126,12 @@ bool Canvas::eventFilter(QObject* object, QEvent* event)
 		if( static_cast<QMouseEvent*>(event)->button() == Qt::RightButton )
 		{
 			pos = static_cast<QMouseEvent*>(event)->pos();
-			loc = pickNodeCheck(pos, mData);
+            loc = pickNodeCheck(pos, *mData);
 			if (loc != -1)
 			{
 				//find loc in getControlPoints() list
 				//if exists then show menu
-				auto& control = mData.getControlPoints();
+                auto& control = mData->getControlPoints();
 
 				auto it = std::find(control.begin(), control.end(), loc);
 				if (it != control.end()) mNodeMenu->exec( mapToGlobal(pos), loc );
@@ -150,8 +158,8 @@ void Canvas::drawLogos(QPainter& painter)
     //QImage coleg(":/images/ColegCenedlaetholCymraeg.png");
     //painter.drawImage(QRect(width()-150-1, height()-87-1, 150, 87), coleg);
 
-	QImage sulogo(":/images/SULogo.png");
-	painter.drawImage(QRect(width()-158-1, 1, 158, 100), sulogo);
+    //QImage sulogo(":/images/SULogo.png");
+    //painter.drawImage(QRect(width()-158-1, 1, 158, 100), sulogo);
 
 	QImage map(":/images/Map.png");
 	painter.drawImage(QRect(25, 100, 20, 300), map);
@@ -167,14 +175,15 @@ void Canvas::drawAxis(QPainter &painter)
 	painter.setBrush(QBrush(QColor(255, 255, 255, 0)));
 	painter.setPen(pen);
 
-	Arrow arrx( QPointF(30, height()-30), QPointF(100, height()-30) );
+    int arrow_length = 60;
+    Arrow arrx( QPointF(30, height()-30), QPointF(arrow_length, height()-30) );
 	arrx.paint(&painter);
 
-	Arrow arry( QPointF(30, height()-30), QPointF(30, height()-100) );
+    Arrow arry( QPointF(30, height()-30), QPointF(30, height()-arrow_length) );
 	arry.paint(&painter);
 
-	painter.drawText( QPointF(103, height()-30), "X");
-	painter.drawText( QPointF(30, height()-103), "Y");
+    painter.drawText( QPointF(arrow_length+3, height()-30), "X");
+    painter.drawText( QPointF(30, height()-(arrow_length+3)), "Y");
 }
 
 void Canvas::drawScale(QPainter &painter)
@@ -194,7 +203,7 @@ void Canvas::drawScale(QPainter &painter)
 
 }
 
-void Canvas::drawProfile(QPainter &painter, const ProjectData& data)
+void Canvas::drawProfile(QPainter &painter, const OptimisationRun& data)
 {
 	painter.setRenderHint(QPainter::Antialiasing, false);
 	QPen pen(Qt::black, 1, Qt::SolidLine);
@@ -202,7 +211,7 @@ void Canvas::drawProfile(QPainter &painter, const ProjectData& data)
 	painter.setPen(pen);
 	QRect rect;
 
-	for (auto& p : data.getProfile() )
+    for (auto& p : data.getProfile())
 	{
 		rect.moveCenter( QPoint(w(p.first), h(p.second)) );
 		rect.setWidth( 3 );
@@ -211,7 +220,7 @@ void Canvas::drawProfile(QPainter &painter, const ProjectData& data)
 	}
 }
 
-void Canvas::drawMesh(QPainter &painter, const ProjectData& data)
+void Canvas::drawMesh(QPainter &painter, const OptimisationRun& data)
 {
 	painter.setRenderHint(QPainter::Antialiasing, false);
 	painter.setBrush(QBrush(QColor(255, 255, 255, 0)));
@@ -481,7 +490,7 @@ void Canvas::calcCanvasScale()
 	}
 }
 
-int Canvas::pickNodeCheck(const QPoint& pos, const ProjectData& data)
+int Canvas::pickNodeCheck(const QPoint& pos, const OptimisationRun& data)
 {
 	int index = -1;
 	bool r = true;
@@ -558,7 +567,7 @@ void Canvas::transferFunction(const float& value, rgba& colour) const
 void Canvas::setConstraints(const unsigned int index)
 {
 	//Open new dialogue here to get constraints.
-	ConstraintsDialog diag(mData, this);
+    ConstraintsDialog diag(*mData, this);
 	diag.setConstraint(index);
 	diag.show();
 	diag.exec();
@@ -566,7 +575,7 @@ void Canvas::setConstraints(const unsigned int index)
 
 void Canvas::resetConstraints(const unsigned int index)
 {
-    BoundaryPoint *point = mData.getControlPoint(0, index);
+    BoundaryPoint *point = mData->getControlPoint(0, index);
     point->setBoundCoords(0.0, 0.0, 0.0, 0.0);
 }
 

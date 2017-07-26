@@ -1,9 +1,9 @@
 #include "PlotterDialog.h"
 #include "ui_PlotterDialog.h"
-#include "ProjectData.h"
+#include "OptimisationRun.h"
 
 PlotterDialog::PlotterDialog(QWidget *parent) :
-	QDialog(parent),
+    QDialog(parent),
 	ui(new Ui::PlotterDialog)
 {
 	ui->setupUi(this);
