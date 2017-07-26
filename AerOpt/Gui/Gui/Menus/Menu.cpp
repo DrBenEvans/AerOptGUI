@@ -24,9 +24,6 @@ Menu::Menu(ProjectData& data, Canvas& canvas, Enum::TreeType type, QObject *pare
 		case Enum::TreeType::MESH:
 			mesh(parent);
 			break;
-		case Enum::TreeType::FUNCTION:
-			objective(parent);
-			break;
 		case Enum::TreeType::BOUNDARY:
 			boundary(parent);
 			break;
@@ -106,13 +103,6 @@ void Menu::mesh(QObject *parent)
 	QObject::connect(runmeshObject, SIGNAL( triggered() ), this->parent(), SLOT( runMesher() ));
 	QObject::connect(showObject, SIGNAL( triggered() ), this, SLOT( showMesh() ));
 	QObject::connect(hideObject, SIGNAL( triggered() ), this, SLOT( hideMesh() ));
-}
-
-void Menu::objective(QObject *parent)
-{
-    QAction* Object = new QAction("Set Fitness Function", parent);
-	mActions.append(Object);
-	QObject::connect(Object, SIGNAL( triggered() ), this->parent(), SLOT( setObjective() ));
 }
 
 void Menu::boundary(QObject *parent)

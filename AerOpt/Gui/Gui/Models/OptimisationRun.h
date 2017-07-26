@@ -227,12 +227,7 @@ public:
 	 * @param mesh Sets mesh.
 	 */
 	void setMesh(bool mesh);
-	/**
-	 * @brief function
-	 * @return True if function is set.
-	 */
-	bool function() const;
-	/**
+    /**
 	 * @brief setFunction
 	 * @param function Sets the function.
 	 */
@@ -412,7 +407,6 @@ private:
     bool mProfileSet;
     bool mProjectPathSet;
 	bool mMeshSet;
-	bool mFunctionSet;
 	bool mBoundarySet;
 	bool mOptimiserSet;
 	bool mRunTimeSet;

@@ -35,7 +35,6 @@ void ProjectData::clearProject()
 	mProfileSet = false;
 	mProjectPathSet = false;
 	mMeshSet = false;
-	mFunctionSet = false;
 	mBoundarySet = false;
 	mOptimiserSet = false;
 	mRunTimeSet = false;
@@ -419,16 +418,6 @@ bool ProjectData::mesh() const
 void ProjectData::setMesh(bool mesh)
 {
 	mMeshSet = mesh;
-}
-
-bool ProjectData::function() const
-{
-	return mFunctionSet;
-}
-
-void ProjectData::setFunction(bool function)
-{
-	mFunctionSet = function;
 }
 
 bool ProjectData::boundary() const

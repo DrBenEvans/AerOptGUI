@@ -44,7 +44,6 @@ private:
 	void root(QObject *parent);
 	void profile(QObject *parent);
 	void mesh(QObject *parent);
-	void objective(QObject *parent);
 	void boundary(QObject *parent);
 	void optimiser(QObject *parent);
 	void runtime(QObject *parent);

@@ -26,7 +26,6 @@
 #include "Menu.h"
 #include "ProjectData.h"
 #include "Enumerations.h"
-#include "ObjectiveDialog.h"
 #include "BoundaryDialog.h"
 #include "OptimiserDialog.h"
 #include "MeshDialog.h"
@@ -180,7 +179,6 @@ TreeView::TreeView(ProjectData& data, Canvas& canvas) : mCanvas(canvas), mData(d
 	//Set Defaults.
 	addProfileObject();
 	addMeshObject();
-	addFunctionObject();
 	addBoundaryObject();
 	addOptimiserObject();
 	addRuntimeObject();
@@ -258,37 +256,6 @@ void TreeView::addMeshObject()
 			item->setText(0, name);
             item->setText(1, "No");
 			mData.setMesh(false);
-			treeWidget->expandItem(item);
-		}
-	}
-}
-
-void TreeView::addFunctionObject()
-{
-	QList<QTreeWidgetItem*> selectedList = treeWidget->selectedItems();
-	if (selectedList.size() > 0) mCurrentNode = selectedList.at(0);
-
-	for (QTreeWidgetItem* node : selectedList)
-	{
-		bool b = false;
-		int qty = node->childCount();
-
-		for (int i = 0; i < qty; ++i)
-		{
-			b |= node->child(i)->type() == Enum::TreeType::FUNCTION;
-		}
-
-		if ( b )
-		{
-            qInfo() << "Item 'Fitness Function' already exists";
-		}
-		else
-		{
-			QTreeWidgetItem* item = new QTreeWidgetItem(node, Enum::TreeType::FUNCTION);
-            QString name = "Fitness Function";
-			item->setText(0, name);
-            item->setText(1, "No");
-			mData.setFunction(false);
 			treeWidget->expandItem(item);
 		}
 	}

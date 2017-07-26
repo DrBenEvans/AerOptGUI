@@ -1,44 +1,22 @@
-/*********************************************
-**
-**	Created on: 	03/01/2014 2014
-**	Author: 	matt - Matt Edmunds
-**	File:		MainWindow.h
-**
-**********************************************/
-
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "ui_MainWindow.h"
-#include <QHBoxLayout>
-#include <QSplitter>
+#include <QMainWindow>
 
-class DebugOutput;
-class TreeView;
-class Canvas;
+namespace Ui {
+class MainWindow;
+}
 
-class MainWindow : public QMainWindow, private Ui::MainWindow
+class MainWindow : public QMainWindow
 {
-	Q_OBJECT
-	
+    Q_OBJECT
+
 public:
-	explicit MainWindow(DebugOutput& debug, TreeView& tree, Canvas& canvas);
-	MainWindow() = delete;
-	~MainWindow();
+    explicit MainWindow(QWidget *parent = 0);
+    ~MainWindow();
 
-	QSplitter *splitterVertical;
-	QVBoxLayout *verticalLayout;
-	QWidget *widgetSplitter;
-	QSplitter *splitterHorizontal;
-	QHBoxLayout *horizontalLayout;
-
-
-	DebugOutput& mDebugOutput;
-	TreeView& mTreeView;
-	Canvas& mCanvas;
-private slots:
-	void on_actionStop_Mesher_triggered();
-	void on_actionStop_AerOpt_triggered();
+private:
+    Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H

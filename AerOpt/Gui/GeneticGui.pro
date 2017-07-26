@@ -56,7 +56,6 @@ SOURCES += \
     Gui/Canvas.cpp \
     Gui/GuiComponents/ProjectData.cpp \
     Gui/Dialogs/ConstraintsDialog.cpp \
-    Gui/Dialogs/ObjectiveDialog.cpp \
     Gui/Dialogs/BoundaryDialog.cpp \
     Gui/Dialogs/OptimiserDialog.cpp \
     Gui/Dialogs/MeshDialog.cpp \
@@ -74,7 +73,6 @@ HEADERS  += \
     Gui/GuiComponents/ProjectData.h \
     Gui/Dialogs/ConstraintsDialog.h \
     Gui/Enumerations.h \
-    Gui/Dialogs/ObjectiveDialog.h \
     Gui/Dialogs/BoundaryDialog.h \
     Gui/Dialogs/OptimiserDialog.h \
     Gui/Dialogs/MeshDialog.h \

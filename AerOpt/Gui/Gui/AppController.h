@@ -52,12 +52,7 @@ public slots:
 	 * Adds the treeview mesh entry.
 	 */
 	void addMeshObject();
-	/**
-	 * @brief addFunctionObject
-	 * Adds the treeview objective function entry.
-	 */
-	void addFunctionObject();
-	/**
+    /**
 	 * @brief addBoundaryObject
 	 * Adds the treeview boundary condition entry.
 	 */
@@ -101,13 +96,7 @@ public slots:
 	 * working directory, and input from the mesh dialogue.
 	 */
 	void runMesher();//2
-	/**
-	 * @brief setObjective
-	 * Sets the objective function from user input from
-	 * the objective function dialogue.
-	 */
-	void setObjective();//3
-	/**
+    /**
 	 * @brief setBoundary
      * Sets the flow conditions from user input
 	 * from boundary condition dialogue.
