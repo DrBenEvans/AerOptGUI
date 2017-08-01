@@ -86,7 +86,7 @@ void Menu::profile(QObject *parent)
 
     //QObject::connect(importObject, SIGNAL( triggered() ), this->parent(), SLOT( importProfile() ));
 	QObject::connect(showObject, SIGNAL( triggered() ), this, SLOT( showProfile() ));
-	QObject::connect(hideObject, SIGNAL( triggered() ), this, SLOT( hideProfile() ));
+    //QObject::connect(hideObject, SIGNAL( triggered() ), this, SLOT( hideProfile() ));
 }
 
 void Menu::mesh(QObject *parent)
@@ -100,23 +100,23 @@ void Menu::mesh(QObject *parent)
 	mActions.append(showObject);
 	mActions.append(hideObject);
 
-	QObject::connect(runmeshObject, SIGNAL( triggered() ), this->parent(), SLOT( runMesher() ));
-	QObject::connect(showObject, SIGNAL( triggered() ), this, SLOT( showMesh() ));
-	QObject::connect(hideObject, SIGNAL( triggered() ), this, SLOT( hideMesh() ));
+    //QObject::connect(runmeshObject, SIGNAL( triggered() ), this->parent(), SLOT( runMesher() ));
+    //QObject::connect(showObject, SIGNAL( triggered() ), this, SLOT( showMesh() ));
+    //QObject::connect(hideObject, SIGNAL( triggered() ), this, SLOT( hideMesh() ));
 }
 
 void Menu::boundary(QObject *parent)
 {
     QAction* Object = new QAction("Set Flow Conditions", parent);
 	mActions.append(Object);
-	QObject::connect(Object, SIGNAL( triggered() ), this->parent(), SLOT( setBoundary() ));
+    //QObject::connect(Object, SIGNAL( triggered() ), this->parent(), SLOT( setBoundary() ));
 }
 
 void Menu::optimiser(QObject *parent)
 {
 	QAction* Object = new QAction("Set Optimiser parameters", parent);
 	mActions.append(Object);
-	QObject::connect(Object, SIGNAL( triggered() ), this->parent(), SLOT( setOptimiser() ));
+    //QObject::connect(Object, SIGNAL( triggered() ), this->parent(), SLOT( setOptimiser() ));
 }
 
 void Menu::runtime(QObject *parent)
@@ -144,30 +144,6 @@ void Menu::node(QObject *parent)
 
 	QObject::connect(setObject, SIGNAL( triggered() ), this, SLOT( setConstraints() ));
 	QObject::connect(unsetObject, SIGNAL( triggered() ), this, SLOT( resetConstraints() ));
-}
-
-void Menu::showProfile()
-{
-	mData.setRenderProfile(true);
-	mCanvas.update();
-}
-
-void Menu::hideProfile()
-{
-	mData.setRenderProfile(false);
-	mCanvas.update();
-}
-
-void Menu::showMesh()
-{
-	mData.setRenderMesh(true);
-	mCanvas.update();
-}
-
-void Menu::hideMesh()
-{
-	mData.setRenderMesh(false);
-	mCanvas.update();
 }
 
 void Menu::setConstraints()

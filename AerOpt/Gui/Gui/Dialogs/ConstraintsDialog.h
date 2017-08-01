@@ -22,14 +22,14 @@ class ConstraintsDialog : public QDialog
 	Q_OBJECT
 
 public:
-    explicit ConstraintsDialog(OptimisationRun& data, QWidget *parent = 0);
-	~ConstraintsDialog();
+    explicit ConstraintsDialog(Mesh& mesh, QWidget *parent = 0);
+    ~ConstraintsDialog();
 	void setConstraint(const unsigned int index);
 
 private:
 	Ui::ConstraintsDialog *ui;
 	unsigned int mIndex;
-    OptimisationRun& mData;
+    Mesh& mMesh;
 
 protected slots:
 	void accept();

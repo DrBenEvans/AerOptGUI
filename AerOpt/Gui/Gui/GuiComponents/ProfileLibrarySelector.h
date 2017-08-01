@@ -9,16 +9,14 @@
 class ProfileLibrarySelector : public QComboBox
 {
 public:
+    explicit ProfileLibrarySelector(std::vector<Profile>* profiles, QWidget* parent);
     explicit ProfileLibrarySelector(QWidget* parent);
-    Profile& getSelectedProfile();
+    Profile* getSelectedProfile();
 private slots:
     void on_currentIndexChanged(int index);
 private:
-    std::vector<QString> getProfileNameList();
-    QString getIndexedProfileFileName(int);
-    std::vector<Profile> mProfiles;
+    std::vector<Profile>* mProfiles;
     void addProfile();
-    bool addProfileFromFileName(std::string fileName);
 };
 
 #endif // ProfileLibrarySelector_H

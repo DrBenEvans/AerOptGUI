@@ -3,15 +3,29 @@
 #include "ui_ConfigSimulationDialog.h"
 #include "OptimisationRun.h"
 
-ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, QWidget *parent) :
+ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, std::vector<Profile>* profiles, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConfigSimulationDialog),
-    mData(data)
+    mData(data),
+    mProfiles(profiles)
 {
     ui->setupUi(this);
 
     // label setup
     ui->label->setText(mData.getLabel());
+
+    // profiles QComboBox setup
+    ui->profile->addItem(QString("Add New..."));
+    for(Profile& profile: *mProfiles) {
+        ui->profile->addItem(profile.getDisplayString(), QVariant::fromValue(&profile));
+    }
+
+    // set profile to top item
+    if(mProfiles->size() > 1) {
+        ui->profile->setCurrentIndex(1);
+    } else {
+        ui->profile->setCurrentIndex(0);
+    }
 
     // optimiser setup
     ui->objfunc->setCurrentIndex(this->objFuncEnumToIndex(mData.objFunc()));
@@ -26,6 +40,7 @@ ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, QWidget *p
     ui->angle->setValue(mData.freeAlpha());
     ui->reynolds->setValue(mData.reNo());
     ui->mach->setValue(mData.machNo());
+
 }
 
 ConfigSimulationDialog::~ConfigSimulationDialog()
@@ -50,11 +65,8 @@ void ConfigSimulationDialog::accept()
     mData.setFreeTemp(ui->temp->value());
 
     // profile setup
-    mData.setProfile(&ui->profile->getSelectedProfile());
-
-    // done...
-    mData.setBoundary(true);
-    mData.setOptimiser(true);
+    Profile* profile = ui->profile->currentData().value<Profile*>();
+    mData.setProfile(profile);
 
     QDialog::accept();
 }

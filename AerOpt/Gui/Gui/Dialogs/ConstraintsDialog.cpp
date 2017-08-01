@@ -9,12 +9,12 @@
 #include <QDebug>
 #include "ConstraintsDialog.h"
 #include "ui_ConstraintsDialog.h"
-#include "OptimisationRun.h"
+#include "Mesh.h"
 
-ConstraintsDialog::ConstraintsDialog(OptimisationRun& data, QWidget *parent) :
+ConstraintsDialog::ConstraintsDialog(Mesh& mesh, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::ConstraintsDialog),
-	mData(data)
+    mMesh(mesh)
 {
 	ui->setupUi(this);
 	mIndex = 0;
@@ -29,28 +29,28 @@ void ConstraintsDialog::setConstraint(const unsigned int index)
 {
 	mIndex = index;
 
-    BoundaryPoint *point = mData.getControlPoint(0, index);
+    BoundaryPoint& point = mMesh.getControlPoint(index);
 
 	qreal x1,y1,x2,y2;
-    point->getBoundCoords(&x1,&y1,&x2,&y2);
+    point.getBoundCoords(&x1,&y1,&x2,&y2);
 
 	ui->xMin->setValue( x1 );
 	ui->xMax->setValue( x2 );
 	ui->yMin->setValue( y1 );
 	ui->yMax->setValue( y2 );
-    ui->smoothing->setValue( point->getSmoothing() );
+    ui->smoothing->setValue( point.getSmoothing() );
 }
 
 void ConstraintsDialog::accept()
 {
-    BoundaryPoint *point = mData.getControlPoint(0, mIndex);
+    BoundaryPoint& point = mMesh.getControlPoint(mIndex);
 
-    point->setBoundCoords(ui->xMin->value(),
+    point.setBoundCoords(ui->xMin->value(),
 						   ui->yMin->value(),
 						   ui->xMax->value(),
 						   ui->yMax->value());
 
-    point->setSmoothing(ui->smoothing->value());
+    point.setSmoothing(ui->smoothing->value());
 
 	QDialog::accept();
 }

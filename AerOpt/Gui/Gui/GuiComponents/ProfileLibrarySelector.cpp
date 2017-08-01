@@ -3,44 +3,29 @@
 #include <QFileDialog>
 #include <QDebug>
 
+ProfileLibrarySelector::ProfileLibrarySelector(std::vector<Profile>* profiles, QWidget* parent) : QComboBox(parent), mProfiles(profiles) {
+}
+
 ProfileLibrarySelector::ProfileLibrarySelector(QWidget* parent) : QComboBox(parent)
 {
 
-    addProfileFromFileName("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA0024.prf");
-    addProfileFromFileName("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA21120.prf");
-
+    // Add item entries
     addItem(QString("Add New..."));
-    for(Profile& profile: mProfiles) {
-        this->addItem(QString::fromStdString(profile.getDisplayString()));
+    for(Profile& profile: *mProfiles) {
+        this->addItem(profile.getDisplayString());
     }
     this->setCurrentIndex(1);
 }
 
-bool ProfileLibrarySelector::addProfileFromFileName(std::string fileName) {
-    Profile profile(fileName);
-    mProfiles.push_back(profile);
-    return true;
-}
-
-std::vector<QString> ProfileLibrarySelector::getProfileNameList() {
-    std::vector<QString> string_list;
-    string_list.push_back(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA0024.prf"));
-    string_list.push_back(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA21120.prf"));
-    return string_list;
-}
-
-Profile& ProfileLibrarySelector::getSelectedProfile() {
-    return mProfiles[this->currentIndex()];
+Profile* ProfileLibrarySelector::getSelectedProfile() {
+    Profile& profile = mProfiles->at(this->currentIndex() - 1);
+    return &profile;
 }
 
 void ProfileLibrarySelector::on_currentIndexChanged(int index) {
     if(index==0) {
         this->addProfile();
     }
-}
-
-QString ProfileLibrarySelector::getIndexedProfileFileName(int index) {
-   return QString('/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA21120.prf');
 }
 
 void ProfileLibrarySelector::addProfile()
@@ -72,7 +57,7 @@ void ProfileLibrarySelector::addProfile()
 
         qInfo() << "File selected: " << fileName;
 
-        success &= addProfileFromFileName(fileName.toStdString());
+        mProfiles->emplace_back(fileName);
 
         if (success)
         {

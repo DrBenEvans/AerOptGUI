@@ -1,32 +1,35 @@
 #include "MeshDialog.h"
 #include "ui_MeshDialog.h"
-#include "OptimisationRun.h"
 
-MeshDialog::MeshDialog(OptimisationRun& data, QWidget *parent) :
+Q_DECLARE_METATYPE(Enum::Mesh)
+
+MeshDialog::MeshDialog(Mesh& mesh, QWidget* parent) :
 	QDialog(parent),
 	ui(new Ui::MeshDialog),
-	mData(data)
+    mMesh(mesh)
 {
 	ui->setupUi(this);
 
-	mMeshDensity = mData.meshDensity();
+    ui->density->addItem(QString("Coarse"), QVariant::fromValue(Enum::Mesh::COURSE));
+    ui->density->addItem(QString("Medium"), QVariant::fromValue(Enum::Mesh::MEDIUM));
+    ui->density->addItem(QString("Fine"), QVariant::fromValue(Enum::Mesh::FINE));
 
-	switch (mMeshDensity)
+    switch (mMesh.getMeshDensity())
 	{
 		case Enum::Mesh::COURSE :
-			ui->course->setChecked(true);
+            ui->density->setCurrentIndex(0);
 			break;
 		case Enum::Mesh::MEDIUM :
-			ui->medium->setChecked(true);
+            ui->density->setCurrentIndex(1);
 			break;
 		case Enum::Mesh::FINE :
-			ui->fine->setChecked(true);
-			break;
+            ui->density->setCurrentIndex(2);
+            break;
 	}
 
-    ui->viscous->setChecked(mData.getBoundaryLayerFlag());
-    ui->layers->setValue(mData.getNumBoundaryLayers());
-    ui->thickness->setValue(mData.getBoundaryLayerThickness());
+    ui->viscous->setChecked(mMesh.getBoundaryLayerFlag());
+    ui->layers->setValue(mMesh.getNumBoundaryLayers());
+    ui->thickness->setValue(mMesh.getBoundaryLayerThickness());
 }
 
 MeshDialog::~MeshDialog()
@@ -36,33 +39,17 @@ MeshDialog::~MeshDialog()
 
 void MeshDialog::accept()
 {
-    mData.setMeshDensity(mMeshDensity);
+    mMesh.setMeshDensity(ui->density->currentData().value<Enum::Mesh>());
 
     bool hasBoundaryLayer = ui->viscous->isChecked();
-    mData.setBoundaryLayerFlag(hasBoundaryLayer);
+    mMesh.setBoundaryLayerFlag(hasBoundaryLayer);
 
     if(hasBoundaryLayer) {
-        mData.setNumBoundaryLayers(ui->layers->value());
-        mData.setBoundaryLayerThickness(ui->thickness->value());
+        mMesh.setNumBoundaryLayers(ui->layers->value());
+        mMesh.setBoundaryLayerThickness(ui->thickness->value());
     }
 
 	QDialog::accept();
-}
-
-
-void MeshDialog::on_course_toggled(bool checked)
-{
-	if (checked) mMeshDensity = Enum::Mesh::COURSE;
-}
-
-void MeshDialog::on_medium_toggled(bool checked)
-{
-	if (checked) mMeshDensity = Enum::Mesh::MEDIUM;
-}
-
-void MeshDialog::on_fine_toggled(bool checked)
-{
-	if (checked) mMeshDensity = Enum::Mesh::FINE;
 }
 
 void MeshDialog::on_viscous_toggled(bool checked)

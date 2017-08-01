@@ -11,6 +11,8 @@
 
 #include <QWidget>
 #include <QEvent>
+#include "Mesh.h"
+#include "Profile.h"
 
 //Abbreviate long type names
 typedef std::tuple<int,int,int,int> rgba;
@@ -35,7 +37,8 @@ public:
 	 */
     explicit Canvas(QWidget *dialog);
 	~Canvas();
-    void setData(OptimisationRun& data);
+    void setMesh(Mesh& mesh);
+    void setProfile(Profile& profile);
 
 protected:
 	/**
@@ -73,15 +76,13 @@ private:
 	/**
 	 * @brief drawProfile
 	 * @param painter A reference to the current painter context.
-     * @param data Read only reference to the OptimisationRun class.
 	 */
-    void drawProfile(QPainter &painter, const OptimisationRun& data);
+    void drawProfile(QPainter &painter);
 	/**
 	 * @brief drawMesh
 	 * @param painter A reference to the current painter context.
-     * @param data Read only reference to the OptimisationRun class.
 	 */
-    void drawMesh(QPainter &painter, const OptimisationRun& data);
+    void drawMesh(QPainter &painter);
 
 	/**
 	 * @brief widthMin
@@ -144,7 +145,7 @@ private:
      * @param data Read only reference to the OptimisationRun class.
 	 * @return The index of the node the mouse curser is over.
 	 */
-    int pickNodeCheck(const QPoint& pos, const OptimisationRun& data);
+    int pickNodeCheck(const QPoint& pos, Mesh *mesh);
 	/**
 	 * @brief getColour
 	 * @param min Range minimum.
@@ -190,7 +191,9 @@ private:
 
 	std::vector<std::tuple<float,float,float,float>> colourmap;
 
-    OptimisationRun* mData;
+    Mesh* mMesh;
+    Mesh* mPrevMesh;
+    Profile* mProfile;
 
 signals:
 

@@ -3,6 +3,8 @@
 #include "ConfigSimulationDialog.h"
 #include "OptimisationRun.h"
 #include "DebugOutput.h"
+#include "MeshDialog.h"
+#include "Mesh.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -10,6 +12,9 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
+    mProfiles.emplace_back("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA0024.prf");
+    mProfiles.emplace_back("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA21120.prf");
+    mProfiles.emplace_back("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/test.prf");
 }
 
 MainWindow::~MainWindow()
@@ -18,12 +23,24 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_actionNewOptimisation_triggered() {
-    OptimisationRun simulation = OptimisationRun();
-    ConfigSimulationDialog diag(simulation,this);
+    mOptimisations.emplace_back();
+    OptimisationRun& optimisation = mOptimisations.back();
+    ConfigSimulationDialog diag(optimisation,&mProfiles,this);
     diag.exec();
     diag.show();
-    ui->canvas->setData(simulation);
+    ui->canvas->setProfile(*optimisation.getProfileObj());
     ui->canvas->update();
+}
+
+void MainWindow::on_actionRunMesher_triggered() {
+    QString workDir("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Project");
+
+    const std::list<std::pair<float,float>> profilePoints;
+    Mesh mesh(profilePoints);
+    MeshDialog diag(mesh, this);
+    diag.show();
+    diag.exec();
+    mesh.runMesher(this,workDir);
 }
 
 void MainWindow::on_actionShowLog_triggered() {

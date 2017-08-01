@@ -12,6 +12,7 @@
 #include <QString>
 #include <QTimer>
 #include <QEventLoop>
+#include <QCoreApplication>
 
 #include <fstream>
 #include <map>
@@ -33,9 +34,9 @@
 AppController::AppController(OptimisationRun& data, Canvas& canvas, QWidget *parent) : QDialog(parent), mCanvas(canvas), mData(data)
 {
     mParent = parent;
-    myMeshProcess.setParent(mParent);
     myOptProcess.setParent(mParent);
     myDirWatcher.setParent(mParent);
+    sGenNo = 0;
 
     mProjectDirectory = "";
 
@@ -131,36 +132,13 @@ AppController::AppController(OptimisationRun& data, Canvas& canvas, QWidget *par
 
 AppController::~AppController()
 {
-	myMeshProcess.kill();
 	myOptProcess.kill();
 }
 
 void AppController::clearProject()
 {
-    qInfo() << "Project data cleared!";
-    mRoot->setText(1, "No");
-
-    //All sub items set to 'No'
-	for(int i = 0; i < mRoot->childCount(); ++i)
-	{
-        mRoot->child(i)->setText(1, "No");
-	}
-
 	mData.clearProject();
 	mCanvas.update();
-}
-
-void AppController::new_simulation() {
-    mData = OptimisationRun();
-    ConfigSimulationDialog diag(mData);
-    diag.show();
-    diag.exec();
-}
-
-void AppController::configure_current_simulation() {
-    ConfigSimulationDialog diag(mData);
-    diag.show();
-    diag.exec();
 }
 
 void AppController::loadProject()
@@ -177,114 +155,15 @@ void AppController::loadProject()
 #endif
 
     mProjectDirectory = projPath.path();
-    mData.setProjectPathSet(true);
-    mRoot->setText(1, "Yes");
 
     qInfo() << "Project directory set: " << mProjectDirectory;
 }
 
 //Sub menus
 
-void AppController::runMesher()
-{
-	sGenNo = 0;
-	//Clear mesh data first
-    mData.setMesh(false);
-    mData.setRenderMesh(false);
-    mData.setRenderProfile(true);
-	mData.clearMesh();
-
-	MeshDialog diag(mData, this);
-
-	diag.show();
-	diag.exec();
-
-	bool r = true;
-	QDir meshPath(mProjectDirectory);
-	QString meshInFile;
-	QString meshBacFile;
-	QString meshGeoFile;
-	QString meshDatFile;
-
-	QString meshWorkDir = mAppPath;
-	meshWorkDir += "/AerOpt/FLITE/Mesher/";
-	meshWorkDir = QDir::toNativeSeparators(meshWorkDir);
-
-	meshInFile = QDir(meshPath.absolutePath() + QDir::separator() + meshPath.dirName() + ".in").absolutePath();
-	meshInFile = QDir::toNativeSeparators(meshInFile);
-
-	meshBacFile = QDir(meshPath.absolutePath() + QDir::separator() + meshPath.dirName() + ".bac").absolutePath();
-	meshBacFile = QDir::toNativeSeparators(meshBacFile);
-
-	meshGeoFile = QDir(meshPath.absolutePath() + QDir::separator() + meshPath.dirName() + ".geo").absolutePath();
-	meshGeoFile = QDir::toNativeSeparators(meshGeoFile);
-
-	meshDatFile = QDir(meshPath.absolutePath() + QDir::separator() + meshPath.dirName() + ".dat").absolutePath();
-	meshDatFile = QDir::toNativeSeparators(meshDatFile);
-
-	r &= createInputFile(meshInFile.toStdString(),
-						 meshBacFile.toStdString(),
-						 meshGeoFile.toStdString(),
-						 meshDatFile.toStdString());
-	r &= QFile::exists(meshInFile);
-
-	r &= createBacFile(meshBacFile.toStdString());
-	r &= QFile::exists(meshBacFile);
-
-	r &= createGeoFile(meshGeoFile.toStdString(), mData);
-	r &= QFile::exists(meshGeoFile);
-
-	if (r)
-	{
-		myMeshProcess.setWorkingDirectory( meshWorkDir );
-		myMeshProcess.setStandardInputFile( meshInFile );
-		myMeshProcess.start( mMesherPath );
-	}
-}
-
-void AppController::setBoundary()
-{
-	bool r = true;
-    if (!mData.mesh())
-	{
-        qWarning() << "Please first set the mesh!";
-		return;
-	}
-    ConfigSimulationDialog diag(mData, this);
-
-	diag.show();
-	diag.exec();
-
-	r &= mData.boundary();
-    if (r) mCurrentNode->setText(1, "Yes");
-}
-
-void AppController::setOptimiser()
-{
-	bool r = true;
-	if (!mData.boundary())
-	{
-        qWarning() << "Please first set the flow conditions!";
-		return;
-	}
-    ConfigSimulationDialog diag(mData, this);
-
-	diag.show();
-	diag.exec();
-
-	r &= mData.optimiser();
-    if (r) mCurrentNode->setText(1, "Yes");
-}
-
 void AppController::runAerOpt()
 {
 	bool r = true;
-
-	if (!mData.optimiser())
-	{
-		qWarning() << "Please first set the optimiser parameters!";
-		return;
-	}
 
     QString AerOpt = mAerOptPath;
 
@@ -326,11 +205,12 @@ void AppController::runAerOpt()
 	r &= copyFile(meshDatFile, dest);
 
 	//Set input files in input directory
-	r &= createAerOptInFile(AerOptInFile.toStdString(), mData);
+    r &= createAerOptInFile(AerOptInFile.toStdString(), mData);
 	r &= createAerOptNodeFile(AerOptNodeFile.toStdString(), mData);
 
 	sGenNo = 0;
-	mData.resetBoundary();
+    Mesh* mesh = mData.getMesh();
+    mesh->resetBoundary();
 
 	//then run aeropt
 	if (r)
@@ -343,12 +223,6 @@ void AppController::runAerOpt()
 	{
 		qWarning() << "Process Aborted!";
 	}
-}
-
-void AppController::stopMesher()
-{
-	myMeshProcess.kill();
-    qInfo() << "Any running mesh jobs have been stopped!";
 }
 
 void AppController::stopAerOpt()
@@ -364,26 +238,6 @@ void AppController::showGraph()
 }
 
 //Private slots
-void AppController::meshOutput()
-{
-	QByteArray byteArray = myMeshProcess.readAllStandardOutput();
-	QStringList strLines = QString(byteArray).split("\n");
-
-	foreach (QString line, strLines){
-        qInfo() << line;
-	}
-}
-
-void AppController::meshError()
-{
-	QByteArray byteArray = myMeshProcess.readAllStandardError();
-	QStringList strLines = QString(byteArray).split("\n");
-
-	foreach (QString line, strLines){
-		qCritical() << line;
-	}
-}
-
 void AppController::processOutput()
 {
 	QByteArray byteArray = myOptProcess.readAllStandardOutput();
@@ -401,62 +255,6 @@ void AppController::processError()
 
 	foreach (QString line, strLines){
 		qCritical() << line;
-	}
-}
-
-void AppController::meshingStarted()
-{
-    qInfo() << "Meshing process started normally";
-}
-
-void AppController::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
-{
-	if (exitStatus == QProcess::NormalExit && exitCode == 0)
-	{
-		bool r = true;
-
-        qInfo() << "Process finished normally";
-
-		//Set and/or check existance of output data file
-
-		QDir meshPath(mProjectDirectory);
-		QString meshDatFile;
-		meshDatFile = QDir(meshPath.absolutePath() + QDir::separator() + meshPath.dirName() + ".dat").absolutePath();
-		meshDatFile = QDir::toNativeSeparators(meshDatFile);
-
-		r &= myMeshProcess.exitCode() == 0;
-		r &= QFile::exists(meshDatFile);
-
-		//Now load points into data object, ready for canvas to render.
-		if (r)
-		{
-			r &= loadMeshProfile(sGenNo, meshDatFile.toStdString(), mData);
-			r &= loadMesh(meshDatFile.toStdString(), mData);
-		}
-
-        //When done set menu to 'Yes'
-		if (r)
-		{
-            mCurrentNode->setText(1, "Yes");
-			mData.setMesh(true);
-			mData.setRenderMesh(true);
-			mData.setRenderProfile(false);
-            qInfo() << "Mesh successfully created.";
-		}
-		else
-		{
-            mCurrentNode->setText(1, "No");
-			mData.setMesh(false);
-			mData.setRenderMesh(false);
-			mData.setRenderProfile(true);
-			qWarning() << "Mesh not created!";
-		}
-		mCanvas.update();
-	}
-	else
-	{
-		qCritical() << "Process finished abnormally with exit code: " << exitCode;
-		//Definately set Y/N in treeview here!!
 	}
 }
 
@@ -524,9 +322,10 @@ void AppController::readDirectory(const QString& path)
 
 	if (c)
 	{
-		loadMeshProfile(sGenNo, mesh.toStdString(), mData);
-		loadMesh(mesh.toStdString(), mData);
-		loadResults(results.toStdString(), mData);
+        Mesh* pMesh = mData.getMesh();
+        pMesh->loadMeshProfile(mesh.toStdString());
+        pMesh->loadMesh(mesh.toStdString());
+        pMesh->loadResults(results.toStdString());
 		readFitness(fit);
 
 		//Output .prf file here
@@ -622,16 +421,10 @@ void AppController::optimiserFinished(int exitCode, QProcess::ExitStatus exitSta
 		bool r = true;
 
 		r &= myOptProcess.exitCode() == 0;
-
-        //When done set menu to 'Yes'
-        if (r) mCurrentNode->setText(1, "Yes");
-        else mCurrentNode->setText(1, "No");
 	}
 	else
 	{
 		qCritical() << "Process finished abnormally with exit code: " << exitCode;
-		//Definately set Y/N in treeview here!!
-        mCurrentNode->setText(1, "No");
 	}
 
 	//Move files to project folder here!
@@ -686,608 +479,6 @@ void AppController::optimiserFinished(int exitCode, QProcess::ExitStatus exitSta
 
 //Private functions
 
-bool AppController::createInputFile(const std::string& meshInFile,
-							   const std::string& meshBacFile,
-							   const std::string& meshGeoFile,
-							   const std::string& meshDatFile)
-{
-	bool r = true;
-
-	std::ofstream outfile(meshInFile, std::ofstream::out);
-	r &= outfile.is_open();
-
-	if (r)
-	{
-		outfile << meshGeoFile << std::endl;
-		outfile << meshBacFile << std::endl;
-		outfile << meshDatFile << std::endl;
-		outfile << "0" << std::endl;
-		outfile << "1" << std::endl;
-        outfile << "N" << std::endl;
-		outfile << "1" << std::endl;
-		outfile << "1" << std::endl;
-		outfile << "1" << std::endl;
-		outfile << "1" << std::endl;
-		outfile << "3" << std::endl;
-		outfile << "5" << std::endl;
-	}
-	outfile.close();
-
-	return r;
-}
-
-bool AppController::createBacFile(const std::string& meshBacFile)
-{
-	bool r = true;
-
-	std::ofstream outfile(meshBacFile, std::ofstream::out);
-	r &= outfile.is_open();
-
-	if (r)
-	{
-		outfile << "title" << std::endl;
-		outfile << "   4    2" << std::endl;
-		outfile << "   1 -0.600081E+02 -0.600000E+02  0.100000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "      0.100000E+01  2.500000E+01  2.500000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "   2  0.600081E+02 -0.600000E+02  0.100000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "      0.100000E+01  2.500000E+01  2.500000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "   3  0.600081E+02  0.600000E+02  0.100000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "      0.100000E+01  2.500000E+01  2.500000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "   4 -0.600081E+02  0.600000E+02  0.100000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "      0.100000E+01  2.500000E+01  2.500000E+01  0.100000E+01  0.100000E+01" << std::endl;
-		outfile << "  1    1   2   3" << std::endl;
-		outfile << "  2    1   3   4" << std::endl;
-		outfile << "  sources" << std::endl;
-		outfile << "  0  1	 0" << std::endl;
-		outfile << "  point" << std::endl;
-		outfile << "  line" << std::endl;
-		outfile << "InnerRadius" << std::endl;
-		switch (mData.meshDensity())
-		{
-			case Enum::Mesh::COURSE :
-                outfile << "    0.0  0.0   0.15  0.4  0.6" << std::endl;//<< course
-                outfile << "    1.0  0.0   0.15  0.4  0.6" << std::endl;//<< course
-				break;
-			case Enum::Mesh::MEDIUM :
-                outfile << "    0.0  0.0   0.07  0.4  0.6" << std::endl;//<< medium
-                outfile << "    1.0  0.0   0.07  0.4  0.6" << std::endl;//<< medium
-				break;
-			case Enum::Mesh::FINE :
-                outfile << "    0.0  0.0   0.02  0.3  0.7" << std::endl;//<< fine
-                outfile << "    1.0  0.0   0.02  0.3  0.7" << std::endl;//<< fine
-				break;
-			default :
-                outfile << "    0.0  0.0   0.15  0.4  0.6" << std::endl;//<< course
-                outfile << "    1.0  0.0   0.15  0.4  0.6" << std::endl;//<< course
-		}
-		outfile << " 0 " << std::endl;
-		outfile << " 0 " << std::endl;
-	}
-	outfile.close();
-
-	return r;
-}
-
-bool AppController::createGeoFile(const std::string& meshGeoFile, OptimisationRun& data)
-{
-	bool r = true;
-	int noPoints = 0;
-	int noSegments = 6;
-	int noDomainPoints = 4;
-    int nViscSegments = 0;
-
-	std::ofstream outfile(meshGeoFile, std::ofstream::out);
-	r &= outfile.is_open();
-
-	noPoints = data.getProfile().size();
-    int nLayers = data.getNumBoundaryLayers();
-    bool hasBoundaryLayer = data.getBoundaryLayerFlag();
-
-    if(hasBoundaryLayer) {
-        nViscSegments = 2;
-    };
-
-	if (r)
-	{
-		outfile << "npoin nseg nvseg nlayer hmin" << std::endl;
-        outfile << int(noPoints + noDomainPoints) << "	  " << noSegments <<  "	  " << nViscSegments << "	  " << nLayers << "   0.000" << std::endl;
-
-		outfile.precision(7);
-//		outfile << std::scientific;
-		outfile << std::fixed;
-
-		int i = 1;
-		for (auto &p : data.getProfile())
-		{
-			outfile << i << "	  " << p.first << "	   " << p.second << std::endl;
-			++i;
-		}
-
-		outfile << i << " 	 -50.000000	 -50.000000" << std::endl;
-		++i;
-		outfile << i << " 	  50.000000	 -50.000000" << std::endl;
-		++i;
-		outfile << i << " 	  50.000000	  50.000000" << std::endl;
-		++i;
-		outfile << i << " 	 -50.000000	  50.000000" << std::endl;
-
-
-		int seg = 1;
-		int prof1 = std::round(noPoints*0.5);
-		int prof2 = noPoints - prof1 + 2;
-
-		outfile << seg << " " << prof1 << " " << 1 << std::endl;
-		for (i = 1; i <= prof1; ++i)
-		{
-			outfile << i << std::endl;
-		}
-		++seg;
-
-
-		outfile << seg << " " << prof2 << " " << 1 << std::endl;
-		for (i = prof1; i <= noPoints; ++i)
-		{
-			outfile << i << std::endl;
-		}
-		outfile << 1 << std::endl;
-		++seg;
-
-
-		outfile << seg << " " << 2 << " " << 3 << std::endl;
-		outfile << i << " " << i+1 << std::endl;
-		++seg;
-		++i;
-
-		outfile << seg << " " << 2 << " " << 3 << std::endl;
-		outfile << i << " " << i+1 << std::endl;
-		++seg;
-		++i;
-
-		outfile << seg << " " << 2 << " " << 3 << std::endl;
-		outfile << i << " " << i+1 << std::endl;
-		++seg;
-		++i;
-
-		outfile << seg << " " << 2 << " " << 3 << std::endl;
-		outfile << i << " " << i-3 << std::endl;
-	}
-
-    if(hasBoundaryLayer) {
-        qreal thickness = data.getBoundaryLayerThickness();
-        qreal dist = thickness;
-        for(int i=0; i<nLayers; i++) {
-            dist += thickness;
-            outfile << dist << std::endl;
-        }
-    }
-
-	outfile.close();
-
-	return r;
-}
-
-bool AppController::loadMeshProfile(const uint genNo, const std::string &filePath, OptimisationRun &data)
-{
-	bool r = true;
-	int type = 1;
-	std::string word1 = "";
-
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		while (infile >> word1)
-		{
-			if (word1 == "clean")
-			{
-				type = 2;
-				break;
-			}
-		}
-
-		infile.close();
-
-		if (type == 1)
-		{
-			r &= loadMeshProfileType1(genNo, filePath, data);
-		}
-		else if (type == 2)
-		{
-			r &= loadMeshProfileType2(genNo, filePath, data);
-		}
-	}
-	else
-	{
-		infile.close();
-	}
-
-	return r;
-}
-
-bool AppController::loadMeshProfileType1(const uint genNo, const std::string& filePath, OptimisationRun& data)
-{
-	bool r = true;
-
-	std::list<int> iBounds;
-	std::list<std::pair<uint,uint>> bConnectivity;
-	std::list<std::pair<float,float>> pPoints;
-
-	//Read boundary indicies and connectivity
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word1("");
-		std::string word2("");
-		while (infile >> word1)
-		{
-			if ( word1 == "boundary" )
-			{
-				infile >> word2;
-				break;
-			}
-		}
-
-		if ( word1 == "boundary" &&  word2 == "sides")
-		{
-			//Do >> get boundary point indicies
-			int i,j,b,t1,t2;
-			while ( infile >> i >> j >> t1 >> b >> t2)
-			{
-				if (b == 1)
-				{
-					iBounds.push_back(i);
-					bConnectivity.emplace_back(i,j);
-				}
-			}
-			iBounds.sort();
-		}
-	}
-	infile.close();
-
-	//Read boundary points from indecies
-	infile.open(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word3("");
-		while (infile >> word3)
-		{
-			if ( word3 == "coordinates" )
-			{
-				break;
-			}
-		}
-
-		if ( word3 == "coordinates" )
-		{
-			//Do >> get coordinates
-			int i;
-			float x,y;
-			float t1, t2;
-
-			while (infile >> i >> x >> y >> t1 >> t2)
-			{
-				if (i == iBounds.front())
-				{
-					pPoints.emplace_back(x,y);
-					iBounds.pop_front();
-				}
-			}
-
-			for (auto &pair : pPoints)
-			{
-				data.addBoundaryPoint(genNo, pair.first, pair.second);
-			}
-
-			for (auto& pair : bConnectivity)
-			{
-				data.addBConnectivity(genNo, pair.first, pair.second);
-			}
-
-		}
-	}
-	infile.close();
-
-	return r;
-}
-
-bool AppController::loadMeshProfileType2(const uint genNo, const std::string& filePath, OptimisationRun& data)
-{
-	bool r = true;
-
-	std::list<int> iBounds;
-	std::list<std::pair<uint,uint>> bConnectivity;
-	std::list<std::pair<float,float>> pPoints;
-
-	//Read boundary indicies and connectivity
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word1("");
-		std::string word2("");
-		while (infile >> word1)
-		{
-			if ( word1 == "Boundary" )
-			{
-				infile >> word2;
-				break;
-			}
-		}
-
-		if ( word1 == "Boundary" &&  word2 == "Faces")
-		{
-			//Do >> get boundary point indicies
-			int i,j,b;
-			while ( infile >> i >> j >> b )
-			{
-				if (b == 1)
-				{
-					iBounds.push_back(i);
-					bConnectivity.emplace_back(i,j);
-				}
-			}
-			iBounds.sort();
-		}
-	}
-	infile.close();
-
-	//Read boundary points from indecies
-	infile.open(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word3("");
-		while (infile >> word3)
-		{
-			if ( word3 == "Coordinates" )
-			{
-				break;
-			}
-		}
-
-		if ( word3 == "Coordinates" )
-		{
-			//Do >> get coordinates
-			int i;
-			float x,y;
-
-			while (infile >> i >> x >> y)
-			{
-				if (i == iBounds.front())
-				{
-					pPoints.emplace_back(x,y);
-					iBounds.pop_front();
-				}
-			}
-
-			for (auto &pair : pPoints)
-			{
-				data.addBoundaryPoint(genNo, pair.first, pair.second);
-			}
-
-			for (auto& pair : bConnectivity)
-			{
-				data.addBConnectivity(genNo, pair.first, pair.second);
-			}
-		}
-	}
-	infile.close();
-
-	return r;
-}
-
-bool AppController::loadMesh(const std::string& filePath, OptimisationRun& data)
-{
-	bool r = true;
-	int type = 1;
-	std::string word1 = "";
-
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		while (infile >> word1)
-		{
-			if (word1 == "clean")
-			{
-				type = 2;
-				break;
-			}
-		}
-
-		infile.close();
-
-		if (type == 1)
-		{
-			r &= loadMeshType1(filePath, data);
-		}
-		else if (type == 2)
-		{
-			r &= loadMeshType2(filePath, data);
-		}
-	}
-	else
-	{
-		infile.close();
-	}
-
-	return r;
-}
-
-bool AppController::loadMeshType1(const std::string& filePath, OptimisationRun& data)
-{
-	bool r = true;
-
-	//Read mesh connectivity
-	std::vector<std::tuple<uint,uint,uint>> mConnectivity;
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word1("");
-		std::string word2("");
-		while (infile >> word1)
-		{
-			if ( word1 == "connectivities" ) break;
-		}
-
-		if ( word1 == "connectivities")
-		{
-			//Do >> get triangle connectivities
-			uint i,j,k,t1;
-			while ( infile >> word2 >> i >> j >> k >> t1)
-			{
-				if (word2 != "coordinates")
-				{
-					mConnectivity.emplace_back(i,j,k);
-				}
-				else break;
-			}
-
-			data.clearMeshConnectivities();
-			for (auto& tuple : mConnectivity)
-			{
-				data.addMeshConnectivity(tuple);
-			}
-		}
-	}
-	infile.close();
-
-	//Read mesh points
-	std::vector<std::pair<float,float>> mPoints;
-	infile.open(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word1("");
-		std::string word2("");
-		while (infile >> word1)
-		{
-			if ( word1 == "coordinates" ) break;
-		}
-
-		if ( word1 == "coordinates" )
-		{
-			float x,y,t1,t2;
-			while ( infile >> word2 >> x >> y >> t1 >> t2)
-			{
-				if (word2 != "unknown")
-				{
-					mPoints.emplace_back(x,y);
-				}
-				else break;
-			}
-
-			data.clearMeshPoints();
-			for (auto &pair : mPoints)
-			{
-				data.addMeshPoint(pair);
-			}
-		}
-	}
-	infile.close();
-
-	return r;
-}
-
-bool AppController::loadMeshType2(const std::string& filePath, OptimisationRun& data)
-{
-	bool r = true;
-
-	//Read mesh connectivity
-	std::vector<std::tuple<uint,uint,uint>> mConnectivity;
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word1("");
-		std::string word2("");
-		while (infile >> word1)
-		{
-			if ( word1 == "Connectivities" ) break;
-		}
-
-		if ( word1 == "Connectivities")
-		{
-			//Do >> get triangle connectivities
-			uint i,j,k;
-			while ( infile >> word2 >> i >> j >> k)
-			{
-				if (word2 != "Coordinates")
-				{
-					mConnectivity.emplace_back(i,j,k);
-				}
-				else break;
-			}
-
-			data.clearMeshConnectivities();
-			for (auto& tuple : mConnectivity)
-			{
-				data.addMeshConnectivity(tuple);
-			}
-		}
-	}
-	infile.close();
-
-	//Read mesh points
-	std::vector<std::pair<float,float>> mPoints;
-	infile.open(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		std::string word1("");
-		std::string word2("");
-		while (infile >> word1)
-		{
-			if ( word1 == "Coordinates" ) break;
-		}
-
-		if ( word1 == "Coordinates" )
-		{
-			float x,y;
-			while ( infile >> word2 >> x >> y)
-			{
-				if (word2 != "Boundary")
-				{
-					mPoints.emplace_back(x,y);
-				}
-				else break;
-			}
-
-			data.clearMeshPoints();
-			for (auto &pair : mPoints)
-			{
-				data.addMeshPoint(pair);
-			}
-		}
-	}
-	infile.close();
-
-	return r;
-}
-
-bool AppController::loadResults(const std::string& filePath, OptimisationRun& data)
-{
-	bool r = true;
-
-	float i,rho,u,v,e,p;
-	std::ifstream infile(filePath, std::ifstream::in);
-	r &= infile.is_open();
-	if (r)
-	{
-		data.clearMeshData();
-		while (infile >> i >> rho >> u >> v >> e >> p)
-		{
-			data.addMeshData( std::make_tuple(rho, u, v, e, p) );
-		}
-	}
-	infile.close();
-
-	return r;
-}
-
 bool AppController::createAerOptInFile(const std::string& filePath, OptimisationRun& data)
 {
 	bool r = true;
@@ -1295,7 +486,8 @@ bool AppController::createAerOptInFile(const std::string& filePath, Optimisation
 	std::ofstream outfile(filePath, std::ofstream::out);
 	r &= outfile.is_open();
 
-	auto& cpoints = data.getControlPoints();//<< list of uints identifying
+    Mesh* mesh = data.getMesh();
+    auto& cpoints = mesh->getControlPoints();//<< list of uints identifying
 	r &= cpoints.size() > 0;
 
 	if (r)
@@ -1309,9 +501,9 @@ bool AppController::createAerOptInFile(const std::string& filePath, Optimisation
         for (auto& i : cpoints)
 		{
 			qreal x1,y1,x2,y2;
-            BoundaryPoint *point = data.getControlPoint(0, i);
+            BoundaryPoint& point = mesh->getControlPoint(i);
 
-            point->getBoundCoords(&x1,&y1,&x2,&y2);//<< the control point and range
+            point.getBoundCoords(&x1,&y1,&x2,&y2);//<< the control point and range
 
 			xrange += " ";
 			xrange += std::to_string(x2);
@@ -1326,11 +518,11 @@ bool AppController::createAerOptInFile(const std::string& filePath, Optimisation
 			myrange += std::to_string(y1);
 
             smoothing_str += " ";
-            smoothing_str += std::to_string(point->getSmoothFactor());
+            smoothing_str += std::to_string(point.getSmoothFactor());
 		}
 
 		outfile << "&inputVariables" << std::endl;
-		outfile << "IV%Ma = " << std::to_string( data.machNo() ) << std::endl;
+
 		outfile << "IV%Tamb = " << std::to_string( data.freeTemp() ) << std::endl;// < deg kelvin
 		outfile << "IV%Pamb = " << std::to_string( data.freePress() ) << std::endl;// < Pa
 		outfile << "IV%R = 287" << std::endl;
@@ -1427,12 +619,13 @@ bool AppController::createAerOptNodeFile(const std::string& filePath, Optimisati
 		std::string yrange;
 		std::string myrange;
 
-		auto& cpoints = data.getControlPoints();
+        Mesh* mesh = data.getMesh();
+        auto& cpoints = mesh->getControlPoints();
 		for (auto& i : cpoints)
 		{
-            outfile << std::to_string(data.getControlPoint(0, i)->x())
+            outfile << std::to_string(mesh->getControlPoint(i).x())
 					<< "	"
-                    << std::to_string(data.getControlPoint(0, i)->y())
+                    << std::to_string(mesh->getControlPoint(i).y())
 					<< std::endl;
 		}
 	}
@@ -1547,17 +740,18 @@ bool AppController::removeFolder(const QString& path)
 	return r;
 }
 
-bool AppController::saveCurrentProfile(const QString& path, const OptimisationRun& data)
+bool AppController::saveCurrentProfile(const QString& path, OptimisationRun& data)
 {
 	bool r = true;
 
 	std::ofstream outfile(path.toStdString(), std::ofstream::out);
 	r &= outfile.is_open();
 
-	auto& currbconn = data.getBConnects().back();
+    Mesh* mesh = data.getMesh();
+    auto& currbconn = mesh->getBConnects();
 	const uint size = currbconn.size();
 
-	auto& currbpoints = data.getBoundary().back();
+    auto& currbpoints = mesh->getMeshBoundary();
 
 	if (r)
 	{
@@ -1572,8 +766,8 @@ bool AppController::saveCurrentProfile(const QString& path, const OptimisationRu
 			{
                 if (point.first == i)
 				{
-                    x = currbpoints.at(point.first-1)->x();
-                    y = currbpoints.at(point.first-1)->y();
+                    x = currbpoints.at(point.first-1).x();
+                    y = currbpoints.at(point.first-1).y();
 					outfile << x
 							<< "     "
 							<< y

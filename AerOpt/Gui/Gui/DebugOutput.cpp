@@ -61,7 +61,7 @@ DebugOutput::~DebugOutput()
 
 void DebugOutput::printInfoMsg(const QString &msg)
 {
-    QString m("Info: ");
+    QString m("");
     m += msg;
 
     this->textBrowser->setTextColor( QColor( "black" ) );

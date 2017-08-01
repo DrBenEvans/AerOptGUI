@@ -64,7 +64,8 @@ SOURCES += \
     Gui/MainWindow.cpp \
     Gui/Models/OptimisationRun.cpp \
     Gui/GuiComponents/ProfileLibrarySelector.cpp \
-    Gui/Models/Profile.cpp
+    Gui/Models/Profile.cpp \
+    Gui/Models/Mesh.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -83,7 +84,8 @@ HEADERS  += \
     Gui/MainWindow.h \
     Gui/Models/OptimisationRun.h \
     Gui/GuiComponents/ProfileLibrarySelector.h \
-    Gui/Models/Profile.h
+    Gui/Models/Profile.h \
+    Gui/Models/Mesh.h
 
 FORMS    += \
     Gui/DebugOutput.ui \

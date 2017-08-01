@@ -16,14 +16,9 @@
 
 #include "Enumerations.h"
 #include "Profile.h"
+#include "Mesh.h"
 #include "BoundaryPoint.h"
-
-//Abbreviate long type names
-typedef std::vector<std::vector<BoundaryPoint*>> Boundaries;
-typedef std::vector<std::vector<std::pair<uint,uint>>> BConnectivities;
-typedef std::vector<std::pair<float,float>> MeshPoints;
-typedef std::vector<std::tuple<uint,uint,uint>> MeshConnectivities;
-typedef std::vector<std::tuple<float,float,float,float,float>> MeshResults;
+#include <QString>
 
 /**
  * @brief The OptimisationRun class
@@ -54,134 +49,8 @@ public:
 	 * Clears the mesh data.
 	 */
 	void clearMesh();
-	//mesh boundary points
-	/**
-	 * @brief addBoundaryPoint
-	 * @param gen The current generation number.
-	 * @param x Location x of point.
-	 * @param y Location x of point.
-	 * Adds a mesh boundary point.
-	 */
-	void addBoundaryPoint(const uint& gen, const float& x, const float& y);
-	/**
-	 * @brief addBConnectivity
-	 * @param gen The current generation number.
-	 * @param a Boundary point index.
-	 * @param b Boundary point index.
-	 * Adds boundary point connectivity from a to b.
-	 */
-	void addBConnectivity(const uint& gen, const uint& a, const uint& b);
-	/**
-	 * @brief getControlPoint
-	 * @param genNo The generation of interest.
-	 * @param index Index of the boundary point
-	 * of interest.
-	 * @return A point and a rectangle representing
-	 * the control point of interest.
-	 * This function returns a reference to the control
-	 * point of interest.
-	 */
-    BoundaryPoint *getControlPoint(const uint& genNo, const uint& index);
-	/**
-	 * @brief checkBoundaryIntegrity
-	 * @return True if the boundary integrity is OK.
-	 * Checks the integrity of the boundary.
-	 */
-	bool checkBoundaryIntegrity();
-	/**
-	 * @brief getBoundary
-	 * @return A reference to the current boundary.
-	 * Gets a reference to the current bounday data.
-	 */
-	const Boundaries& getBoundary() const;
-	/**
-	 * @brief getBConnects
-	 * @return A reference to the current boundary connectivities.
-	 * Returns a reference to a list of pairs of indices representing the
-	 * boundary connectivities.
-	 */
-	const BConnectivities& getBConnects() const;
-	/**
-	 * @brief resetBoundary
-	 * Resets the boundary back to the initial boundary.
-	 */
-	void resetBoundary();
-	//control points
-	/**
-	 * @brief selectControlPoint
-	 * @param index Index of the control point to be selected.
-	 * Sets the control point of interest as selected.
-	 */
-	void selectControlPoint(const unsigned int& index);
-	/**
-	 * @brief checkControlPointIntegrity
-	 * @return True if the control point is OK.
-	 * Checks the integrity of the control points.
-	 */
-	bool checkControlPointIntegrity();
-	/**
-	 * @brief getControlPoints
-	 * @return A reference to the list of control point indices.
-	 * Gets a reference to the current list of selected control points.
-	 */
-	const std::list<unsigned int>& getControlPoints() const;
-	//mesh points
-	/**
-	 * @brief addMeshPoint
-	 * @param pair The point location pair as x and y.
-	 * Adds a point to the list of mesh points
-	 * where the pair is x and y locations.
-	 */
-	void addMeshPoint(const std::pair<float,float>& pair);
-	/**
-	 * @brief clearMeshPoints
-	 * Clears the current mesh points.
-	 */
-	void clearMeshPoints();
-	/**
-	 * @brief getMeshPoints
-	 * @return A reference to the list of x y pairs.
-	 * Gets a reference to the current list of mesh points.
-	 */
-	const MeshPoints& getMeshPoints() const;
-	//mesh connectivity
-	/**
-	 * @brief addMeshConnectivity
-	 * @param tuple A triple of indices representing a triangular cell.
-	 * Adds mesh cell connectivity indeces.
-	 */
-	void addMeshConnectivity(const std::tuple<uint, uint, uint>& tuple);
-	/**
-	 * @brief clearMeshConnectivities
-	 * Clears the list of mesh connectivites.
-	 */
-	void clearMeshConnectivities();
-	/**
-	 * @brief getMeshConnectivities
-	 * @return A reference to the list of mesh connectivities.
-	 * Gets a reference to the mesh connectivity indices.
-	 */
-	const MeshConnectivities& getMeshConnectivities() const;
-	//mesh results
-	/**
-	 * @brief addMeshData
-	 * @param tuple A quintuple of results data (rho, u, v, e, p).
-	 * Sets the results data for each node or point in the mesh.
-	 */
-	void addMeshData(const std::tuple<float, float, float, float, float>& tuple);
-	/**
-	 * @brief clearMeshData
-	 * Clears the mesh results data.
-	 */
-	void clearMeshData();
-	/**
-	 * @brief getMeshData
-	 * @return A reference to the results data.
-	 * Gets a reference to the list of results data.
-	 */
-	const MeshResults& getMeshData() const;
 
-	//Getters and Setters for the class variables
+    //Getters and Setters for the class variables
     /**
      * @brief setProfile
      * @param Profile object to use
@@ -192,11 +61,6 @@ public:
 	 * @return True if profile is set.
 	 */
 	bool mesh() const;
-	/**
-	 * @brief setMesh
-	 * @param mesh Sets mesh.
-	 */
-	void setMesh(bool mesh);
     /**
 	 * @brief setFunction
 	 * @param function Sets the function.
@@ -216,17 +80,7 @@ public:
 	 * @brief optimiser
 	 * @return True if optimiser is set.
 	 */
-	bool optimiser() const;
-	/**
-	 * @brief setOptimiser
-	 * @param optimiser Sets optimiser.
-	 */
     void setOptimisationMethod(Enum::OptMethod method);
-    /**
-     * @brief setOptimisation method
-     * @param method_index is the method index as defined by ordering in OptimiserDialog.ui.
-     */
-	void setOptimiser(bool optimiser);
 	/**
 	 * @brief runTime
 	 * @return True if runtime is set.
@@ -247,16 +101,6 @@ public:
 	 * @param renderProfile Sets render profile.
 	 */
 	void setRenderProfile(bool renderProfile);
-	/**
-	 * @brief renderMesh
-	 * @return True if render mesh is set.
-	 */
-	bool renderMesh() const;
-	/**
-	 * @brief setRenderMesh
-	 * @param renderMesh Sets render mesh.
-	 */
-	void setRenderMesh(bool renderMesh);
 	/**
 	 * @brief objFunc
 	 * @return The current objective function.
@@ -337,66 +181,26 @@ public:
 	 * @param noGens Sets the number of generations.
 	 */
 	void setNoGens(int noGens);
-	/**
-	 * @brief meshDensity
-	 * @return Gets the current mesh density requirement.
-	 */
-	Enum::Mesh meshDensity() const;
-	/**
-	 * @brief setMeshDensity
-	 * @param meshDensity Sets the current mesh density requirement.
-	 */
-	void setMeshDensity(const Enum::Mesh& meshDensity);
-	/**
-	 * @brief projectPathSet
-	 * @return True if the project path is set.
-	 */
-	bool projectPathSet() const;
-	/**
-	 * @brief setProjectPathSet
-	 * @param projectPathSet Sets wether the project path is set.
-	 */
-	void setProjectPathSet(bool projectPathSet);
-
-    Enum::OptMethod getOptimisationMethod() const;
     /**
-     * @brief getOptimisation method
+     * @brief getOptimisationMethod
      * @param returns the method index as defined by ordering in OptimiserDialog.ui.
      */
+    Enum::OptMethod getOptimisationMethod() const;
     int getNoTop() const;
     void setNoTop(int noTop);
 
     QString getLabel();
     void setLabel(QString label);
 
-    bool getBoundaryLayerFlag();
-    int getNumBoundaryLayers();
-    qreal getBoundaryLayerThickness();
-    void setBoundaryLayerFlag(bool hasBoundaryLayer);
-    void setNumBoundaryLayers(int num_layers);
-    void setBoundaryLayerThickness(qreal layer_thickness);
     const std::list<std::pair<float,float>> getProfile() const;
+    Profile*  getProfileObj() const;
+
+    Mesh* getMesh();
 
 private:
     Profile* mProfile;
-    bool mProjectPathSet;
-    bool mMeshSet;
-	bool mBoundarySet;
-	bool mOptimiserSet;
-	bool mRunTimeSet;
-	bool mRenderProfile;
-	bool mRenderMesh;
 
     QString mLabel;
-
-	//Mesh Attributes
-	Boundaries mMeshProfile;
-	BConnectivities mBoundConnects;
-	std::list<uint> mControlPoints;
-	MeshPoints mMeshPoints;
-	MeshConnectivities mMeshConnectivities;
-	MeshResults mMeshResults;
-	Enum::Mesh mMeshDensity;
 
 	//Objective function attributes
 	Enum::ObjFunc mObjFunc;
@@ -414,10 +218,7 @@ private:
 	int mNoGens;
     int mNoTop;
 
-    // boundary layer parameters
-    bool mHasBoundaryLayer;
-    int mNumBoundaryLayers;
-    qreal mBoundaryLayerThickness;
+    Mesh* mMesh;
 
 };
 

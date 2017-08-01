@@ -31,10 +31,6 @@ public:
 signals:
 	
 public slots:
-	void showProfile();
-	void hideProfile();
-	void showMesh();
-	void hideMesh();
 	void setConstraints();
 	void resetConstraints();
 

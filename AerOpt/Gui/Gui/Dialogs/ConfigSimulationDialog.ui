@@ -412,7 +412,7 @@
      <string>Initial Profile</string>
     </property>
    </widget>
-   <widget class="ProfileLibrarySelector" name="profile">
+   <widget class="QComboBox" name="profile">
     <property name="geometry">
      <rect>
       <x>100</x>
@@ -424,13 +424,6 @@
    </widget>
   </widget>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>ProfileLibrarySelector</class>
-   <extends>QComboBox</extends>
-   <header>ProfileLibrarySelector.h</header>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>

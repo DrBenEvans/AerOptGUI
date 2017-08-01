@@ -29,7 +29,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Output Log</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="leftMargin">

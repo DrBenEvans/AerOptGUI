@@ -1,15 +1,15 @@
 #ifndef PROFILE_H
 #define PROFILE_H
 
-#include <string>
 #include <list>
+#include <QString>
 
 class Profile
 {
 public:
-    Profile(std::string& filePath);
-    const std::list<std::pair<float,float>>& getProfile() const;
-    std::string getDisplayString();
+    Profile(QString filePath);
+    const std::list<std::pair<float,float>> getProfile() const;
+    QString getDisplayString();
 
 private:
     /**
@@ -39,7 +39,7 @@ private:
     bool checkClockwise();
     bool checkNormalised();
     std::list<std::pair<float,float>> mProfile;
-    std::string& mFilePath;
+    QString mFilePath;
 };
 
 #endif // PROFILE_H

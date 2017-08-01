@@ -1,12 +1,15 @@
 #include "Profile.h"
 #include <fstream>
+#include <QDebug>
+#include "DebugOutput.h"
 
-Profile::Profile(std::string& filePath) :  mFilePath(filePath)
+Profile::Profile(QString filePath) :  mFilePath(filePath)
 {
     bool r = true;
     float x, y;
 
-    std::ifstream infile(mFilePath, std::ifstream::in);
+    qInfo() << "Loading profile: " << mFilePath;
+    std::ifstream infile(mFilePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
 
     if (r)
@@ -25,7 +28,7 @@ Profile::Profile(std::string& filePath) :  mFilePath(filePath)
 }
 
 
-std::string Profile::getDisplayString() {
+QString Profile::getDisplayString() {
     return mFilePath;
 }
 
@@ -42,22 +45,22 @@ bool Profile::checkProfileIntegrity()
     //Points don't duplicate start and finish vertex.
     c = checkDuplicates();
     r &= c;
-//	qDebug() << "Passed duplicate point test? " << c;
+    qDebug() << "Passed duplicate point test? " << c;
 
-    c = mProfile.size() >= 6;
+    c = mProfile.size() >= 3;
     r &= c;
-//	qDebug() << "Passed No. points test? " << c;
-//	qDebug() << "No. of profile points: " << mProfile.size();
+    qDebug() << "Passed No. points test? " << c;
+    qDebug() << "No. of profile points: " << mProfile.size();
 
     //Points in sequence and clockwise (check - it could be anticlockwise)
     c = checkClockwise();
     r &= c;
-//	qDebug() << "Passed point sequence test? " << c;
+    qDebug() << "Passed point sequence test? " << c;
 
     //Points are scaled to x=1 normalisation x[0,...,1] and y is scaled by same qty
     c = checkNormalised();
     r &= c;
-//	qDebug() << "Passed normalised range test? " << c;
+    qDebug() << "Passed normalised range test? " << c;
 
     return r;
 }
@@ -67,7 +70,7 @@ void Profile::clearProfile()
     mProfile.clear();
 }
 
-const std::list<std::pair<float, float> >& Profile::getProfile() const
+const std::list<std::pair<float, float> > Profile::getProfile() const
 {
     return mProfile;
 }

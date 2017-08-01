@@ -10,6 +10,7 @@
 #define DEBUGOUTPUT_H
 
 #include "ui_DebugOutput.h"
+#include <QDialog>
 
 /**
  * @brief The DebugOutput class

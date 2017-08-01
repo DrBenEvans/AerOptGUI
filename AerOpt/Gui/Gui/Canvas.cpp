@@ -12,8 +12,6 @@
 #include <cmath>
 
 #include "Canvas.h"
-#include "OptimisationRun.h"
-#include "AppController.h"
 #include "Menu.h"
 #include "ConstraintsDialog.h"
 #include "Arrow.h"
@@ -23,8 +21,9 @@ Canvas::Canvas(QWidget *parent) : mChordLength(1.0),
 									mWidthMax(0.75),
 									mHeightMin(-0.5),
                                     mHeightMax(0.5),
-                                    mData(nullptr),
-                                    QWidget(parent)
+                                    QWidget(parent),
+                                    mMesh(nullptr),
+                                    mProfile(nullptr)
 {
 	colourmap.emplace_back( 0,         0,        0,        0.423499   );
 	colourmap.emplace_back( 0.0668895, 0,        0.119341, 0.529244   );
@@ -56,8 +55,12 @@ Canvas::Canvas(QWidget *parent) : mChordLength(1.0),
 	calcCanvasScale();
 }
 
-void Canvas::setData(OptimisationRun& data) {
-    mData = &data;
+void Canvas::setMesh(Mesh& mesh) {
+    mMesh = &mesh;
+}
+
+void Canvas::setProfile(Profile& profile) {
+    mProfile = &profile;
 }
 
 Canvas::~Canvas()
@@ -72,14 +75,8 @@ void Canvas::paintEvent(QPaintEvent *event)
 
 	calcCanvasScale();
 	drawBackground(painter);
-
-	//Draw first profile only - use 'if' to decide which to draw.
-	//Or, all profiles with same function?
-    if(mData) {
-        if (mData->renderProfile()) drawProfile(painter, *mData);
-        if (mData->renderMesh()) drawMesh(painter, *mData);
-    }
-
+    drawProfile(painter);
+    drawMesh(painter);
 	drawLogos(painter);
 	drawScale(painter);
 	drawAxis(painter);
@@ -87,7 +84,8 @@ void Canvas::paintEvent(QPaintEvent *event)
 
 bool Canvas::eventFilter(QObject* object, QEvent* event)
 {
-    if(!mData) return false;
+    //TODO - remove me
+    return false;
 
 	bool r = false;
 	QPoint pos = {0,0};
@@ -97,7 +95,7 @@ bool Canvas::eventFilter(QObject* object, QEvent* event)
 	{
 		r = true;
 		pos = static_cast<QMouseEvent*>(event)->pos();
-        loc = pickNodeCheck(pos, *mData);
+        loc = pickNodeCheck(pos, mMesh);
 		if (loc != mHighlight)
 		{
 			mHighlight = loc;
@@ -109,13 +107,13 @@ bool Canvas::eventFilter(QObject* object, QEvent* event)
 	{
 		r = true;
 		pos = static_cast<QMouseEvent*>(event)->pos();
-        loc = pickNodeCheck(pos, *mData);
+        loc = pickNodeCheck(pos, mMesh);
 		if (loc != -1)
 		{
 			//store id here in data object
-            mData->selectControlPoint(loc);
-            BoundaryPoint  *point = mData->getControlPoint(0, loc);
-            point->setBoundCoords(0, 0, 0, 0);
+            mMesh->selectControlPoint(loc);
+            BoundaryPoint& point = mMesh->getControlPoint(loc);
+            point.setBoundCoords(0, 0, 0, 0);
 
 			repaint();
 		}
@@ -126,12 +124,12 @@ bool Canvas::eventFilter(QObject* object, QEvent* event)
 		if( static_cast<QMouseEvent*>(event)->button() == Qt::RightButton )
 		{
 			pos = static_cast<QMouseEvent*>(event)->pos();
-            loc = pickNodeCheck(pos, *mData);
+            loc = pickNodeCheck(pos, mMesh);
 			if (loc != -1)
 			{
 				//find loc in getControlPoints() list
 				//if exists then show menu
-                auto& control = mData->getControlPoints();
+                auto& control = mMesh->getControlPoints();
 
 				auto it = std::find(control.begin(), control.end(), loc);
 				if (it != control.end()) mNodeMenu->exec( mapToGlobal(pos), loc );
@@ -203,15 +201,19 @@ void Canvas::drawScale(QPainter &painter)
 
 }
 
-void Canvas::drawProfile(QPainter &painter, const OptimisationRun& data)
+void Canvas::drawProfile(QPainter &painter)
 {
+    if(!mProfile) {
+        return;
+    }
+
 	painter.setRenderHint(QPainter::Antialiasing, false);
 	QPen pen(Qt::black, 1, Qt::SolidLine);
 	painter.setBrush(QBrush(QColor(255, 255, 255, 0)));
 	painter.setPen(pen);
 	QRect rect;
 
-    for (auto& p : data.getProfile())
+    for (auto& p : mProfile->getProfile())
 	{
 		rect.moveCenter( QPoint(w(p.first), h(p.second)) );
 		rect.setWidth( 3 );
@@ -220,9 +222,13 @@ void Canvas::drawProfile(QPainter &painter, const OptimisationRun& data)
 	}
 }
 
-void Canvas::drawMesh(QPainter &painter, const OptimisationRun& data)
+void Canvas::drawMesh(QPainter &painter)
 {
-	painter.setRenderHint(QPainter::Antialiasing, false);
+    if(!mMesh) {
+        return;
+    }
+
+    painter.setRenderHint(QPainter::Antialiasing, false);
 	painter.setBrush(QBrush(QColor(255, 255, 255, 0)));
 	painter.setPen(QPen(Qt::black, 1, Qt::SolidLine));
 	QRect rect;
@@ -230,12 +236,12 @@ void Canvas::drawMesh(QPainter &painter, const OptimisationRun& data)
 	rect.setWidth( 7 );
 	rect.setHeight( 7 );
 
-	const auto& boundaries = data.getBoundary();
-	const auto& bConnects = data.getBConnects();
-	const auto& control = data.getControlPoints();
-	const auto& meshpoints = data.getMeshPoints();
-	const auto& meshconnects = data.getMeshConnectivities();
-	const auto& resultsdata = data.getMeshData();
+    Boundaries& boundary = mMesh->getMeshBoundary();
+    auto& bConnects = mMesh->getBConnects();
+    auto& control = mMesh->getControlPoints();
+    auto& meshpoints = mMesh->getMeshPoints();
+    auto& meshconnects = mMesh->getMeshConnectivities();
+    auto& resultsdata = mMesh->getMeshData();
 
 
 	//This scope is for rendering the mesh when available
@@ -312,127 +318,108 @@ void Canvas::drawMesh(QPainter &painter, const OptimisationRun& data)
 	}
 
 	//This scope is for rendering boundary points
-	//from all boundaries.
+    //from current boundary.
 	painter.setRenderHint(QPainter::Antialiasing, false);
 	painter.setPen( QPen(Qt::black, 1, Qt::SolidLine) );
-	for (auto& boundary : boundaries)
-	for (auto& p : boundary)
+    for (auto& p : boundary)
 	{
-        rect.moveCenter( QPoint( w(p->x()), h(p->y()) ) );
+        rect.moveCenter( QPoint( w(p.x()), h(p.y()) ) );
 		rect.setWidth( 7 );
 		rect.setHeight( 7 );
 		painter.drawRect( rect );
 	}
 
-	//This scope is for rendering initial and last boundaries
+    //This scope is for rendering current and previous boundary
 	painter.setRenderHint(QPainter::Antialiasing, true);
-	uint inc = bConnects.size()-1;
-	if (inc < 1) inc = 1;
-	for (uint i = 0; i < bConnects.size(); i += inc)
-	{
-		if (i == 0) painter.setPen( QPen(Qt::blue, 2, Qt::SolidLine) );
-		else painter.setPen( QPen(Qt::red, 2, Qt::SolidLine) );
+    painter.setPen( QPen(Qt::blue, 2, Qt::SolidLine) );
 
-		for (uint j = 0; j < bConnects.at(i).size(); ++j)
-		{
-			uint a = bConnects.at(i).at(j).first - 1;
-			uint b = bConnects.at(i).at(j).second - 1;
+    for (uint i = 0; i < bConnects.size(); ++i)
+    {
+        uint a = bConnects.at(i).first - 1;
+        uint b = bConnects.at(i).second - 1;
 
-			painter.drawLine(
-                w( boundaries.at(i).at(a)->x() ),
-                h( boundaries.at(i).at(a)->y() ),
-                w( boundaries.at(i).at(b)->x() ),
-                h( boundaries.at(i).at(b)->y() )
-				);
-		}
-	}
+        painter.drawLine(
+                    w( boundary.at(a).x() ),
+                    h( boundary.at(a).y() ),
+                    w( boundary.at(b).x() ),
+                    h( boundary.at(b).y() )
+                    );
+    }
 
-	//This scope is for rendering boundary point connectivity
-	//between all boundaries.
-	painter.setRenderHint(QPainter::Antialiasing, true);
-	painter.setPen( QPen(Qt::green, 1, Qt::SolidLine) );
-	if (boundaries.size() > 1)
-	{
-		bool bs = true;
-		const uint bQty = boundaries.size();
-		const uint bSize = boundaries.at(0).size();
+    //This scope is for rendering boundary point connectivity
+    //between all boundaries.
+    painter.setRenderHint(QPainter::Antialiasing, true);
+    painter.setPen( QPen(Qt::green, 1, Qt::SolidLine) );
+    if (mPrevMesh)
+    {
+        Boundaries& prevBoundaries = mPrevMesh->getMeshBoundary();
+        const uint bSize = boundary.size();
 
-		for (auto& boundary : boundaries)
-		{
-			bs &= boundary.size() == bSize;
-		}
+        if (prevBoundaries.size() == bSize)
+        {
+            for (uint i = 0; i < bSize; i++)
+            {
+                prevBoundaries.at(i);
+                boundary.at(i);
 
-		if (bs)
-		{
-			for (uint i = 0; i < bSize; i++)
-			for (uint o = 1; o < bQty; o++)
-			{
-				boundaries.at(o-1).at(i);
-				boundaries.at(o).at(i);
-
-				painter.drawLine(
-                            w( boundaries.at(o-1).at(i)->x() ),
-                            h( boundaries.at(o-1).at(i)->y() ),
-                            w( boundaries.at(o  ).at(i)->x() ),
-                            h( boundaries.at(o  ).at(i)->y() )
-							);
-			}
-		}
-	}
+                painter.drawLine(
+                            w( prevBoundaries.at(i).x() ),
+                            h( prevBoundaries.at(i).y() ),
+                            w( boundary.at(i).x() ),
+                            h( boundary.at(i).y() )
+                            );
+            }
+        }
+    }
 
 	//This scope is for control points only.
 	painter.setRenderHint(QPainter::Antialiasing, false);
-	painter.setPen( QPen(Qt::black, 1, Qt::SolidLine) );
-	if (boundaries.size() > 0)
-	{
-		const auto& boundary = boundaries.at(0);
+    painter.setPen( QPen(Qt::black, 1, Qt::SolidLine) );
+    for (auto& i : control)
+    {
+        auto& p = boundary.at(i);
 
-		for (auto& i : control)
-		{
-			auto& p = boundary.at(i);
+        //Set here red if selected, and green if fully constrained.
+        if (p.isControlPoint())
+        {
+            painter.setBrush(QBrush(QColor(255, 0, 0, 255)));
+        }
+        else
+        {
+            painter.setBrush(QBrush(QColor(0, 255, 0, 255)));
+        }
 
-			//Set here red if selected, and green if fully constrained.
-            if (p->isControlPoint())
-			{
-				painter.setBrush(QBrush(QColor(255, 0, 0, 255)));
-			}
-			else
-			{
-				painter.setBrush(QBrush(QColor(0, 255, 0, 255)));
-			}
+        rect.moveCenter( QPoint( w(p.x()), h(p.y()) ) );
+        rect.setWidth( 7 );
+        rect.setHeight( 7 );
+        painter.drawRect( rect );
+    }
 
-            rect.moveCenter( QPoint( w(p->x()), h(p->y()) ) );
-			rect.setWidth( 7 );
-			rect.setHeight( 7 );
-			painter.drawRect( rect );
-		}
+    for (auto& i : control)
+    {
+        auto& p = boundary.at(i);
+        if (!(p.isControlPoint()))
+        {
+            qreal x1,y1,x2,y2;
+            p.getBoundCoords(&x1,&y1,&x2,&y2);
 
-		for (auto& i : control)
-		{
-			auto& p = boundary.at(i);
-            if (!(p->isControlPoint()))
-			{
-				qreal x1,y1,x2,y2;
-                p->getBoundCoords(&x1,&y1,&x2,&y2);
+            constraint.setCoords( w(p.x()+x1), h(p.y()+y1), w(p.x()+x2), h(p.y()+y2) );
 
-                constraint.setCoords( w(p->x()+x1), h(p->y()+y1), w(p->x()+x2), h(p->y()+y2) );
+            painter.setBrush(QBrush(QColor(255, 0, 0, 69)));
+            painter.drawRect( constraint );
+        }
+    }
 
-				painter.setBrush(QBrush(QColor(255, 0, 0, 69)));
-				painter.drawRect( constraint );
-			}
-		}
-
-		if (mHighlight > -1 && mHighlight < int(boundary.size()))
-		{
-			auto& p = boundary.at(mHighlight);
-//			painter.setBrush(QBrush(QColor(255, 215, 0, 180)));
-			painter.setBrush(QBrush(QColor(255, 215, 0, 220)));
-            rect.moveCenter( QPoint( w(p->x()), h(p->y()) ) );
-			rect.setWidth( 7 );
-			rect.setHeight( 7 );
-			painter.drawRect( rect );
-		}
-	}
+    if (mHighlight > -1 && mHighlight < int(boundary.size()))
+    {
+        auto& p = boundary.at(mHighlight);
+        //			painter.setBrush(QBrush(QColor(255, 215, 0, 180)));
+        painter.setBrush(QBrush(QColor(255, 215, 0, 220)));
+        rect.moveCenter( QPoint( w(p.x()), h(p.y()) ) );
+        rect.setWidth( 7 );
+        rect.setHeight( 7 );
+        painter.drawRect( rect );
+    }
 }
 
 int Canvas::h(float size) const
@@ -490,27 +477,32 @@ void Canvas::calcCanvasScale()
 	}
 }
 
-int Canvas::pickNodeCheck(const QPoint& pos, const OptimisationRun& data)
+int Canvas::pickNodeCheck(const QPoint& pos, Mesh* mesh)
 {
-	int index = -1;
-	bool r = true;
-	const auto& boundary = data.getBoundary().at(0);
-	int i = 0;
-	QRect rect;
 
-	for (const auto& point : boundary)
-	{
-		r = true;
+    Boundaries& boundary = mesh->getMeshBoundary();
+    if(boundary.size() > 0) {
+        int index = -1;
+        bool r = true;
+        int i = 0;
+        QRect rect;
 
-        rect.moveCenter( QPoint( w(point->x()), h(point->y()) ) );
-		rect.setWidth( 13 );
-		rect.setHeight( 13 );
-		r &= rect.contains( pos );
-		if (r) index = i;
+        for (const auto& point : boundary)
+        {
+            r = true;
 
-		++i;
-	}
-	return index;
+            rect.moveCenter( QPoint( w(point.x()), h(point.y()) ) );
+            rect.setWidth( 13 );
+            rect.setHeight( 13 );
+            r &= rect.contains( pos );
+            if (r) index = i;
+
+            ++i;
+        }
+        return index;
+    } else {
+        return -1;
+    }
 }
 
 const rgba Canvas::getColour(const float& min, const float& value, const float& max) const
@@ -567,7 +559,7 @@ void Canvas::transferFunction(const float& value, rgba& colour) const
 void Canvas::setConstraints(const unsigned int index)
 {
 	//Open new dialogue here to get constraints.
-    ConstraintsDialog diag(*mData, this);
+    ConstraintsDialog diag(*mMesh, this);
 	diag.setConstraint(index);
 	diag.show();
 	diag.exec();
@@ -575,8 +567,8 @@ void Canvas::setConstraints(const unsigned int index)
 
 void Canvas::resetConstraints(const unsigned int index)
 {
-    BoundaryPoint *point = mData->getControlPoint(0, index);
-    point->setBoundCoords(0.0, 0.0, 0.0, 0.0);
+    BoundaryPoint& point = mMesh->getControlPoint(index);
+    point.setBoundCoords(0.0, 0.0, 0.0, 0.0);
 }
 
 //Getters and Setters

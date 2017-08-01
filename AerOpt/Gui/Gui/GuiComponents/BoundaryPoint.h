@@ -25,8 +25,8 @@ public:
     BoundaryPoint(QPointF coords, QRectF bounding_box);
     BoundaryPoint(qreal xcoord, qreal ycoord, qreal bb_x, qreal bb_y, qreal bb_width, qreal bb_height);
 
-    qreal x();
-    qreal y();
+    qreal x() const;
+    qreal y() const;
     void getBoundCoords(qreal *x1,qreal *y1,qreal *x2,qreal *y2);
     void setBoundCoords(qreal x1,qreal y1,qreal x2,qreal y2);
     bool isControlPoint();
@@ -37,7 +37,7 @@ public:
 private:
     QPointF mCoord;
     bool mIsControlPoint = false;
-    QRectF *mBounds;
+    QRectF mBounds;
     uint mSmooth = 0.0;
 
 };

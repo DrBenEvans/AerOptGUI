@@ -8,12 +8,15 @@ namespace Ui {
 class ConfigSimulationDialog;
 }
 
+Q_DECLARE_METATYPE(Profile*)
+
 class ConfigSimulationDialog : public QDialog
 {
     Q_OBJECT
 
+
 public:
-    explicit ConfigSimulationDialog(OptimisationRun& data, QWidget *parent = 0);
+    explicit ConfigSimulationDialog(OptimisationRun& data, std::vector<Profile>* profiles, QWidget *parent = 0);
     ~ConfigSimulationDialog();
 
 public slots:
@@ -32,6 +35,7 @@ private:
 
     Ui::ConfigSimulationDialog *ui;
     OptimisationRun& mData;
+    std::vector<Profile>* mProfiles;
 };
 
 #endif // ConfigSimulationDialog_H

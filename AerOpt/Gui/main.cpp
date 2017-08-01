@@ -9,7 +9,6 @@
 
 #include <iostream>
 #include <QApplication>
-#include <QCoreApplication>
 #include <QDir>
 #include <QDebug>
 
@@ -26,19 +25,17 @@ int main(int argc, char *argv[])
 	//Initialises the QT library application event loops.
     QApplication app(argc, argv);
     app.setWindowIcon( QIcon(":/images/AerOpt.png") );
-    app.setAttribute(Qt::AA_DontUseNativeMenuBar);
+    //app.setAttribute(Qt::AA_DontUseNativeMenuBar);
 
 	//Application main interaction classes.
     DebugOutput& debugOutput = DebugOutput::Instance();
-    OptimisationRun data;
+    qInfo() << " *** Welcome to AerOpt ***";
+    qInfo() << " ***     Have a nice day     ***";
 
 	//Main window setup and show.
     MainWindow w;
     w.setWindowTitle("AerOpt");
     w.show();
-
-    //Debug output
-    qCritical() << "TEST";
 
     //PlotterDialog* plotter = new PlotterDialog(w);
     //plotter->hide();
