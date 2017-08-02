@@ -1,6 +1,42 @@
-    module Toolbox
+module Toolbox
+    
+    type OptimizationVariables
+    
+        integer, dimension(:), allocatable :: engInNodes           ! Engine inlet Nodes
+        integer(kind = 4), dimension(8) :: timestart
+        integer :: Gen
+        double precision :: Precovery
+        double precision, dimension(:,:), allocatable :: modes, coeff, modes2, coeff2       ! Modes and Coefficient derived by the POD method
+        double precision, dimension(:), allocatable :: meanpressure         ! Mean Pressure excluded of Snapshots in POD
+        double precision, dimension(:), allocatable :: pTamb                ! total pressure of free-stream flow of each Nest
+        double precision, dimension(:,:), allocatable :: pressure           ! Static Pressure at every mesh node for each Nest
+        double precision, dimension(:,:), allocatable :: MaLocal            ! Local Mach number at every mesh node for each Nest
+        double precision, dimension(:), allocatable :: Fi                   ! Vector with all current Fitness values
+        double precision, dimension(:), allocatable :: converged            ! Vector flagging converged Snapshots
+        double precision, dimension(:), allocatable :: Precoutput           ! Vector with all current total pressure values
+        double precision, dimension(:), allocatable :: PolCoeff, PolCoeff2  ! Polynomial Coefficients for POD RBF interpolation
+        double precision, dimension(:,:), allocatable :: Weights, Weights2  ! Weights for POD RBF interpolation
+        double precision, dimension(:,:), allocatable :: Nests_Move, Nests              ! Nest regenerated with each generation
+        logical :: InitConv                                                 ! Initial Convergence Check - TRUE: yes 
+        
+    end type OptimizationVariables
+    
+    type(OptimizationVariables) :: OV
+    
+    
+    type CreateSnapshotsVariables
+        
+        double precision :: rn                                            ! Counts random numbers
+        double precision, dimension(:,:), allocatable :: MxDisp           ! Matrix with min/max Displacements
+        double precision, dimension(:,:), allocatable :: MxDisp_Move      ! Matrix with only moving min/max Displacements
+        integer, dimension(:), allocatable :: cond                          ! Identifies zero/non-zero values
+        double precision, dimension(:,:), allocatable :: Snapshots      ! Matrix containing the initial Nests
+        
+    end type CreateSnapshotsVariables
+    
+    type(CreateSnapshotsVariables) :: CS
 
-    contains
+contains
 
     function linSpacing(max, min, NoInt)
     !! Objective: Generate a uniform, linear Distribution of NoInt values in the (max, min) Domain
@@ -400,9 +436,12 @@
     elseif (i < 1000) then
         allocate(character(len=3) :: istr)
         write( istr, '(I3)' )  i
-    else
+    elseif (i < 10000) then
         allocate(character(len=4) :: istr)
         write( istr, '(I4)' )  i
+    else
+        allocate(character(len=5) :: istr)
+        write( istr, '(I5)' )  i        
     end if
 
     end subroutine DetermineStrLen
