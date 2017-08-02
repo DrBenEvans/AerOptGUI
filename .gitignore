@@ -1,0 +1,7 @@
+AerOpt/FLITE
+*.o
+*.mod
+*.Debug
+*.Release
+Makefile
+build/

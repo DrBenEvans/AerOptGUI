@@ -55,7 +55,7 @@ public:
      * @brief setProfile
      * @param Profile object to use
      */
-    void setProfile(Profile* profile);
+    void setProfile(QSharedPointer<Profile> profile);
     /**
 	 * @brief mesh
 	 * @return True if profile is set.
@@ -186,6 +186,7 @@ public:
      * @param returns the method index as defined by ordering in OptimiserDialog.ui.
      */
     Enum::OptMethod getOptimisationMethod() const;
+    QSharedPointer<Mesh> newMesh();
     int getNoTop() const;
     void setNoTop(int noTop);
 
@@ -193,12 +194,13 @@ public:
     void setLabel(QString label);
 
     const std::list<std::pair<float,float>> getProfile() const;
-    Profile*  getProfileObj() const;
+    QSharedPointer<Profile> getProfileObj() const;
 
-    Mesh* getMesh();
+    QSharedPointer<Mesh> getMesh();
+    void finishConfigure();
 
 private:
-    Profile* mProfile;
+    QSharedPointer<Profile> mProfile;
 
     QString mLabel;
 
@@ -218,7 +220,7 @@ private:
 	int mNoGens;
     int mNoTop;
 
-    Mesh* mMesh;
+    QSharedPointer<Mesh> mMesh;
 
 };
 

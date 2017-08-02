@@ -16,7 +16,7 @@ class MeshDialog : public QDialog
 	Q_OBJECT
 
 public:
-    explicit MeshDialog(Mesh& mesh, QWidget *parent = 0);
+    explicit MeshDialog(QSharedPointer<Mesh> mesh, QWidget *parent = 0);
 	~MeshDialog();
 
 	void accept();
@@ -26,7 +26,7 @@ private slots:
 
 private:
 	Ui::MeshDialog *ui;
-    Mesh& mMesh;
+    QSharedPointer<Mesh> mMesh;
 };
 
 #endif // MESHDIALOG_H

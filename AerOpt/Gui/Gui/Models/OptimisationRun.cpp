@@ -41,6 +41,10 @@ void OptimisationRun::clearProject()
 
 }
 
+void OptimisationRun::finishConfigure() {
+    mMesh = QSharedPointer<Mesh>(new Mesh(getProfile()));
+}
+
 //Profile Attributes
 const std::list<std::pair<float,float>>  OptimisationRun::getProfile() const {
    if(mProfile) {
@@ -56,11 +60,11 @@ const std::list<std::pair<float,float>>  OptimisationRun::getProfile() const {
    }
 }
 
-void OptimisationRun::setProfile(Profile* profile) {
+void OptimisationRun::setProfile(QSharedPointer<Profile> profile) {
     mProfile = profile;
 }
 
-Profile*  OptimisationRun::getProfileObj() const {
+QSharedPointer<Profile>  OptimisationRun::getProfileObj() const {
     return mProfile;
 }
 
@@ -82,7 +86,7 @@ void OptimisationRun::setNoTop(int noTop)
 }
 
 //Getters and Setters
-Mesh* OptimisationRun::getMesh()
+QSharedPointer<Mesh> OptimisationRun::getMesh()
 {
     return mMesh;
 }

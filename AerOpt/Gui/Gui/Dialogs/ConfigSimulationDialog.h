@@ -3,12 +3,11 @@
 
 #include <QDialog>
 #include "OptimisationRun.h"
+#include "ProfileLibrary.h"
 
 namespace Ui {
 class ConfigSimulationDialog;
 }
-
-Q_DECLARE_METATYPE(Profile*)
 
 class ConfigSimulationDialog : public QDialog
 {
@@ -16,7 +15,7 @@ class ConfigSimulationDialog : public QDialog
 
 
 public:
-    explicit ConfigSimulationDialog(OptimisationRun& data, std::vector<Profile>* profiles, QWidget *parent = 0);
+    explicit ConfigSimulationDialog(OptimisationRun& data, ProfileLibrary& profileLibrary, QWidget *parent = 0);
     ~ConfigSimulationDialog();
 
 public slots:
@@ -25,6 +24,8 @@ public slots:
 
 private slots:
     void on_optmethod_currentIndexChanged(int index);
+
+    void on_pushButton_clicked();
 
 private:
     int objFuncEnumToIndex(Enum::ObjFunc enumeration);
@@ -35,7 +36,7 @@ private:
 
     Ui::ConfigSimulationDialog *ui;
     OptimisationRun& mData;
-    std::vector<Profile>* mProfiles;
+    ProfileLibrary& mProfileLibrary;
 };
 
 #endif // ConfigSimulationDialog_H

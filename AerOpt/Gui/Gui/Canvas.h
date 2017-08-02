@@ -37,8 +37,8 @@ public:
 	 */
     explicit Canvas(QWidget *dialog);
 	~Canvas();
-    void setMesh(Mesh& mesh);
-    void setProfile(Profile& profile);
+    void setProfile(QSharedPointer<Profile> profile);
+    void setMesh(QSharedPointer<Mesh> mesh);
 
 protected:
 	/**
@@ -145,7 +145,7 @@ private:
      * @param data Read only reference to the OptimisationRun class.
 	 * @return The index of the node the mouse curser is over.
 	 */
-    int pickNodeCheck(const QPoint& pos, Mesh *mesh);
+    int pickNodeCheck(const QPoint& pos, QSharedPointer<Mesh> mesh);
 	/**
 	 * @brief getColour
 	 * @param min Range minimum.
@@ -191,9 +191,9 @@ private:
 
 	std::vector<std::tuple<float,float,float,float>> colourmap;
 
-    Mesh* mMesh;
-    Mesh* mPrevMesh;
-    Profile* mProfile;
+    QSharedPointer<Mesh> mMesh;
+    QSharedPointer<Mesh> mPrevMesh;
+    QSharedPointer<Profile> mProfile;
 
 signals:
 

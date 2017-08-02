@@ -3,11 +3,13 @@
 
 #include <list>
 #include <QString>
+#include <QObject>
+#include <QSharedPointer>
 
-class Profile
-{
+class Profile : public QObject {
+    Q_OBJECT
 public:
-    Profile(QString filePath);
+    Profile(QObject *parent, QString filePath);
     const std::list<std::pair<float,float>> getProfile() const;
     QString getDisplayString();
 
@@ -41,5 +43,8 @@ private:
     std::list<std::pair<float,float>> mProfile;
     QString mFilePath;
 };
+
+typedef QSharedPointer<Profile> ProfileSharedPointer;
+Q_DECLARE_METATYPE(ProfileSharedPointer)
 
 #endif // PROFILE_H

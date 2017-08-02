@@ -55,12 +55,13 @@ Canvas::Canvas(QWidget *parent) : mChordLength(1.0),
 	calcCanvasScale();
 }
 
-void Canvas::setMesh(Mesh& mesh) {
-    mMesh = &mesh;
+void Canvas::setMesh(QSharedPointer<Mesh> mesh) {
+    mMesh = mesh;
+    update();
 }
 
-void Canvas::setProfile(Profile& profile) {
-    mProfile = &profile;
+void Canvas::setProfile(QSharedPointer<Profile> profile) {
+    mProfile = profile;
 }
 
 Canvas::~Canvas()
@@ -477,7 +478,7 @@ void Canvas::calcCanvasScale()
 	}
 }
 
-int Canvas::pickNodeCheck(const QPoint& pos, Mesh* mesh)
+int Canvas::pickNodeCheck(const QPoint& pos, QSharedPointer<Mesh> mesh)
 {
 
     Boundaries& boundary = mesh->getMeshBoundary();

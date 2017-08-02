@@ -37,9 +37,5 @@ int main(int argc, char *argv[])
     w.setWindowTitle("AerOpt");
     w.show();
 
-    //PlotterDialog* plotter = new PlotterDialog(w);
-    //plotter->hide();
-    //controller.mPlotter = plotter
-
     return app.exec();
 }

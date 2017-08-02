@@ -1,13 +1,13 @@
 #include <QDebug>
 #include "ConfigSimulationDialog.h"
 #include "ui_ConfigSimulationDialog.h"
-#include "OptimisationRun.h"
+#include <QFileDialog>
 
-ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, std::vector<Profile>* profiles, QWidget *parent) :
+ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, ProfileLibrary &profileLibrary, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConfigSimulationDialog),
     mData(data),
-    mProfiles(profiles)
+    mProfileLibrary(profileLibrary)
 {
     ui->setupUi(this);
 
@@ -15,17 +15,7 @@ ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, std::vecto
     ui->label->setText(mData.getLabel());
 
     // profiles QComboBox setup
-    ui->profile->addItem(QString("Add New..."));
-    for(Profile& profile: *mProfiles) {
-        ui->profile->addItem(profile.getDisplayString(), QVariant::fromValue(&profile));
-    }
-
-    // set profile to top item
-    if(mProfiles->size() > 1) {
-        ui->profile->setCurrentIndex(1);
-    } else {
-        ui->profile->setCurrentIndex(0);
-    }
+    ui->profile->setModel(&profileLibrary);
 
     // optimiser setup
     ui->objfunc->setCurrentIndex(this->objFuncEnumToIndex(mData.objFunc()));
@@ -65,7 +55,7 @@ void ConfigSimulationDialog::accept()
     mData.setFreeTemp(ui->temp->value());
 
     // profile setup
-    Profile* profile = ui->profile->currentData().value<Profile*>();
+    QSharedPointer<Profile> profile = ui->profile->currentData(Qt::UserRole).value<QSharedPointer<Profile>>();
     mData.setProfile(profile);
 
     QDialog::accept();
@@ -162,4 +152,40 @@ void ConfigSimulationDialog::reject()
 {
     QDialog::reject();
     //Do Nothing!
+}
+
+void ConfigSimulationDialog::on_pushButton_clicked()
+{
+    QString fileName;
+    QStringList fileNames;
+
+#ifdef Q_OS_UNIX
+    // unix load file
+    fileNames.append(
+                QFileDialog::getOpenFileName(this, "Select Profile File", QDir::homePath()+"/Documents/Projects/AerOptProject/", "Profile Files (*.prf)")
+                );
+#endif
+#ifdef Q_OS_WIN32
+    // do windows stuff here
+    fileNames.append(
+                QFileDialog::getOpenFileName(this, "Select Profile File", QDir::homePath(), "Profile Files (*.prf)")
+                );
+#endif
+
+    if (fileNames.size() > 0)
+    {
+        for (const QString &f: fileNames)
+        {
+            fileName = f;
+        }
+
+        qDebug() << "File selected: " << fileName;
+
+        mProfileLibrary.addProfileFromFilePath(fileName);
+    }
+    else
+    {
+        //Set text Not OK here!
+        qWarning() << "Profile data not imported!";
+    }
 }

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "OptimisationRun.h"
+#include "ProfileLibrary.h"
 
 namespace Ui {
 class MainWindow;
@@ -22,9 +23,11 @@ private slots:
     void on_actionRunMesher_triggered();
 
 private:
+    OptimisationRun& getCurrentOptimisation();
+
     Ui::MainWindow *ui;
     std::vector<OptimisationRun> mOptimisations;
-    std::vector<Profile> mProfiles;
+    ProfileLibrary mProfileLibrary;
 };
 
 #endif // MAINWINDOW_H

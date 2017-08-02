@@ -3,7 +3,7 @@
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
-MeshDialog::MeshDialog(Mesh& mesh, QWidget* parent) :
+MeshDialog::MeshDialog(QSharedPointer<Mesh> mesh, QWidget* parent) :
 	QDialog(parent),
 	ui(new Ui::MeshDialog),
     mMesh(mesh)
@@ -14,7 +14,7 @@ MeshDialog::MeshDialog(Mesh& mesh, QWidget* parent) :
     ui->density->addItem(QString("Medium"), QVariant::fromValue(Enum::Mesh::MEDIUM));
     ui->density->addItem(QString("Fine"), QVariant::fromValue(Enum::Mesh::FINE));
 
-    switch (mMesh.getMeshDensity())
+    switch (mMesh->getMeshDensity())
 	{
 		case Enum::Mesh::COURSE :
             ui->density->setCurrentIndex(0);
@@ -27,9 +27,9 @@ MeshDialog::MeshDialog(Mesh& mesh, QWidget* parent) :
             break;
 	}
 
-    ui->viscous->setChecked(mMesh.getBoundaryLayerFlag());
-    ui->layers->setValue(mMesh.getNumBoundaryLayers());
-    ui->thickness->setValue(mMesh.getBoundaryLayerThickness());
+    ui->viscous->setChecked(mMesh->getBoundaryLayerFlag());
+    ui->layers->setValue(mMesh->getNumBoundaryLayers());
+    ui->thickness->setValue(mMesh->getBoundaryLayerThickness());
 }
 
 MeshDialog::~MeshDialog()
@@ -39,14 +39,14 @@ MeshDialog::~MeshDialog()
 
 void MeshDialog::accept()
 {
-    mMesh.setMeshDensity(ui->density->currentData().value<Enum::Mesh>());
+    mMesh->setMeshDensity(ui->density->currentData().value<Enum::Mesh>());
 
     bool hasBoundaryLayer = ui->viscous->isChecked();
-    mMesh.setBoundaryLayerFlag(hasBoundaryLayer);
+    mMesh->setBoundaryLayerFlag(hasBoundaryLayer);
 
     if(hasBoundaryLayer) {
-        mMesh.setNumBoundaryLayers(ui->layers->value());
-        mMesh.setBoundaryLayerThickness(ui->thickness->value());
+        mMesh->setNumBoundaryLayers(ui->layers->value());
+        mMesh->setBoundaryLayerThickness(ui->thickness->value());
     }
 
 	QDialog::accept();

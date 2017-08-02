@@ -3,7 +3,9 @@
 #include <QDebug>
 #include "DebugOutput.h"
 
-Profile::Profile(QString filePath) :  mFilePath(filePath)
+Profile::Profile(QObject *parent, QString filePath) :
+    QObject(parent),
+    mFilePath(filePath)
 {
     bool r = true;
     float x, y;

@@ -209,7 +209,7 @@ void AppController::runAerOpt()
 	r &= createAerOptNodeFile(AerOptNodeFile.toStdString(), mData);
 
 	sGenNo = 0;
-    Mesh* mesh = mData.getMesh();
+    QSharedPointer<Mesh> mesh = mData.getMesh();
     mesh->resetBoundary();
 
 	//then run aeropt
@@ -322,9 +322,9 @@ void AppController::readDirectory(const QString& path)
 
 	if (c)
 	{
-        Mesh* pMesh = mData.getMesh();
-        pMesh->loadMeshProfile(mesh.toStdString());
-        pMesh->loadMesh(mesh.toStdString());
+        QSharedPointer<Mesh> pMesh = mData.getMesh();
+        pMesh->loadMeshProfile(mesh);
+        pMesh->loadMesh(mesh);
         pMesh->loadResults(results.toStdString());
 		readFitness(fit);
 
@@ -486,7 +486,7 @@ bool AppController::createAerOptInFile(const std::string& filePath, Optimisation
 	std::ofstream outfile(filePath, std::ofstream::out);
 	r &= outfile.is_open();
 
-    Mesh* mesh = data.getMesh();
+    QSharedPointer<Mesh> mesh = data.getMesh();
     auto& cpoints = mesh->getControlPoints();//<< list of uints identifying
 	r &= cpoints.size() > 0;
 
@@ -619,7 +619,7 @@ bool AppController::createAerOptNodeFile(const std::string& filePath, Optimisati
 		std::string yrange;
 		std::string myrange;
 
-        Mesh* mesh = data.getMesh();
+        QSharedPointer<Mesh> mesh = data.getMesh();
         auto& cpoints = mesh->getControlPoints();
 		for (auto& i : cpoints)
 		{
@@ -747,7 +747,7 @@ bool AppController::saveCurrentProfile(const QString& path, OptimisationRun& dat
 	std::ofstream outfile(path.toStdString(), std::ofstream::out);
 	r &= outfile.is_open();
 
-    Mesh* mesh = data.getMesh();
+    QSharedPointer<Mesh> mesh = data.getMesh();
     auto& currbconn = mesh->getBConnects();
 	const uint size = currbconn.size();
 

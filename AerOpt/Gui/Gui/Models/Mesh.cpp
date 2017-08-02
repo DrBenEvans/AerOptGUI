@@ -3,17 +3,19 @@
 #include <cmath>
 #include <QDebug>
 
-Mesh::Mesh(const std::list<std::pair<float,float>> profilePoints) :
+Mesh::Mesh(ProfilePoints profilePoints) :
     mMeshDensity(Enum::Mesh::COURSE),
     mProfilePoints(profilePoints)
 {
+    mMeshProcess.setParent(this);
+
     // Boundary layer setup
     mHasBoundaryLayer = false;
     mNumBoundaryLayers = 10;
     mBoundaryLayerThickness = 0.001;
 }
 
-void Mesh::runMesher(QWidget *parent, QDir workDir) {
+void Mesh::runMesher(QDir workDir) {
 
     bool r = true;
 
@@ -22,7 +24,6 @@ void Mesh::runMesher(QWidget *parent, QDir workDir) {
     QString meshInFile;
     QString meshBacFile;
     QString meshGeoFile;
-    QString meshDatFile;
 
     QString mesherPath = "/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/FLITE/Mesher/MeshGenerator";
 
@@ -35,13 +36,13 @@ void Mesh::runMesher(QWidget *parent, QDir workDir) {
     meshGeoFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".geo").absolutePath();
     meshGeoFile = QDir::toNativeSeparators(meshGeoFile);
 
-    meshDatFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".dat").absolutePath();
-    meshDatFile = QDir::toNativeSeparators(meshDatFile);
+    mMeshDatFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".dat").absolutePath();
+    mMeshDatFile = QDir::toNativeSeparators(mMeshDatFile);
 
     r &= createInputFile(meshInFile.toStdString(),
                          meshBacFile.toStdString(),
                          meshGeoFile.toStdString(),
-                         meshDatFile.toStdString());
+                         mMeshDatFile.toStdString());
     r &= QFile::exists(meshInFile);
 
     r &= createBacFile(meshBacFile.toStdString());
@@ -52,11 +53,11 @@ void Mesh::runMesher(QWidget *parent, QDir workDir) {
 
     if (r)
     {
-
-        mMeshProcess.setParent(parent);
         mMeshProcess.setWorkingDirectory( mMeshPath.absolutePath() );
         mMeshProcess.setStandardInputFile( meshInFile );
         mMeshProcess.start( mesherPath );
+        mMeshProcess.waitForFinished();
+        meshingFinished(mMeshProcess.exitCode(),mMeshProcess.exitStatus());
     }
 }
 
@@ -210,13 +211,13 @@ bool Mesh::createGeoFile(const std::string& meshGeoFile)
     return r;
 }
 
-bool Mesh::loadMeshProfile(const std::string &filePath)
+bool Mesh::loadMeshProfile(const QString &filePath)
 {
     bool r = true;
     int type = 1;
     std::string word1 = "";
 
-    std::ifstream infile(filePath, std::ifstream::in);
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -248,7 +249,7 @@ bool Mesh::loadMeshProfile(const std::string &filePath)
     return r;
 }
 
-bool Mesh::loadMeshProfileType1(const std::string& filePath)
+bool Mesh::loadMeshProfileType1(const QString& filePath)
 {
     bool r = true;
 
@@ -257,7 +258,7 @@ bool Mesh::loadMeshProfileType1(const std::string& filePath)
     std::list<std::pair<float,float>> pPoints;
 
     //Read boundary indicies and connectivity
-    std::ifstream infile(filePath, std::ifstream::in);
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -290,7 +291,7 @@ bool Mesh::loadMeshProfileType1(const std::string& filePath)
     infile.close();
 
     //Read boundary points from indecies
-    infile.open(filePath, std::ifstream::in);
+    infile.open(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -341,7 +342,7 @@ void Mesh::addBConnectivity(const uint& a, const uint& b)
     mBoundConnects.emplace_back( a, b );
 }
 
-bool Mesh::loadMeshProfileType2(const std::string& filePath)
+bool Mesh::loadMeshProfileType2(const QString &filePath)
 {
     bool r = true;
 
@@ -350,7 +351,7 @@ bool Mesh::loadMeshProfileType2(const std::string& filePath)
     std::list<std::pair<float,float>> pPoints;
 
     //Read boundary indicies and connectivity
-    std::ifstream infile(filePath, std::ifstream::in);
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -383,7 +384,7 @@ bool Mesh::loadMeshProfileType2(const std::string& filePath)
     infile.close();
 
     //Read boundary points from indecies
-    infile.open(filePath, std::ifstream::in);
+    infile.open(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -427,13 +428,13 @@ bool Mesh::loadMeshProfileType2(const std::string& filePath)
     return r;
 }
 
-bool Mesh::loadMesh(const std::string& filePath)
+bool Mesh::loadMesh(const QString& filePath)
 {
     bool r = true;
     int type = 1;
     std::string word1 = "";
 
-    std::ifstream infile(filePath, std::ifstream::in);
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -465,13 +466,13 @@ bool Mesh::loadMesh(const std::string& filePath)
     return r;
 }
 
-bool Mesh::loadMeshType1(const std::string& filePath)
+bool Mesh::loadMeshType1(const QString& filePath)
 {
     bool r = true;
 
     //Read mesh connectivity
     std::vector<std::tuple<uint,uint,uint>> mConnectivity;
-    std::ifstream infile(filePath, std::ifstream::in);
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -506,7 +507,7 @@ bool Mesh::loadMeshType1(const std::string& filePath)
 
     //Read mesh points
     std::vector<std::pair<float,float>> mPoints;
-    infile.open(filePath, std::ifstream::in);
+    infile.open(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -541,13 +542,13 @@ bool Mesh::loadMeshType1(const std::string& filePath)
     return r;
 }
 
-bool Mesh::loadMeshType2(const std::string& filePath)
+bool Mesh::loadMeshType2(const QString &filePath)
 {
     bool r = true;
 
     //Read mesh connectivity
     std::vector<std::tuple<uint,uint,uint>> mConnectivity;
-    std::ifstream infile(filePath, std::ifstream::in);
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -582,7 +583,7 @@ bool Mesh::loadMeshType2(const std::string& filePath)
 
     //Read mesh points
     std::vector<std::pair<float,float>> mPoints;
-    infile.open(filePath, std::ifstream::in);
+    infile.open(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {
@@ -709,19 +710,14 @@ void Mesh::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
         qInfo() << "Process finished normally";
 
         //Set and/or check existance of output data file
-
-        QString meshDatFile;
-
-        meshDatFile = QDir::toNativeSeparators(meshDatFile);
-
         r &= mMeshProcess.exitCode() == 0;
-        r &= QFile::exists(meshDatFile);
+        r &= QFile::exists(mMeshDatFile);
 
         //Now load points into data object, ready for canvas to render.
         if (r)
         {
-            //TODO r &= loadMeshProfile(sGenNo, meshDatFile.toStdString());
-            r &= loadMesh(meshDatFile.toStdString());
+            r &= loadMeshProfile(mMeshDatFile);
+            r &= loadMesh(mMeshDatFile);
         }
 
         //When done set menu to 'Yes'
@@ -733,12 +729,16 @@ void Mesh::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
         {
             qWarning() << "Mesh not created!";
         }
-        //TODO mCanvas.update();
+
+        emit meshUpdate();
     }
     else
     {
         qCritical() << "Process finished abnormally with exit code: " << exitCode;
-        //Definately set Y/N in treeview here!!
+        qCritical() << "Standard Ouput";
+        writeStdOutToLog();
+        qCritical() << "Standard Error";
+        writeStdErrToLog();
     }
 }
 

@@ -6,20 +6,14 @@
 #include <QCoreApplication>
 #include <QDir>
 #include "Enumerations.h"
+#include "CustomTypes.h"
 #include "BoundaryPoint.h"
 
-//Abbreviate long type names
-typedef std::vector<std::tuple<uint,uint,uint>> MeshConnectivities;
-typedef std::vector<std::pair<uint,uint>> BConnectivities;
-typedef std::vector<BoundaryPoint> Boundaries;
-typedef std::vector<std::pair<float,float>> MeshPoints;
-typedef std::vector<std::tuple<float,float,float,float,float>> MeshResults;
-
-
-class Mesh
+class Mesh : public QObject
 {
+    Q_OBJECT
 public:
-    Mesh(const std::list<std::pair<float,float>> profilePoints);
+    Mesh(ProfilePoints profilePoints);
 
     // Getters
     bool getBoundaryLayerFlag();
@@ -63,7 +57,7 @@ public:
      * @brief runMesher
      * run the mesher
      */
-    void runMesher(QWidget *parent, QDir workDir);
+    void runMesher(QDir workDir);
     /**
      * @brief loadResults
      * loads the results
@@ -73,12 +67,12 @@ public:
      * @brief loadMesh
      * loads the mesh
      */
-    bool loadMesh(const std::string& filePath);
+    bool loadMesh(const QString &filePath);
     /**
      * @brief loadMeshProfile
      * Loads the mesh profile
      */
-    bool loadMeshProfile(const std::string &filePath);
+    bool loadMeshProfile(const QString &filePath);
     /**
      * @brief clearMeshConnectivities
      * Clears the list of mesh connectivites.
@@ -191,38 +185,44 @@ public:
 
     Enum::Mesh getMeshDensity() const;
 
+signals:
+    void meshUpdate();
+
+private slots:
+    void meshingFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
 private:
     bool createInputFile(const std::string& meshInFile,
                          const std::string& meshBacFile,
                          const std::string& meshGeoFile,
-                         const std::string& meshDatFile);
+                         const std::string& mMeshDatFile);
     bool createBacFile(const std::string& meshBacFile);
     bool createGeoFile(const std::string& meshGeoFile);
-    bool loadMeshProfileType1(const std::string& filePath);
-    bool loadMeshProfileType2(const std::string& filePath);
+    bool loadMeshProfileType1(const QString& filePath);
+    bool loadMeshProfileType2(const QString& filePath);
     void writeStdOutToLog();
     void writeStdErrToLog();
-    void meshingFinished(int exitCode, QProcess::ExitStatus exitStatus);
     /**
      * @brief loadMeshType1
      * @param filePath
      * @param data
      * @return
      */
-    bool loadMeshType1(const std::string& filePath);
+    bool loadMeshType1(const QString& filePath);
     /**
      * @brief loadMeshType2
      * @param filePath
      * @param data
      * @return
      */
-    bool loadMeshType2(const std::string& filePath);
+    bool loadMeshType2(const QString& filePath);
 
     // Mesher attributes
     QProcess mMeshProcess;
     QDir mMeshPath;
     Enum::Mesh mMeshDensity;
-    const std::list<std::pair<float,float>> mProfilePoints;
+    QString mMeshDatFile;
+    ProfilePoints mProfilePoints;
 
     //Mesh Attributes
     Boundaries mMeshProfile;

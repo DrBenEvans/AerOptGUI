@@ -42,4 +42,6 @@ private:
 
 };
 
+typedef std::vector<BoundaryPoint> Boundaries;
+
 #endif // BOUNDARY_POINT_H
