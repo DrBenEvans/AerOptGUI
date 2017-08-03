@@ -240,8 +240,6 @@
      </sizepolicy>
     </property>
    </widget>
-   <zorder></zorder>
-   <zorder></zorder>
   </widget>
   <widget class="QGroupBox" name="projOptGroup">
    <property name="geometry">
