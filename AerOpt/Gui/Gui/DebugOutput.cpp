@@ -11,7 +11,7 @@
 
 DebugOutput* DebugOutput::sDebug = nullptr;
 
-void myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void myMessageOutput(QtMsgType type, const QMessageLogContext &/*context*/, const QString &msg)
 {
 	switch (type) {
     case QtInfoMsg:

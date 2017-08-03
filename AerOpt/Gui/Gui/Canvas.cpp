@@ -16,16 +16,16 @@
 #include "ConstraintsDialog.h"
 #include "Arrow.h"
 
-Canvas::Canvas(QWidget *parent) : mChordLength(1.0),
-									mWidthMin(-0.75),
-									mWidthMax(0.75),
-									mHeightMin(-0.5),
-                                    mHeightMax(0.5),
-                                    QWidget(parent),
-                                    mMesh(nullptr),
-                                    mProfile(nullptr)
+Canvas::Canvas(QWidget *parent) :  QWidget(parent),
+    mChordLength(1.0),
+    mWidthMin(-0.75),
+    mWidthMax(0.75),
+    mHeightMin(-0.5),
+    mHeightMax(0.5),
+    mMesh(nullptr),
+    mProfile(nullptr)
 {
-	colourmap.emplace_back( 0,         0,        0,        0.423499   );
+    colourmap.emplace_back( 0,         0,        0,        0.423499   );
 	colourmap.emplace_back( 0.0668895, 0,        0.119341, 0.529244   );
 	colourmap.emplace_back( 0.133779,  0,        0.238697, 0.634974   );
 	colourmap.emplace_back( 0.200669,  0,        0.346853, 0.687877   );
@@ -83,7 +83,7 @@ void Canvas::paintEvent(QPaintEvent *event)
 	drawAxis(painter);
 }
 
-bool Canvas::eventFilter(QObject* object, QEvent* event)
+bool Canvas::eventFilter(QObject* /*object*/, QEvent* event)
 {
     //TODO - remove me
     return false;

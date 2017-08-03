@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     //app.setAttribute(Qt::AA_DontUseNativeMenuBar);
 
 	//Application main interaction classes.
-    DebugOutput& debugOutput = DebugOutput::Instance();
+    DebugOutput::Instance();
     qInfo() << " *** Welcome to AerOpt ***";
     qInfo() << " ***     Have a nice day     ***";
 

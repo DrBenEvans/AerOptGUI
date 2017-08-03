@@ -42,8 +42,8 @@ private:
 	void mesh(QObject *parent);
 	void boundary(QObject *parent);
 	void optimiser(QObject *parent);
-	void runtime(QObject *parent);
-	void other(QObject *parent);
+    void runtime(QObject *);
+    void other(QObject *parent);
 	void node(QObject *parent);
 
 

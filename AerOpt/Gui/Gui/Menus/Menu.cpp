@@ -129,7 +129,7 @@ void Menu::runtime(QObject *parent)
 	QObject::connect(showObject, SIGNAL( triggered() ), this->parent(), SLOT( showGraph() ));
 }
 
-void Menu::other(QObject *parent)
+void Menu::other(QObject */*parent*/)
 {
 
 }

@@ -5,3 +5,6 @@ AerOpt/FLITE
 *.Release
 Makefile
 build/
+build-*-Debug/
+build-*-Release/
+GeneticGui.pro.user
