@@ -6,8 +6,8 @@
 **
 **********************************************/
 
-#ifndef TREEVIEW_H
-#define TREEVIEW_H
+#ifndef APPCONTROLLER_H
+#define APPCONTROLLER_H
 
 #include <QFileSystemWatcher>
 #include <QDialog>
@@ -180,4 +180,4 @@ private:
     OptimisationRun& mData;
 };
 
-#endif // TREEVIEW_H
+#endif // APPCONTROLLER_H
