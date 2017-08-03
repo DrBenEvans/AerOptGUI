@@ -30,7 +30,7 @@ comment :
 ifort : COMP = ifort
 ifort : FLAGS = -r8 -O3 -static -static-intel -mkl -I$(MKL_INC)/em64t/lp64 -I$(MKL_INC)/include
 ifort : $(OBJECTS)
-	$(COMP) $(FLAGS) $(OBJECTS) -o $(TARGET) -L$(MKL_LIB) $(MKL_LIB)/lmkl_blas95_lp64 -Wl,--start-group -lmkl_intel_lp64 -lmkl_core -lmkl_sequential -Wl,--end-group -lpthread -lm
+	$(COMP) $(FLAGS) $(OBJECTS) -o $(TARGET) -L$(MKL_LIB) -Wl, -mkl -lpthread -lm
 
 gfort : COMP = gfortran
 gfort : FLAGS = -fdefault-real-8 -O3 -static -static-libgfortran
