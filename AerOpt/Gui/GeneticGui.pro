@@ -50,43 +50,41 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     Gui/DebugOutput.cpp \
-    Gui/Menus/Menu.cpp \
-    Gui/Canvas.cpp \
     Gui/Dialogs/ConstraintsDialog.cpp \
     Gui/Dialogs/MeshDialog.cpp \
     Gui/Plotter/qcustomplot.cpp \
-    Gui/Plotter/PlotterDialog.cpp \
     Gui/GuiComponents/Arrow.cpp \
     Gui/GuiComponents/BoundaryPoint.cpp \
+    Gui/GuiComponents/Canvas.cpp \
     Gui/Dialogs/ConfigSimulationDialog.cpp \
     Gui/AppController.cpp \
     Gui/Dialogs/OptimisationManagerDialog.cpp \
     Gui/MainWindow.cpp \
-    Gui/Models/OptimisationRun.cpp \
-    Gui/Models/Profile.cpp \
-    Gui/Models/Mesh.cpp \
+    Core/Mesh.cpp \
+    Core/OptimisationRun.cpp \
     Core/ProfileModel.cpp \
+    Core/Profile.cpp \
+    Gui/Dialogs/PlotterDialog.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
-    Gui/Menus/Menu.h \
-    Gui/Canvas.h \
     Gui/Dialogs/ConstraintsDialog.h \
-    Gui/Enumerations.h \
     Gui/Dialogs/MeshDialog.h \
     Gui/Plotter/qcustomplot.h \
-    Gui/Plotter/PlotterDialog.h \
     Gui/GuiComponents/Arrow.h \
     Gui/GuiComponents/BoundaryPoint.h \
+    Gui/GuiComponents/Canvas.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
     Gui/AppController.h \
     Gui/Dialogs/OptimisationManagerDialog.h \
     Gui/MainWindow.h \
-    Gui/Models/OptimisationRun.h \
-    Gui/Models/Profile.h \
-    Gui/Models/Mesh.h \
-    Gui/CustomTypes.h \
+    Core/Mesh.h \
+    Core/OptimisationRun.h \
     Core/ProfileModel.h \
+    Core/Profile.h \
+    Core/Enumerations.h \
+    Core/CustomTypes.h \
+    Gui/Dialogs/PlotterDialog.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
@@ -100,10 +98,9 @@ FORMS    += \
 INCLUDEPATH += \
     Gui \
     Gui/Dialogs \
-    Gui/Menus \
     Gui/GuiComponents \
-    Gui/Models \
-    Gui/Plotter
+    Gui/Plotter \
+    Core
 
 RESOURCES += \
     Resourses.qrc

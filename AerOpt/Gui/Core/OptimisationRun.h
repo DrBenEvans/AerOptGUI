@@ -22,16 +22,14 @@
 
 /**
  * @brief The OptimisationRun class
- * This class stores all aspects of the
- * project data accessed from the treeview
- * and canvas classes.
+ * This class stores project data
  */
 class OptimisationRun
 {
 public:
 	/**
      * @brief OptimisationRun
-	 * Constructor and distructor for
+     * Constructor and destructor for
      * the OptimisationRun class.
 	 */
     OptimisationRun();

@@ -37,19 +37,6 @@ namespace Enum
         METHODNOTSET
     };
 
-	enum TreeType
-	{
-		DEFAULT = 1000,
-		ROOT,
-		DATA,
-		MESH,
-		FUNCTION,
-		BOUNDARY,
-		OPTIMISER,
-		RUNTIME,
-		NODE
-	};
-
 	enum Mesh
 	{
 		COURSE,
