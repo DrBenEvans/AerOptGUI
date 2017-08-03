@@ -40,11 +40,6 @@ public:
 
 public slots:
 	void clearProject();
-	/**
-	 * @brief loadProject
-	 * Sets the project working directory from user input.
-	 */
-	void loadProject();
 
 	//Sub menus
 	/**

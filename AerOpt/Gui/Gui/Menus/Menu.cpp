@@ -70,7 +70,7 @@ void Menu::root(QObject *parent)
 	mActions.append(loadObject);
 	mActions.append(clear);
 
-	QObject::connect(loadObject, SIGNAL( triggered() ), this->parent(), SLOT( loadProject() ));
+    //QObject::connect(loadObject, SIGNAL( triggered() ), this->parent(), SLOT( loadProject() ));
 	QObject::connect(clear, SIGNAL( triggered() ), this->parent(), SLOT( clearProject() ));
 }
 

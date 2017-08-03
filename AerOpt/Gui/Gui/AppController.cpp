@@ -141,24 +141,6 @@ void AppController::clearProject()
 	mCanvas.update();
 }
 
-void AppController::loadProject()
-{
-    QDir projPath;
-
-#ifdef Q_OS_UNIX
-    // do fancy unix stuff
-    projPath = QFileDialog::getExistingDirectory(this, "Select Project Directory", QDir::homePath()+"/Documents/Projects/AerOptProject/");
-#endif
-#ifdef Q_OS_WIN32
-    // do windows stuff here
-    projPath = QFileDialog::getExistingDirectory(this, "Select Project Directory", QDir::homePath());
-#endif
-
-    mProjectDirectory = projPath.path();
-
-    qInfo() << "Project directory set: " << mProjectDirectory;
-}
-
 //Sub menus
 
 void AppController::runAerOpt()
