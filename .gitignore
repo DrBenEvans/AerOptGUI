@@ -7,4 +7,4 @@ Makefile
 build/
 build-*-Debug/
 build-*-Release/
-GeneticGui.pro.user
+AerOpt/FortranFiles/AeroOpt/AerOpt
