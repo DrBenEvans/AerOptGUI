@@ -3,11 +3,11 @@
 #include "ui_ConfigSimulationDialog.h"
 #include <QFileDialog>
 
-ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, ProfileLibrary &profileLibrary, QWidget *parent) :
+ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, ProfileModel &profileModel, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConfigSimulationDialog),
     mData(data),
-    mProfileLibrary(profileLibrary)
+    mProfileModel(profileModel)
 {
     ui->setupUi(this);
 
@@ -15,7 +15,7 @@ ConfigSimulationDialog::ConfigSimulationDialog(OptimisationRun& data, ProfileLib
     ui->label->setText(mData.getLabel());
 
     // profiles QComboBox setup
-    ui->profile->setModel(&profileLibrary);
+    ui->profile->setModel(&profileModel);
 
     // optimiser setup
     ui->objfunc->setCurrentIndex(this->objFuncEnumToIndex(mData.objFunc()));
@@ -181,7 +181,7 @@ void ConfigSimulationDialog::on_pushButton_clicked()
 
         qDebug() << "File selected: " << fileName;
 
-        mProfileLibrary.addProfileFromFilePath(fileName);
+        mProfileModel.addProfileFromFilePath(fileName);
     }
     else
     {

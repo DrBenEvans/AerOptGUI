@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "OptimisationRun.h"
-#include "ProfileLibrary.h"
+#include "ProfileModel.h"
 
 namespace Ui {
 class ConfigSimulationDialog;
@@ -15,7 +15,7 @@ class ConfigSimulationDialog : public QDialog
 
 
 public:
-    explicit ConfigSimulationDialog(OptimisationRun& data, ProfileLibrary& profileLibrary, QWidget *parent = 0);
+    explicit ConfigSimulationDialog(OptimisationRun& data, ProfileModel& profileModel, QWidget *parent = 0);
     ~ConfigSimulationDialog();
 
 public slots:
@@ -36,7 +36,7 @@ private:
 
     Ui::ConfigSimulationDialog *ui;
     OptimisationRun& mData;
-    ProfileLibrary& mProfileLibrary;
+    ProfileModel& mProfileModel;
 };
 
 #endif // ConfigSimulationDialog_H

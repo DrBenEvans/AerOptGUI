@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include "OptimisationRun.h"
-#include "ProfileLibrary.h"
+#include "ProfileModel.h"
 
 namespace Ui {
 class MainWindow;
@@ -27,7 +27,7 @@ private:
 
     Ui::MainWindow *ui;
     std::vector<OptimisationRun> mOptimisations;
-    ProfileLibrary mProfileLibrary;
+    ProfileModel mProfileModel;
 };
 
 #endif // MAINWINDOW_H

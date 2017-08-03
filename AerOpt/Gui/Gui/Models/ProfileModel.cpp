@@ -1,14 +1,14 @@
-#include "ProfileLibrary.h"
+#include "ProfileModel.h"
 #include <QDebug>
 
-ProfileLibrary::ProfileLibrary(QObject *parent) : QAbstractListModel(parent)
+ProfileModel::ProfileModel(QObject *parent) : QAbstractListModel(parent)
 {
     addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA0024.prf"));
     addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA21120.prf"));
     addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/test.prf"));
 }
 
-void ProfileLibrary::addProfileFromFilePath(QString filePath) {
+void ProfileModel::addProfileFromFilePath(QString filePath) {
     int first = mProfileList.size();
     int last = mProfileList.size();
     beginInsertRows(QModelIndex(),first,last);
@@ -16,16 +16,16 @@ void ProfileLibrary::addProfileFromFilePath(QString filePath) {
     endInsertRows();
 }
 
-int ProfileLibrary::rowCount(const QModelIndex &parent) const {
+int ProfileModel::rowCount(const QModelIndex &parent) const {
     return mProfileList.size();
 }
 
-ProfileSharedPointer ProfileLibrary::getProfileAtIndex(const QModelIndex index) const {
+ProfileSharedPointer ProfileModel::getProfileAtIndex(const QModelIndex index) const {
     int i = mProfileList.size() - index.row() - 1;
     return mProfileList.at(i);
 }
 
-QVariant ProfileLibrary::data(const QModelIndex &index, int role) const {
+QVariant ProfileModel::data(const QModelIndex &index, int role) const {
     if(!index.isValid())
         return QVariant();
 

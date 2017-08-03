@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ProfileLibrary mProfileLibrary();
+    ProfileModel mProfileModel();
     on_actionNewOptimisation_triggered();
 }
 
@@ -24,7 +24,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_actionNewOptimisation_triggered() {
     mOptimisations.emplace_back();
     OptimisationRun& optimisation = mOptimisations.back();
-    ConfigSimulationDialog diag(optimisation,mProfileLibrary,this);
+    ConfigSimulationDialog diag(optimisation,mProfileModel,this);
     diag.exec();
     diag.show();
     optimisation.finishConfigure();
