@@ -12,7 +12,6 @@
 #include <cmath>
 
 #include "Canvas.h"
-#include "Menu.h"
 #include "ConstraintsDialog.h"
 #include "Arrow.h"
 
@@ -66,7 +65,6 @@ void Canvas::setProfile(QSharedPointer<Profile> profile) {
 
 Canvas::~Canvas()
 {
-    delete mNodeMenu;
 }
 
 void Canvas::paintEvent(QPaintEvent *event)
@@ -132,9 +130,10 @@ bool Canvas::eventFilter(QObject* /*object*/, QEvent* event)
 				//if exists then show menu
                 auto& control = mMesh->getControlPoints();
 
-				auto it = std::find(control.begin(), control.end(), loc);
-				if (it != control.end()) mNodeMenu->exec( mapToGlobal(pos), loc );
-			}
+                auto it = std::find(control.begin(), control.end(), loc);
+                //TODO -> show menu item here...!
+
+            }
 		}
 	}
 

@@ -17,10 +17,7 @@
 //Abbreviate long type names
 typedef std::tuple<int,int,int,int> rgba;
 
-//Forward declarations
 class OptimisationRun;
-class Menu;
-
 /**
  * @brief The Canvas class
  * This class is used for rendering
@@ -187,7 +184,6 @@ private:
 	float mCurrentMinHeight;
 	float mOffset;
 	int mHighlight;
-	Menu* mNodeMenu;
 
 	std::vector<std::tuple<float,float,float,float>> colourmap;
 
