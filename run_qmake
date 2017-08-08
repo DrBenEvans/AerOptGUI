@@ -1,0 +1,4 @@
+#!/bin/bash
+rm -rf build Makefile
+/Applications/Qt//5.9.1/clang_64/bin/qmake GeneticGui.pro -spec macx-clang CONFIG+=debug CONFIG+=x86_64 CONFIG+=qml_debug
+make qmake_all
