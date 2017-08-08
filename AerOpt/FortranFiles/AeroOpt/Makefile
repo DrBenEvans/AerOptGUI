@@ -22,7 +22,7 @@ comment :
 	echo " "
 	echo "   Makefile for mgns2d        "
 	echo "   -------------------------- "
-	echo "   clean  to remove object files "              
+	echo "   clean  to remove object files "
 	echo "   ifort  to compile and link with intel compiler"
 	echo "   gfort  to compile and link with gfortran compiler"
 	echo " "
@@ -42,7 +42,7 @@ gfort : $(OBJECTS)
 	$(COMP) $(FLAGS) -c $<
 
 # Cleaning everything
-clean : 
+clean :
 	find .. -name '*.o' -delete
 	find .. -name '*.mod' -delete
 # End of the makefile
