@@ -2,8 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "OptimisationRun.h"
+#include "Optimisation.h"
 #include "ProfileModel.h"
+#include "OptimisationModel.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,18 +17,18 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void setOptimisationModel(OptimisationModel* optimisationModel);
+
+public slots:
+    void newOptimisation();
 
 private slots:
-    void on_actionNewOptimisation_triggered();
     void on_actionShowLog_triggered();
-    void on_actionRunMesher_triggered();
 
 private:
-    OptimisationRun& getCurrentOptimisation();
-
     Ui::MainWindow *ui;
-    std::vector<OptimisationRun> mOptimisations;
     ProfileModel mProfileModel;
+    OptimisationModel* mOptimisationModel;
 };
 
 #endif // MAINWINDOW_H

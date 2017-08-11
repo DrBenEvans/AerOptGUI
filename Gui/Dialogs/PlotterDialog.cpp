@@ -1,6 +1,6 @@
 #include "PlotterDialog.h"
 #include "ui_PlotterDialog.h"
-#include "OptimisationRun.h"
+#include "Optimisation.h"
 
 PlotterDialog::PlotterDialog(QWidget *parent) :
     QDialog(parent),

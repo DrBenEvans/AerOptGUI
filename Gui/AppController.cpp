@@ -22,15 +22,14 @@
 #include <cmath>
 
 #include "AppController.h"
-#include "Canvas.h"
 #include "Menu.h"
-#include "OptimisationRun.h"
+#include "Optimisation.h"
 #include "Enumerations.h"
 #include "MeshDialog.h"
 #include "PlotterDialog.h"
 #include "ConfigSimulationDialog.h"
 
-AppController::AppController(OptimisationRun& data, Canvas& canvas, QWidget *parent) : QDialog(parent), mCanvas(canvas), mData(data)
+AppController::AppController(Optimisation& data, QWidget *parent) : QDialog(parent), mData(data)
 {
     mParent = parent;
     myOptProcess.setParent(mParent);
@@ -137,7 +136,6 @@ AppController::~AppController()
 void AppController::clearProject()
 {
 	mData.clearProject();
-	mCanvas.update();
 }
 
 //Sub menus
@@ -190,7 +188,7 @@ void AppController::runAerOpt()
 	r &= createAerOptNodeFile(AerOptNodeFile.toStdString(), mData);
 
 	sGenNo = 0;
-    QSharedPointer<Mesh> mesh = mData.getMesh();
+    std::shared_ptr<Mesh> mesh = mData.initMesh();
     mesh->resetBoundary();
 
 	//then run aeropt
@@ -303,7 +301,7 @@ void AppController::readDirectory(const QString& path)
 
 	if (c)
 	{
-        QSharedPointer<Mesh> pMesh = mData.getMesh();
+        std::shared_ptr<Mesh> pMesh = mData.initMesh();
         pMesh->loadMeshProfile(mesh);
         pMesh->loadMesh(mesh);
         pMesh->loadResults(results.toStdString());
@@ -318,7 +316,6 @@ void AppController::readDirectory(const QString& path)
 
 		sGenNo++;
 	}
-	mCanvas.update();
 }
 
 void AppController::readFitness(const QString& path)
@@ -453,21 +450,20 @@ void AppController::optimiserFinished(int exitCode, QProcess::ExitStatus exitSta
 
 	if (!r) qWarning() << "Something went wrong with file cleanup!";
 
-	mCanvas.update();
 	myDirWatcher.removePaths( myDirWatcher.directories() );
 }
 
 
 //Private functions
 
-bool AppController::createAerOptInFile(const std::string& filePath, OptimisationRun& data)
+bool AppController::createAerOptInFile(const std::string& filePath, Optimisation& data)
 {
 	bool r = true;
 
 	std::ofstream outfile(filePath, std::ofstream::out);
 	r &= outfile.is_open();
 
-    QSharedPointer<Mesh> mesh = data.getMesh();
+    std::shared_ptr<Mesh> mesh = data.initMesh();
     auto& cpoints = mesh->getControlPoints();//<< list of uints identifying
 	r &= cpoints.size() > 0;
 
@@ -586,7 +582,7 @@ bool AppController::createAerOptInFile(const std::string& filePath, Optimisation
 	return r;
 }
 
-bool AppController::createAerOptNodeFile(const std::string& filePath, OptimisationRun& data)
+bool AppController::createAerOptNodeFile(const std::string& filePath, Optimisation& data)
 {
 	bool r = true;
 
@@ -600,7 +596,7 @@ bool AppController::createAerOptNodeFile(const std::string& filePath, Optimisati
 		std::string yrange;
 		std::string myrange;
 
-        QSharedPointer<Mesh> mesh = data.getMesh();
+        std::shared_ptr<Mesh> mesh = data.initMesh();
         auto& cpoints = mesh->getControlPoints();
 		for (auto& i : cpoints)
 		{
@@ -721,14 +717,14 @@ bool AppController::removeFolder(const QString& path)
 	return r;
 }
 
-bool AppController::saveCurrentProfile(const QString& path, OptimisationRun& data)
+bool AppController::saveCurrentProfile(const QString& path, Optimisation& data)
 {
 	bool r = true;
 
 	std::ofstream outfile(path.toStdString(), std::ofstream::out);
 	r &= outfile.is_open();
 
-    QSharedPointer<Mesh> mesh = data.getMesh();
+    std::shared_ptr<Mesh> mesh = data.initMesh();
     auto& currbconn = mesh->getBConnects();
 	const uint size = currbconn.size();
 

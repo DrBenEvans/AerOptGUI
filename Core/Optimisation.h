@@ -24,7 +24,7 @@
  * @brief The OptimisationRun class
  * This class stores project data
  */
-class OptimisationRun
+class Optimisation
 {
 public:
 	/**
@@ -32,33 +32,10 @@ public:
      * Constructor and destructor for
      * the OptimisationRun class.
 	 */
-    OptimisationRun();
-    ~OptimisationRun();
-
-	/**
-	 * @brief clearProject
-	 * Clears all project data.
-	 */
-	void clearProject();
-
-	//Mesh Attributes
-	/**
-	 * @brief clearMesh
-	 * Clears the mesh data.
-	 */
-	void clearMesh();
+    Optimisation();
+    ~Optimisation();
 
     //Getters and Setters for the class variables
-    /**
-     * @brief setProfile
-     * @param Profile object to use
-     */
-    void setProfile(QSharedPointer<Profile> profile);
-    /**
-	 * @brief mesh
-	 * @return True if profile is set.
-	 */
-	bool mesh() const;
     /**
 	 * @brief setFunction
 	 * @param function Sets the function.
@@ -184,26 +161,21 @@ public:
      * @param returns the method index as defined by ordering in OptimiserDialog.ui.
      */
     Enum::OptMethod getOptimisationMethod() const;
-    QSharedPointer<Mesh> newMesh();
+    std::shared_ptr<Mesh> newMesh();
     int getNoTop() const;
     void setNoTop(int noTop);
 
-    QString getLabel();
+    QString label() const;
     void setLabel(QString label);
-
-    const std::list<std::pair<float,float>> getProfile() const;
-    QSharedPointer<Profile> getProfileObj() const;
-
-    QSharedPointer<Mesh> getMesh();
-    void finishConfigure();
+    std::shared_ptr<Mesh> initMesh();
 
 private:
-    QSharedPointer<Profile> mProfile;
+    ProfilePoints mProfilePoints;
 
     QString mLabel;
 
 	//Objective function attributes
-	Enum::ObjFunc mObjFunc;
+    Enum::ObjFunc mObjFunc;
 
 	//Boundary condition attributes
 	float mMachNo;
@@ -218,7 +190,7 @@ private:
 	int mNoGens;
     int mNoTop;
 
-    QSharedPointer<Mesh> mMesh;
+    std::shared_ptr<Mesh> mInitMesh;
 
 };
 

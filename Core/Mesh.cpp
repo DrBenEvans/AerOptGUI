@@ -3,19 +3,30 @@
 #include <cmath>
 #include <QDebug>
 
-Mesh::Mesh(ProfilePoints profilePoints) :
+Mesh::Mesh() :
     mMeshDensity(Enum::Mesh::COURSE),
-    mProfilePoints(profilePoints)
+    mProfilePoints()
 {
     mMeshProcess.setParent(this);
 
     // Boundary layer setup
-    mHasBoundaryLayer = false;
     mNumBoundaryLayers = 10;
     mBoundaryLayerThickness = 0.001;
 }
 
-void Mesh::runMesher(QDir workDir) {
+ProfilePoints Mesh::profilePoints() {
+    return mProfilePoints;
+}
+
+void Mesh::setProfilePoints(ProfilePoints profilePoints) {
+    clear();
+    mProfilePoints = profilePoints;
+    emit meshChanged();
+}
+
+void Mesh::runMesher() {
+    clear();
+    QDir workDir("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Project");
 
     bool r = true;
 
@@ -25,7 +36,7 @@ void Mesh::runMesher(QDir workDir) {
     QString meshBacFile;
     QString meshGeoFile;
 
-    QString mesherPath = "/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/FLITE/Mesher/MeshGenerator";
+    QString mesherPath = "/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/FLITE/Mesher/MeshGenerator";
 
     meshInFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".in").absolutePath();
     meshInFile = QDir::toNativeSeparators(meshInFile);
@@ -119,18 +130,13 @@ bool Mesh::createGeoFile(const std::string& meshGeoFile)
     int noPoints = 0;
     int noSegments = 6;
     int noDomainPoints = 4;
-    int nViscSegments = 0;
+    int nViscSegments = 2;
 
     std::ofstream outfile(meshGeoFile, std::ofstream::out);
     r &= outfile.is_open();
 
     noPoints = mProfilePoints.size();
     int nLayers = getNumBoundaryLayers();
-    bool hasBoundaryLayer = getBoundaryLayerFlag();
-
-    if(hasBoundaryLayer) {
-        nViscSegments = 2;
-    };
 
     if (r)
     {
@@ -197,13 +203,11 @@ bool Mesh::createGeoFile(const std::string& meshGeoFile)
         outfile << i << " " << i-3 << std::endl;
     }
 
-    if(hasBoundaryLayer) {
-        qreal thickness = getBoundaryLayerThickness();
-        qreal dist = thickness;
-        for(int i=0; i<nLayers; i++) {
-            dist += thickness;
-            outfile << dist << std::endl;
-        }
+    qreal thickness = getBoundaryLayerThickness();
+    qreal dist = 0;
+    for(int i=0; i<nLayers; i++) {
+        dist += thickness;
+        outfile << dist << std::endl;
     }
 
     outfile.close();
@@ -256,6 +260,8 @@ bool Mesh::loadMeshProfileType1(const QString& filePath)
     std::list<int> iBounds;
     std::list<std::pair<uint,uint>> bConnectivity;
     std::list<std::pair<float,float>> pPoints;
+
+    resetBConnectivity();
 
     //Read boundary indicies and connectivity
     std::ifstream infile(filePath.toStdString(), std::ifstream::in);
@@ -342,6 +348,11 @@ void Mesh::addBConnectivity(const uint& a, const uint& b)
     mBoundConnects.emplace_back( a, b );
 }
 
+void Mesh::resetBConnectivity()
+{
+    mBoundConnects.clear();
+}
+
 bool Mesh::loadMeshProfileType2(const QString &filePath)
 {
     bool r = true;
@@ -349,6 +360,8 @@ bool Mesh::loadMeshProfileType2(const QString &filePath)
     std::list<int> iBounds;
     std::list<std::pair<uint,uint>> bConnectivity;
     std::list<std::pair<float,float>> pPoints;
+
+    resetBConnectivity();
 
     //Read boundary indicies and connectivity
     std::ifstream infile(filePath.toStdString(), std::ifstream::in);
@@ -628,16 +641,8 @@ void Mesh::setMeshDensity(const Enum::Mesh& meshDensity)
     mMeshDensity = meshDensity;
 }
 
-bool Mesh::getBoundaryLayerFlag() {
-    return mHasBoundaryLayer && mNumBoundaryLayers != 0;
-}
-
 int Mesh::getNumBoundaryLayers() {
-    if(mHasBoundaryLayer) {
-        return mNumBoundaryLayers;
-    } else {
-        return 0;
-    }
+    return mNumBoundaryLayers;
 }
 
 qreal Mesh::getBoundaryLayerThickness() {
@@ -713,7 +718,7 @@ void Mesh::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
         r &= mMeshProcess.exitCode() == 0;
         r &= QFile::exists(mMeshDatFile);
 
-        //Now load points into data object, ready for canvas to render.
+        //Now load points into data object
         if (r)
         {
             r &= loadMeshProfile(mMeshDatFile);
@@ -730,7 +735,7 @@ void Mesh::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
             qWarning() << "Mesh not created!";
         }
 
-        emit meshUpdate();
+        emit meshChanged();
     }
     else
     {
@@ -845,9 +850,6 @@ const MeshResults& Mesh::getMeshData() const
 }
 
 void Mesh::clear() {
-    //TODO - not sure if this function is needed...!
-    return;
-
     mMeshProfile.clear();
     mBoundConnects.clear();
     mControlPoints.clear();
@@ -879,10 +881,6 @@ bool Mesh::loadResults(const std::string& filePath)
     infile.close();
 
     return r;
-}
-
-void Mesh::setBoundaryLayerFlag(bool hasBoundaryLayer) {
-    mHasBoundaryLayer = hasBoundaryLayer;
 }
 
 void Mesh::setNumBoundaryLayers(int num) {

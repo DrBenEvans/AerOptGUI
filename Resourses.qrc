@@ -1,10 +1,7 @@
 <RCC>
     <qresource prefix="/images">
         <file alias="FlowVisApp.png">Images/FlowVisApp.png</file>
-        <file alias="ColegCenedlaetholCymraeg.png">Images/ColegCenedlaetholCymraeg.png</file>
-        <file alias="WelshFlag.png">Images/WelshFlag.png</file>
         <file alias="AerOpt.png">Images/AerOpt.png</file>
-        <file alias="SULogo.png">Images/SULogo.png</file>
         <file alias="Scale.png">Images/Scale.png</file>
         <file alias="Map.png">Images/Map.png</file>
     </qresource>

@@ -15,8 +15,7 @@
 
 //Forward declarations
 class Menu;
-class OptimisationRun;
-class Canvas;
+class Optimisation;
 class PlotterDialog;
 
 /**
@@ -32,10 +31,8 @@ public:
 	/**
 	 * @brief TreeView
      * @param data A reference to the OptimisationRun class.
-	 * @param canvas A reference to the Canvas class.
-     * This class depends on the OptimisationRun and Canvas classes.
 	 */
-    AppController(OptimisationRun& data, Canvas& canvas, QWidget *parent = 0);
+    AppController(Optimisation& data, QWidget *parent = 0);
     ~AppController();
 
 public slots:
@@ -103,28 +100,28 @@ private:
 	 * Loads the profile data from file specified by path,
      * and stores the data in OptimisationRun.
 	 */
-    bool loadProfile(const std::string& filePath, OptimisationRun& data);
+    bool loadProfile(const std::string& filePath, Optimisation& data);
 	/**
 	 * @brief loadMesh
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-    bool loadResults(const std::string& filePath, OptimisationRun& data);
+    bool loadResults(const std::string& filePath, Optimisation& data);
 	/**
 	 * @brief createAerOptInFile
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-    bool createAerOptInFile(const std::string& filePath, OptimisationRun& data);
+    bool createAerOptInFile(const std::string& filePath, Optimisation& data);
     /**
 	 * @brief createAerOptNodeFile
 	 * @param filePath
 	 * @param data
 	 * @return
 	 */
-    bool createAerOptNodeFile(const std::string& filePath, OptimisationRun& data);
+    bool createAerOptNodeFile(const std::string& filePath, Optimisation& data);
 
 	/**
 	 * @brief emptyFolder
@@ -159,7 +156,7 @@ private:
 	 * @param data
 	 * @return
 	 */
-    bool saveCurrentProfile(const QString& path, OptimisationRun &data);
+    bool saveCurrentProfile(const QString& path, Optimisation &data);
 
 
 	uint sGenNo;
@@ -176,8 +173,7 @@ private:
 
 	PlotterDialog* mPlotter;
 
-	Canvas& mCanvas;
-    OptimisationRun& mData;
+    Optimisation& mData;
 };
 
 #endif // APPCONTROLLER_H

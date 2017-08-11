@@ -3,26 +3,35 @@
 
 ProfileModel::ProfileModel(QObject *parent) : QAbstractListModel(parent)
 {
-    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA0024.prf"));
-    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/NACA21120.prf"));
-    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Example_profile_files/test.prf"));
+    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Example_profile_files/NACA0024.prf"));
+    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Example_profile_files/NACA21120.prf"));
+    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Example_profile_files/test.prf"));
 }
 
 void ProfileModel::addProfileFromFilePath(QString filePath) {
     int first = mProfileList.size();
     int last = mProfileList.size();
-    beginInsertRows(QModelIndex(),first,last);
-    mProfileList.emplace_back(new Profile(this, filePath));
-    endInsertRows();
+    std::unique_ptr<Profile> profile(new Profile());
+    bool success = profile->setFile(filePath);
+    if(success) {
+        beginInsertRows(QModelIndex(),first,last);
+        mProfileList.push_back(std::move(profile));
+        endInsertRows();
+    }
 }
 
 int ProfileModel::rowCount(const QModelIndex &parent) const {
     return mProfileList.size();
 }
 
-ProfileSharedPointer ProfileModel::getProfileAtIndex(const QModelIndex index) const {
+ProfilePoints ProfileModel::getProfileAtIndex(const QModelIndex index) const {
     int i = mProfileList.size() - index.row() - 1;
-    return mProfileList.at(i);
+    return mProfileList.at(i)->getProfile();
+}
+
+QString ProfileModel::getDisplayStringAtIndex(const QModelIndex index) const {
+    int i = mProfileList.size() - index.row() - 1;
+    return mProfileList.at(i)->getDisplayString();
 }
 
 QVariant ProfileModel::data(const QModelIndex &index, int role) const {
@@ -33,7 +42,7 @@ QVariant ProfileModel::data(const QModelIndex &index, int role) const {
         return QVariant();
 
     if(role == Qt::DisplayRole) {
-        QString displayString = getProfileAtIndex(index)->getDisplayString();
+        QString displayString = getDisplayStringAtIndex(index);
         qDebug() << displayString;
         return displayString;
     } else if (role == Qt::UserRole) {

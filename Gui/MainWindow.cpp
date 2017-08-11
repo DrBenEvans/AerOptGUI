@@ -1,19 +1,25 @@
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "ConfigSimulationDialog.h"
-#include "OptimisationRun.h"
+#include "Optimisation.h"
 #include "DebugOutput.h"
 #include "MeshDialog.h"
 #include "Mesh.h"
+//#include "MeshGraphicsItem.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    mOptimisationModel(nullptr)
 {
     ui->setupUi(this);
+    connect(ui->newOptimisationButton,&QPushButton::clicked,this,&MainWindow::newOptimisation);
+    connect(ui->actionNewOptimisation,&QAction::triggered,this,&MainWindow::newOptimisation);
+}
 
-    ProfileModel mProfileModel();
-    on_actionNewOptimisation_triggered();
+void MainWindow::setOptimisationModel(OptimisationModel* optimisationModel) {
+    mOptimisationModel = optimisationModel;
+    ui->optimisationComboBox->setModel(mOptimisationModel);
 }
 
 MainWindow::~MainWindow()
@@ -21,36 +27,21 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_actionNewOptimisation_triggered() {
-    mOptimisations.emplace_back();
-    OptimisationRun& optimisation = mOptimisations.back();
-    ConfigSimulationDialog diag(optimisation,mProfileModel,this);
-    diag.exec();
-    diag.show();
-    optimisation.finishConfigure();
-    ui->canvas->setProfile(optimisation.getProfileObj());
-    ui->canvas->update();
-}
+void MainWindow::newOptimisation() {
+    auto optimisation = std::make_shared<Optimisation>();
+    auto initMesh = optimisation->initMesh();
+    MeshDialog meshdiag(initMesh,mProfileModel,this);
+    if(meshdiag.exec() == QDialog::Accepted) {
+        optimisation->setLabel(QString("Optimisation %1").arg(mOptimisationModel->rowCount()+1));
 
-void MainWindow::on_actionRunMesher_triggered() {
-    QString workDir("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/AerOpt/Project");
-
-    ProfilePoints profilePoints;
-    OptimisationRun& optimisation = getCurrentOptimisation();
-    QSharedPointer<Mesh> mesh = optimisation.getMesh();
-    MeshDialog diag(mesh, this);
-    diag.show();
-    diag.exec();
-    ui->canvas->setMesh(mesh);
-    connect(mesh.data(),SIGNAL(meshUpdate()),ui->canvas,SLOT(update()));
-    mesh->runMesher(workDir);
+        ConfigSimulationDialog diag(optimisation,this);
+        if(diag.exec() == QDialog::Accepted) {
+            mOptimisationModel->addOptimisation(optimisation);
+        }
+    }
 }
 
 void MainWindow::on_actionShowLog_triggered() {
     DebugOutput& debugOutput = DebugOutput::Instance();
     debugOutput.show();
-}
-
-OptimisationRun& MainWindow::getCurrentOptimisation() {
-    return mOptimisations.back();
 }

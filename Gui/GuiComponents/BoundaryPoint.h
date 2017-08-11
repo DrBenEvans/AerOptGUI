@@ -10,6 +10,7 @@
 #define BOUNDARY_POINT_H
 
 #include <utility>
+#include <vector>
 #include <QRectF>
 
 #include "Enumerations.h"

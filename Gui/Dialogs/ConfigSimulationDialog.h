@@ -2,7 +2,8 @@
 #define ConfigSimulationDialog_H
 
 #include <QDialog>
-#include "OptimisationRun.h"
+#include "Optimisation.h"
+#include "OptimisationModel.h"
 #include "ProfileModel.h"
 
 namespace Ui {
@@ -15,17 +16,15 @@ class ConfigSimulationDialog : public QDialog
 
 
 public:
-    explicit ConfigSimulationDialog(OptimisationRun& data, ProfileModel& profileModel, QWidget *parent = 0);
+    explicit ConfigSimulationDialog(std::shared_ptr<Optimisation> optimisation, QWidget *parent = 0);
     ~ConfigSimulationDialog();
 
 public slots:
-    void accept();
     void reject();
+    void accept();
 
 private slots:
     void on_optmethod_currentIndexChanged(int index);
-
-    void on_pushButton_clicked();
 
 private:
     int objFuncEnumToIndex(Enum::ObjFunc enumeration);
@@ -35,8 +34,7 @@ private:
     Enum::OptMethod indexToOptMethodEnum(int index);
 
     Ui::ConfigSimulationDialog *ui;
-    OptimisationRun& mData;
-    ProfileModel& mProfileModel;
+    std::shared_ptr<Optimisation> mData;
 };
 
 #endif // ConfigSimulationDialog_H

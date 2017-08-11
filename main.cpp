@@ -14,27 +14,30 @@
 
 #include "DebugOutput.h"
 #include "MainWindow.h"
-#include "AppController.h"
-#include "Canvas.h"
-#include "OptimisationRun.h"
-#include "PlotterDialog.h"
+#include "OptimisationModel.h"
 
 //Programme entry point.
 int main(int argc, char *argv[])
 {
-	//Initialises the QT library application event loops.
+    //Initialises the QT library application event loops.
     QApplication app(argc, argv);
     app.setWindowIcon( QIcon(":/images/AerOpt.png") );
     //app.setAttribute(Qt::AA_DontUseNativeMenuBar);
 
-	//Application main interaction classes.
+    //Application main interaction classes.
     DebugOutput::Instance();
     qInfo() << " *** Welcome to AerOpt ***";
     qInfo() << " ***     Have a nice day     ***";
 
-	//Main window setup and show.
+    // Setup optimisation model and selection model
+    OptimisationModel* optimisationModel = new OptimisationModel();
+    QItemSelectionModel* optimisationSelectionModel = new QItemSelectionModel(optimisationModel);
+    optimisationModel->setSelectionModel(optimisationSelectionModel);
+
+    //Main window setup and show.
     MainWindow w;
     w.setWindowTitle("AerOpt");
+    w.setOptimisationModel(optimisationModel);
     w.show();
 
     return app.exec();

@@ -11,7 +11,7 @@
 #include "ui_ConstraintsDialog.h"
 #include "Mesh.h"
 
-ConstraintsDialog::ConstraintsDialog(Mesh& mesh, QWidget *parent) :
+ConstraintsDialog::ConstraintsDialog(std::shared_ptr<Mesh> mesh, QWidget *parent) :
 	QDialog(parent),
 	ui(new Ui::ConstraintsDialog),
     mMesh(mesh)
@@ -29,7 +29,7 @@ void ConstraintsDialog::setConstraint(const unsigned int index)
 {
 	mIndex = index;
 
-    BoundaryPoint& point = mMesh.getControlPoint(index);
+    BoundaryPoint& point = mMesh->getControlPoint(index);
 
 	qreal x1,y1,x2,y2;
     point.getBoundCoords(&x1,&y1,&x2,&y2);
@@ -43,7 +43,7 @@ void ConstraintsDialog::setConstraint(const unsigned int index)
 
 void ConstraintsDialog::accept()
 {
-    BoundaryPoint& point = mMesh.getControlPoint(mIndex);
+    BoundaryPoint& point = mMesh->getControlPoint(mIndex);
 
     point.setBoundCoords(ui->xMin->value(),
 						   ui->yMin->value(),

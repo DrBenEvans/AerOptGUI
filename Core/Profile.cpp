@@ -3,10 +3,10 @@
 #include <QDebug>
 #include "DebugOutput.h"
 
-Profile::Profile(QObject *parent, QString filePath) :
-    QObject(parent),
-    mFilePath(filePath)
+bool Profile::setFile(QString filePath)
 {
+    mFilePath = filePath;
+
     bool r = true;
     float x, y;
 
@@ -27,6 +27,8 @@ Profile::Profile(QObject *parent, QString filePath) :
     r &= checkProfileIntegrity();
 
     if (!r) clearProfile();
+
+    return r;
 }
 
 

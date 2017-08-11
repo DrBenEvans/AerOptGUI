@@ -2,40 +2,38 @@
 **
 **	Created on: 	01/04/2015 2015
 **	Author: 	matt - Matt Edmunds
-**	File:		Canvas.h
+**	File:		SimulationWidget.h
 **
 **********************************************/
 
-#ifndef CANVAS_H
-#define CANVAS_H
+#ifndef SIMULATIONWIDGET_H
+#define SIMULATIONWIDGET_H
 
 #include <QWidget>
 #include <QEvent>
-#include "Mesh.h"
-#include "Profile.h"
+#include "OptimisationModel.h"
 
 //Abbreviate long type names
 typedef std::tuple<int,int,int,int> rgba;
 
-class OptimisationRun;
+class Optimisation;
 /**
- * @brief The Canvas class
+ * @brief The SimulationWidget class
  * This class is used for rendering
- * data to a window/canvas.
+ * data to a window/SimulationWidget.
  */
-class Canvas : public QWidget
+class SimulationWidget : public QWidget
 {
 	Q_OBJECT
 public:
 	/**
-	 * @brief Canvas
+	 * @brief SimulationWidget
      * @param data A reference to the OptimisationRun class.
      * This class depends on the OptimisationRun class.
 	 */
-    explicit Canvas(QWidget *dialog);
-	~Canvas();
-    void setProfile(QSharedPointer<Profile> profile);
-    void setMesh(QSharedPointer<Mesh> mesh);
+    explicit SimulationWidget(QWidget *dialog);
+	~SimulationWidget();
+    void setOptimisationModel(OptimisationModel* mesh);
 
 protected:
 	/**
@@ -49,25 +47,25 @@ private:
 	/**
 	 * @brief drawBackground
 	 * @param painter A reference to the current painter context.
-	 * This function draws the canvas background.
+	 * This function draws the SimulationWidget background.
 	 */
 	void drawBackground(QPainter &painter);
 	/**
 	 * @brief drawLogos
 	 * @param painter A reference to the current painter context.
-	 * This function draws the canvas logos.
+	 * This function draws the SimulationWidget logos.
 	 */
 	void drawLogos(QPainter &painter);
 	/**
 	 * @brief drawAxis
 	 * @param painter A reference to the current painter context.
-	 * This function draws the canvas axis.
+	 * This function draws the SimulationWidget axis.
 	 */
 	void drawAxis(QPainter &painter);
 	/**
 	 * @brief drawScale
 	 * @param painter A reference to the current painter context.
-	 * This function draws the canvas scale.
+	 * This function draws the SimulationWidget scale.
 	 */
 	void drawScale(QPainter &painter);
 	/**
@@ -130,19 +128,19 @@ private:
 	const float& offset() const;
 
 	/**
-	 * @brief calcCanvasScale
-	 * Calculates the current canvas scales for width
-	 * and height with reference to the domain to canvas
-	 * scales and aspect ratio of the canvas.
+	 * @brief calcSimulationWidgetScale
+	 * Calculates the current SimulationWidget scales for width
+	 * and height with reference to the domain to SimulationWidget
+	 * scales and aspect ratio of the SimulationWidget.
 	 */
-	void calcCanvasScale();
+	void calcSimulationWidgetScale();
 	/**
 	 * @brief pickNodeCheck
 	 * @param pos The position of the mouse curser.
      * @param data Read only reference to the OptimisationRun class.
 	 * @return The index of the node the mouse curser is over.
 	 */
-    int pickNodeCheck(const QPoint& pos, QSharedPointer<Mesh> mesh);
+    int pickNodeCheck(const QPoint& pos);
 	/**
 	 * @brief getColour
 	 * @param min Range minimum.
@@ -187,9 +185,7 @@ private:
 
 	std::vector<std::tuple<float,float,float,float>> colourmap;
 
-    QSharedPointer<Mesh> mMesh;
-    QSharedPointer<Mesh> mPrevMesh;
-    QSharedPointer<Profile> mProfile;
+    OptimisationModel* mOptimisationModel;
 
 signals:
 
@@ -199,4 +195,4 @@ public slots:
 	void resetConstraints(const unsigned int index);
 };
 
-#endif // CANVAS_H
+#endif // SIMULATIONWIDGET_H

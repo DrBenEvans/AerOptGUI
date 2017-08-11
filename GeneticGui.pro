@@ -50,48 +50,56 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     Gui/DebugOutput.cpp \
-    Gui/Dialogs/ConstraintsDialog.cpp \
+    #Gui/Dialogs/ConstraintsDialog.cpp \
     Gui/Dialogs/MeshDialog.cpp \
     Gui/Plotter/qcustomplot.cpp \
     Gui/GuiComponents/Arrow.cpp \
     Gui/GuiComponents/BoundaryPoint.cpp \
-    Gui/GuiComponents/Canvas.cpp \
+    Gui/GuiComponents/ProfileGraphicsItem.cpp \
+    Gui/GuiComponents/MeshGraphicsItem.cpp \
     Gui/Dialogs/ConfigSimulationDialog.cpp \
-    Gui/AppController.cpp \
+    #Gui/AppController.cpp \
     Gui/Dialogs/OptimisationManagerDialog.cpp \
     Gui/MainWindow.cpp \
     Core/Mesh.cpp \
-    Core/OptimisationRun.cpp \
     Core/ProfileModel.cpp \
     Core/Profile.cpp \
-    Gui/Dialogs/PlotterDialog.cpp
+    #Gui/Dialogs/PlotterDialog.cpp \
+    Core/Optimisation.cpp \
+    #Core/Simulation.cpp \
+    Core/OptimisationModel.cpp \
+    Gui/GuiComponents/ZoomPanView.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
-    Gui/Dialogs/ConstraintsDialog.h \
+    #Gui/Dialogs/ConstraintsDialog.h \
     Gui/Dialogs/MeshDialog.h \
     Gui/Plotter/qcustomplot.h \
     Gui/GuiComponents/Arrow.h \
     Gui/GuiComponents/BoundaryPoint.h \
-    Gui/GuiComponents/Canvas.h \
+    Gui/GuiComponents/ProfileGraphicsItem.h \
+    Gui/GuiComponents/MeshGraphicsItem.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
-    Gui/AppController.h \
+    #Gui/AppController.h \
     Gui/Dialogs/OptimisationManagerDialog.h \
     Gui/MainWindow.h \
     Core/Mesh.h \
-    Core/OptimisationRun.h \
     Core/ProfileModel.h \
     Core/Profile.h \
     Core/Enumerations.h \
     Core/CustomTypes.h \
-    Gui/Dialogs/PlotterDialog.h
+    #Gui/Dialogs/PlotterDialog.h \
+    Core/Optimisation.h \
+    #Core/Simulation.h \
+    Core/OptimisationModel.h \
+    Gui/GuiComponents/ZoomPanView.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
-    Gui/Dialogs/ConstraintsDialog.ui \
-    Gui/Plotter/PlotterDialog.ui \
+#    Gui/Dialogs/ConstraintsDialog.ui \
+#    Gui/Plotter/PlotterDialog.ui \
     Gui/Dialogs/ConfigSimulationDialog.ui \
-    Gui/Dialogs/OptimisationManagerDialog.ui \
+#    Gui/Dialogs/OptimisationManagerDialog.ui \
     Gui/MainWindow.ui \
     Gui/Dialogs/MeshDialog.ui
 

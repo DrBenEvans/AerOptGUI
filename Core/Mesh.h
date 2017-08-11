@@ -13,10 +13,9 @@ class Mesh : public QObject
 {
     Q_OBJECT
 public:
-    Mesh(ProfilePoints profilePoints);
+    Mesh();
 
     // Getters
-    bool getBoundaryLayerFlag();
     int getNumBoundaryLayers();
     qreal getBoundaryLayerThickness();
     /**
@@ -46,7 +45,6 @@ public:
     const std::list<unsigned int>& getControlPoints() const;
 
     // Setters
-    void setBoundaryLayerFlag(bool hasBoundaryLayer);
     void setNumBoundaryLayers(int num_layers);
     void setBoundaryLayerThickness(qreal layer_thickness);
     void setMeshDensity(const Enum::Mesh& meshDensity);
@@ -57,7 +55,7 @@ public:
      * @brief runMesher
      * run the mesher
      */
-    void runMesher(QDir workDir);
+    void runMesher();
     /**
      * @brief loadResults
      * loads the results
@@ -184,9 +182,11 @@ public:
     void addBConnectivity(const uint& a, const uint& b);
 
     Enum::Mesh getMeshDensity() const;
+    ProfilePoints profilePoints();
+    void setProfilePoints(ProfilePoints profilePoints);
 
 signals:
-    void meshUpdate();
+    void meshChanged();
 
 private slots:
     void meshingFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -227,13 +227,13 @@ private:
     //Mesh Attributes
     Boundaries mMeshProfile;
     BConnectivities mBoundConnects;
+    void resetBConnectivity();
     std::list<uint> mControlPoints;
     MeshPoints mMeshPoints;
     MeshConnectivities mMeshConnectivities;
     MeshResults mMeshResults;
 
     // boundary layer parameters
-    bool mHasBoundaryLayer;
     int mNumBoundaryLayers;
     qreal mBoundaryLayerThickness;
 

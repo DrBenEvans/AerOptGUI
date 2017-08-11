@@ -2,6 +2,7 @@
 #define PROFILEMODEL_H
 
 #include <QAbstractListModel>
+#include <QItemSelectionModel>
 #include "Profile.h"
 
 class ProfileModel : public QAbstractListModel
@@ -13,9 +14,11 @@ public:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
     void addProfileFromFilePath(QString filePath);
-    ProfileSharedPointer getProfileAtIndex(const QModelIndex index) const;
+    ProfilePoints getProfileAtIndex(const QModelIndex index) const;
+    QString getDisplayStringAtIndex(const QModelIndex index) const;
 
-    std::vector<ProfileSharedPointer> mProfileList;
+private:
+    std::vector<std::unique_ptr<Profile>> mProfileList;
 };
 
 #endif // PROFILEMODEL_H

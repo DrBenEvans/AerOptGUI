@@ -10,7 +10,7 @@
 #define CONSTRAINTSDIALOG_H
 
 #include <QDialog>
-#include <OptimisationRun.h>
+#include <Optimisation.h>
 
 namespace Ui
 {
@@ -22,14 +22,14 @@ class ConstraintsDialog : public QDialog
 	Q_OBJECT
 
 public:
-    explicit ConstraintsDialog(Mesh& mesh, QWidget *parent = 0);
+    explicit ConstraintsDialog(std::shared_ptr<Mesh> mesh, QWidget *parent = 0);
     ~ConstraintsDialog();
 	void setConstraint(const unsigned int index);
 
 private:
 	Ui::ConstraintsDialog *ui;
 	unsigned int mIndex;
-    Mesh& mMesh;
+    std::shared_ptr<Mesh> mMesh;
 
 protected slots:
 	void accept();
