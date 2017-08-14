@@ -6,10 +6,7 @@ ProfileGraphicsItem::ProfileGraphicsItem(int scale) :
     mScale(scale)
 {
     setZValue(0);
-    setPos(QPointF(-(mScale/2), 0));
-
-    setFlags(ItemIsSelectable);
-    setAcceptHoverEvents(true);
+    setPos(0,0);
 }
 
 
@@ -70,10 +67,9 @@ void ProfileGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
     for (auto& p : mProfile)
     {
         path = QPainterPath();
-        rect.moveCenter( QPoint(w(p.first), h(p.second)) );
-        rect.setWidth( 3 );
-        rect.setHeight( 3 );
-        path.addRoundedRect(rect,100,100);
+        QPoint center = QPoint(w(p.first), h(p.second));
+        qreal radius = 3.0;
+        path.addEllipse(center,radius,radius);
         painter->fillPath(path, Qt::blue);
         painter->drawPath(path);
     }

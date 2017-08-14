@@ -68,7 +68,8 @@ SOURCES += \
     Core/Optimisation.cpp \
     #Core/Simulation.cpp \
     Core/OptimisationModel.cpp \
-    Gui/GuiComponents/ZoomPanView.cpp
+    Gui/GuiComponents/ZoomPanView.cpp \
+    Gui/GuiComponents/ControlPointGraphicsItem.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -92,7 +93,8 @@ HEADERS  += \
     Core/Optimisation.h \
     #Core/Simulation.h \
     Core/OptimisationModel.h \
-    Gui/GuiComponents/ZoomPanView.h
+    Gui/GuiComponents/ZoomPanView.h \
+    Gui/GuiComponents/ControlPointGraphicsItem.h
 
 FORMS    += \
     Gui/DebugOutput.ui \

@@ -6,11 +6,7 @@ MeshGraphicsItem::MeshGraphicsItem(int scale) :
 {
     this->color = QColor(0,255,0);
     setZValue(-10);
-    setPos(QPointF(-(mScale/2), 0));
-
-    setFlags(ItemIsSelectable);
-    setAcceptHoverEvents(true);
-
+    setPos(0,0);
 
     // set initial bounding box
     mXmax =  -std::numeric_limits<float>::infinity();
@@ -26,8 +22,36 @@ void MeshGraphicsItem::setMesh(std::shared_ptr<Mesh> mesh) {
 
 void MeshGraphicsItem::meshChanged() {
     calcBoundingBox();
+
+    foreach(auto& item, this->childItems()) {
+        delete item;
+    }
+
+    // Draw control point objects, if mMesh is set
+    if(mMesh) {
+        const auto& boundary = mMesh->getMeshBoundary();
+
+        for (auto& p : boundary)
+        {
+            ControlPointGraphicsItem* cp = new ControlPointGraphicsItem(mScale);
+            cp->setPos(w(p.x()), h(p.y()));
+            cp->setParentItem(this);
+            cp->setVisible(false);
+        }
+
+        showControlPoints(false);
+    }
+
+
     prepareGeometryChange();
     QGraphicsItem::update();
+}
+
+void MeshGraphicsItem::showControlPoints(bool visible) {
+    foreach(auto& item, this->childItems()) {
+        item->setVisible(visible);
+    }
+
 }
 
 void MeshGraphicsItem::calcBoundingBox() {
@@ -156,18 +180,6 @@ void MeshGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
         }
     }
 
-    //This scope is for rendering boundary points
-    //from all boundaries.
-    painter->setRenderHint(QPainter::Antialiasing, false);
-    painter->setPen( QPen(Qt::black, getBrushSize(), Qt::SolidLine) );
-    for (auto& p : boundary)
-    {
-        rect.moveCenter( QPoint( w(p.x()), h(p.y()) ) );
-        rect.setWidth( 7 );
-        rect.setHeight( 7 );
-        painter->drawRect( rect );
-    }
-
     //This scope is for rendering initial and last boundaries
     painter->setRenderHint(QPainter::Antialiasing, true);
     uint inc = bConnects.size()-1;
@@ -186,6 +198,10 @@ void MeshGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
                     w( boundary.at(b).x() ),
                     h( boundary.at(b).y() )
                     );
+    }
+
+    foreach(auto& item, this->childItems()) {
+        item->update();
     }
 }
 

@@ -4,6 +4,7 @@
 #include <QGraphicsView>
 #include <QWheelEvent>
 #include <QFileDialog>
+#include <ControlPointGraphicsItem.h>
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
@@ -20,6 +21,7 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
 
     ui->graphicsView->setSceneRect(QRectF(-51*mScale,-51*mScale,102*mScale,102*mScale));
     ui->graphicsView->setScene(mScene);
+    ui->graphicsView->centerOn(0.5*mScale,0);
 
     connect(ui->meshButton,&QPushButton::clicked,this,&MeshDialog::runMesher);
 
@@ -30,6 +32,15 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
     connect(mMesh.get(),&Mesh::meshChanged,[this]() {
         mMeshGraphicsItem->meshChanged();
     });
+
+    // Stacked Widget Controls
+    connect(ui->nextButton,&QPushButton::clicked,[this]() {
+        controlPointStackedWidget();
+    });
+    connect(ui->prevButton,&QPushButton::clicked,[this]() {
+        meshStackedWidget();
+    });
+    ui->stackedWidget->setCurrentIndex(0);
 
     // profiles QComboBox setup
     ui->profile->setModel(&mProfileModel);
@@ -89,9 +100,23 @@ void MeshDialog::setMeshActive(bool meshIsActive, bool doToggleProfile) {
     if(doToggleProfile) {
         ui->toggleProfile->setChecked(!meshIsActive);
     }
-    ui->okButton->setDefault(meshIsActive);
+    ui->nextButton->setDefault(meshIsActive);
     ui->meshButton->setDefault(!meshIsActive);
-    ui->okButton->setDisabled(!meshIsActive);
+    ui->nextButton->setDisabled(!meshIsActive);
+}
+
+void MeshDialog::controlPointStackedWidget() {
+    ui->stackedWidget->setCurrentIndex(1);
+    mMeshGraphicsItem->setOpacity(0.3);
+    mProfileGraphicsItem->setOpacity(0.3);
+    mMeshGraphicsItem->showControlPoints(true);
+}
+
+void MeshDialog::meshStackedWidget() {
+    ui->stackedWidget->setCurrentIndex(0);
+    mMeshGraphicsItem->setOpacity(1);
+    mProfileGraphicsItem->setOpacity(1);
+    mMeshGraphicsItem->showControlPoints(false);
 }
 
 void MeshDialog::accept()

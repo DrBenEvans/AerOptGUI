@@ -29,6 +29,8 @@ public:
 public slots:
     void runMesher();
     void setProfile();
+    void controlPointStackedWidget();
+    void meshStackedWidget();
 
 private slots:
     void on_profile_currentIndexChanged(int index);
@@ -47,7 +49,7 @@ private:
     std::shared_ptr<Mesh> mMesh;
     QGraphicsScene* mScene;
     ProfileModel& mProfileModel;
-    int mScale = 500;
+    int mScale = 1000;
     ProfileGraphicsItem* mProfileGraphicsItem;
     MeshGraphicsItem* mMeshGraphicsItem;
 };

@@ -3,6 +3,7 @@
 
 #include <QGraphicsItem>
 #include "Mesh.h"
+#include "ControlPointGraphicsItem.h"
 
 class MeshGraphicsItem : public QGraphicsItem
 {
@@ -13,6 +14,7 @@ public:
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
+    void showControlPoints(bool visible);
 
 public slots:
     void meshChanged();
@@ -22,6 +24,7 @@ private:
     uint getBrushSize();
     qreal w(qreal width);
     qreal h(qreal height);
+
     QColor color;
     std::shared_ptr<Mesh> mMesh;
     int mScale;
