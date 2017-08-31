@@ -3,18 +3,18 @@
 
 #include <QGraphicsItem>
 #include "Mesh.h"
-#include "ControlPointGraphicsItem.h"
 
 class MeshGraphicsItem : public QGraphicsItem
 {
 public:
-    MeshGraphicsItem(int scale);
+    MeshGraphicsItem(int scale, QGraphicsItem *parent = 0);
 
     void setMesh(std::shared_ptr<Mesh> mesh);
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
     void showControlPoints(bool visible);
+    void setBoundaryPoints(Boundaries& boundaryPoints);
 
 public slots:
     void meshChanged();

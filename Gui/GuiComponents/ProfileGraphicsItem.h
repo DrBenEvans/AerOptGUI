@@ -7,7 +7,7 @@
 class ProfileGraphicsItem : public QGraphicsItem
 {
 public:
-    ProfileGraphicsItem(int scale);
+    ProfileGraphicsItem(int scale, QGraphicsItem *parent = 0);
 
     void setProfilePoints(ProfilePoints profilePoints);
     QRectF boundingRect() const override;

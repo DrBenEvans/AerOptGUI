@@ -4,7 +4,7 @@
 #include <QGraphicsView>
 #include <QWheelEvent>
 #include <QFileDialog>
-#include <ControlPointGraphicsItem.h>
+#include <BoundaryPointGraphicsItem.h>
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
@@ -69,6 +69,8 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
     mScene->addItem(mMeshGraphicsItem);
 
     setProfile();
+
+    runMesher();
 }
 
 void MeshDialog::setProfile() {

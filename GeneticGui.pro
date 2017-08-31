@@ -69,7 +69,8 @@ SOURCES += \
     #Core/Simulation.cpp \
     Core/OptimisationModel.cpp \
     Gui/GuiComponents/ZoomPanView.cpp \
-    Gui/GuiComponents/ControlPointGraphicsItem.cpp
+    Gui/GuiComponents/ControlPointHandleGraphicsItem.cpp \
+    Gui/GuiComponents/BoundaryPointGraphicsItem.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -94,14 +95,15 @@ HEADERS  += \
     #Core/Simulation.h \
     Core/OptimisationModel.h \
     Gui/GuiComponents/ZoomPanView.h \
-    Gui/GuiComponents/ControlPointGraphicsItem.h
+    Gui/GuiComponents/ControlPointHandleGraphicsItem.h \
+    Gui/GuiComponents/BoundaryPointGraphicsItem.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
 #    Gui/Dialogs/ConstraintsDialog.ui \
 #    Gui/Plotter/PlotterDialog.ui \
     Gui/Dialogs/ConfigSimulationDialog.ui \
-#    Gui/Dialogs/OptimisationManagerDialog.ui \
+    Gui/Dialogs/OptimisationManagerDialog.ui \
     Gui/MainWindow.ui \
     Gui/Dialogs/MeshDialog.ui
 

@@ -1,7 +1,8 @@
 #include "MeshGraphicsItem.h"
+#include "BoundaryPointGraphicsItem.h"
 #include <QtWidgets>
 
-MeshGraphicsItem::MeshGraphicsItem(int scale) :
+MeshGraphicsItem::MeshGraphicsItem(int scale, QGraphicsItem* parent) :
     mScale(scale)
 {
     this->color = QColor(0,255,0);
@@ -17,32 +18,12 @@ MeshGraphicsItem::MeshGraphicsItem(int scale) :
 
 void MeshGraphicsItem::setMesh(std::shared_ptr<Mesh> mesh) {
     mMesh = mesh;
+    setBoundaryPoints(mMesh->getMeshBoundary());
     meshChanged();
 }
 
 void MeshGraphicsItem::meshChanged() {
     calcBoundingBox();
-
-    foreach(auto& item, this->childItems()) {
-        delete item;
-    }
-
-    // Draw control point objects, if mMesh is set
-    if(mMesh) {
-        const auto& boundary = mMesh->getMeshBoundary();
-
-        for (auto& p : boundary)
-        {
-            ControlPointGraphicsItem* cp = new ControlPointGraphicsItem(mScale);
-            cp->setPos(w(p.x()), h(p.y()));
-            cp->setParentItem(this);
-            cp->setVisible(false);
-        }
-
-        showControlPoints(false);
-    }
-
-
     prepareGeometryChange();
     QGraphicsItem::update();
 }
@@ -78,6 +59,19 @@ void MeshGraphicsItem::calcBoundingBox() {
     int margin=10;
 
     mBoundingBox = QRectF(mXmin-margin, mYmin-margin, (mXmax-mXmin)+2*margin, (mYmax-mYmin)+2*margin);
+}
+
+void MeshGraphicsItem::setBoundaryPoints(Boundaries& boundaryPoints) {
+    foreach(auto& item, this->childItems()) {
+        delete item;
+    }
+
+    // Draw control point objects, if mMesh is set
+    for (auto& p : boundaryPoints)
+    {
+        BoundaryPointGraphicsItem* cp = new BoundaryPointGraphicsItem(mScale, this);
+        cp->setPos(w(p.x()), h(p.y()));
+    }
 }
 
 QRectF MeshGraphicsItem::boundingRect() const
@@ -198,10 +192,6 @@ void MeshGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
                     w( boundary.at(b).x() ),
                     h( boundary.at(b).y() )
                     );
-    }
-
-    foreach(auto& item, this->childItems()) {
-        item->update();
     }
 }
 

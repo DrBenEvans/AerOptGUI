@@ -2,7 +2,8 @@
 #include <QWheelEvent>
 #include "QDebug"
 
-ZoomPanView::ZoomPanView(QWidget* parent)
+ZoomPanView::ZoomPanView(QWidget* parent) :
+    QGraphicsView(parent)
 {
     setDragMode(QGraphicsView::ScrollHandDrag);
     setInteractive(true);

@@ -2,7 +2,8 @@
 #include <QtWidgets>
 #include <QPainter>
 
-ProfileGraphicsItem::ProfileGraphicsItem(int scale) :
+ProfileGraphicsItem::ProfileGraphicsItem(int scale, QGraphicsItem* parent) :
+    QGraphicsItem(parent),
     mScale(scale)
 {
     setZValue(0);
