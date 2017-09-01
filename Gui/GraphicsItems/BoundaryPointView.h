@@ -4,7 +4,7 @@
 #include <QGraphicsItem>
 #include "ControlPointBoundingBox.h"
 
-class BoundaryPointView : public QGraphicsItem
+class BoundaryPointView : public QGraphicsObject
 {
 public:
     BoundaryPointView(int scale, QGraphicsItem *parent);

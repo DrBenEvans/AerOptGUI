@@ -8,7 +8,7 @@
 
 
 BoundaryPointView::BoundaryPointView(int scale, QGraphicsItem* parent) :
-    QGraphicsItem(parent),
+    QGraphicsObject(parent),
     mScale(scale),
     mActive(false)
 {
