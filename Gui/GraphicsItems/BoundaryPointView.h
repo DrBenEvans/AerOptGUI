@@ -3,11 +3,12 @@
 
 #include <QGraphicsItem>
 #include "ControlPointBoundingBox.h"
+#include "BoundaryPoint.h"
 
 class BoundaryPointView : public QGraphicsObject
 {
 public:
-    BoundaryPointView(int scale, QGraphicsItem *parent);
+    BoundaryPointView(BoundaryPoint& boundaryPoint, QGraphicsItem *parent = 0);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
@@ -22,10 +23,10 @@ private:
     qreal h(qreal width);
 
     QRectF mPointRect;
-    int mScale;
     bool mActive;
     bool mControl = false;
     ControlPointBoundingBox* mControlPointHandles = nullptr;
+    BoundaryPoint& mBoundaryPoint;
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;

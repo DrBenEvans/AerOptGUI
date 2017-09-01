@@ -1,28 +1,33 @@
 #include "ControlPointBoundingBox.h"
 #include <QPainter>
 
-ControlPointBoundingBox::ControlPointBoundingBox(QGraphicsItem *parent) :
+ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPoint &bp, QGraphicsItem *parent) :
     QGraphicsItem(parent),
-    mControlPointRect(-10,-10,20,20),
-    mActive(false)
+    mActive(false),
+    mBoundaryPoint(bp)
 {
-    mTopLeft = new ControlPointDragHandle(mControlPointRect.topLeft(), true, this);
-    mBottomRight = new ControlPointDragHandle(mControlPointRect.bottomRight(), false, this);
+    QRectF rect = controlPointRect();
+    mTopLeft = new ControlPointDragHandle(rect.topLeft(), true, this);
+    mBottomRight = new ControlPointDragHandle(rect.bottomRight(), false, this);
 
 }
 
+QRectF ControlPointBoundingBox::controlPointRect() const {
+    return mBoundaryPoint.controlPointRect();
+}
+
 void ControlPointBoundingBox::topLeftMoved(QPointF pos) {
-    mControlPointRect.setTopLeft(pos);
+    mBoundaryPoint.setTopLeftBound(pos);
     prepareGeometryChange();
 }
 
 void ControlPointBoundingBox::bottomRightMoved(QPointF pos) {
-    mControlPointRect.setBottomRight(pos);
+    mBoundaryPoint.setBottomRightBound(pos);
     prepareGeometryChange();
 }
 
 QRectF ControlPointBoundingBox::boundingRect() const {
-    QRectF r = mControlPointRect;
+    QRectF r = controlPointRect();
     qreal margin = 2.0;
     r.adjust(-margin,-margin,margin,margin);
     return r;
@@ -38,7 +43,7 @@ void ControlPointBoundingBox::paint(QPainter *painter, const QStyleOptionGraphic
     }
     pen.setJoinStyle(Qt::MiterJoin);
     painter->setPen(pen);
-    painter->drawRect(mControlPointRect);
+    painter->drawRect(controlPointRect());
 }
 
 void ControlPointBoundingBox::setActivePoint(bool active) {

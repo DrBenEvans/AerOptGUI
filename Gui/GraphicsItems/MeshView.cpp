@@ -70,10 +70,10 @@ void MeshView::setBoundaryPoints(Boundaries& boundaryPoints) {
     }
 
     // Draw control point objects, if mMesh is set
-    for (auto& p : boundaryPoints)
+    for (auto& bp : boundaryPoints)
     {
-        BoundaryPointView* cp = new BoundaryPointView(mScale, this);
-        cp->setPos(w(p.x()), h(p.y()));
+        BoundaryPointView* cp = new BoundaryPointView(bp, this);
+        cp->setPos(w(bp.x()), h(bp.y()));
     }
 }
 

@@ -6,11 +6,10 @@
 #include <QGraphicsSceneMouseEvent>
 #include "BoundaryPointView.h"
 
-
-BoundaryPointView::BoundaryPointView(int scale, QGraphicsItem* parent) :
+BoundaryPointView::BoundaryPointView(BoundaryPoint& boundaryPoint, QGraphicsItem* parent) :
     QGraphicsObject(parent),
-    mScale(scale),
-    mActive(false)
+    mActive(false),
+    mBoundaryPoint(boundaryPoint)
 {
     setZValue(1);
 
@@ -85,7 +84,7 @@ void BoundaryPointView::setActivePoint(bool active) {
 void BoundaryPointView::setControl(bool ctl) {
     //build control handles
     if(mControlPointHandles == nullptr && ctl) {
-        mControlPointHandles = new ControlPointBoundingBox(this);
+        mControlPointHandles = new ControlPointBoundingBox(mBoundaryPoint, this);
     }
 
     mControlPointHandles->setVisible(ctl);
