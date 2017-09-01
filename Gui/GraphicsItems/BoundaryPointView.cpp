@@ -128,7 +128,3 @@ void BoundaryPointView::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
     QGraphicsItem::mouseDoubleClickEvent(event);
 }
-
-void BoundaryPointView::mouseMoveEvent(QGraphicsSceneMouseEvent *event) {
-    printf("%f, %f\n", event->pos());
-}

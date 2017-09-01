@@ -7,7 +7,7 @@ ControlPointBoundingBox::ControlPointBoundingBox(QGraphicsItem *parent) :
     mActive(false)
 {
     mTopLeft = new ControlPointDragHandle(mControlPointRect.topLeft(), true, this);
-    mTopLeft = new ControlPointDragHandle(mControlPointRect.bottomRight(), false, this);
+    mBottomRight = new ControlPointDragHandle(mControlPointRect.bottomRight(), false, this);
 
 }
 

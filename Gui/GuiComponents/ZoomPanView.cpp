@@ -10,13 +10,10 @@ ZoomPanView::ZoomPanView(QWidget* parent) :
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setTransformationAnchor(QGraphicsView::AnchorViewCenter);
-    setMouseTracking(true);
 }
 
 void ZoomPanView::wheelEvent(QWheelEvent* event) {
-
     //Scale the view ie. do the zoom
-    double scaleFactor = 1.15; //How fast we zoom
     qInfo() << event->delta();
     if(event->delta() > 0) {
         zoomIn();

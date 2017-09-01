@@ -19,7 +19,7 @@ public:
 private:
     QRectF mControlPointRect;
     ControlPointDragHandle* mTopLeft;
-    ControlPointDragHandle* mTopRight;
+    ControlPointDragHandle* mBottomRight;
     bool mActive;
 };
 
