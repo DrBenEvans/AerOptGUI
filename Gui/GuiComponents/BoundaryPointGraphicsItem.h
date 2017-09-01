@@ -2,7 +2,26 @@
 #define CONTROLPOINTGRAPHICSITEM_H
 
 #include <QGraphicsItem>
-#include "ControlPointHandleGraphicsItem.h"
+
+class BoundaryPointGraphicsItem;
+
+class ControlPointHandleGraphicsItem : public QGraphicsItem
+{
+public:
+    ControlPointHandleGraphicsItem(QPointF point, bool top_left, BoundaryPointGraphicsItem *parent = 0);
+
+    QRectF boundingRect() const override;
+    void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
+
+private:
+    void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
+    void hoverLeaveEvent(QGraphicsSceneHoverEvent *event) override;
+    void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+    QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
+
+    bool mTopLeft;
+    BoundaryPointGraphicsItem* mParent;
+};
 
 class BoundaryPointGraphicsItem : public QGraphicsItem
 {
@@ -31,7 +50,7 @@ private:
     std::vector<ControlPointHandleGraphicsItem> mHandles;
     QRectF mControlPointRect;
 
-protected slots:
+public:
     void topLeftMoved(QPointF pos);
     void bottomRightMoved(QPointF pos);
 

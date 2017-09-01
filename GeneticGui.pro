@@ -69,7 +69,6 @@ SOURCES += \
     #Core/Simulation.cpp \
     Core/OptimisationModel.cpp \
     Gui/GuiComponents/ZoomPanView.cpp \
-    Gui/GuiComponents/ControlPointHandleGraphicsItem.cpp \
     Gui/GuiComponents/BoundaryPointGraphicsItem.cpp
 
 HEADERS  += \
@@ -95,7 +94,6 @@ HEADERS  += \
     #Core/Simulation.h \
     Core/OptimisationModel.h \
     Gui/GuiComponents/ZoomPanView.h \
-    Gui/GuiComponents/ControlPointHandleGraphicsItem.h \
     Gui/GuiComponents/BoundaryPointGraphicsItem.h
 
 FORMS    += \
