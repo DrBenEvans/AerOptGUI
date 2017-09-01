@@ -14,7 +14,7 @@ public:
 
 private:
     bool active() const;
-    void setActive(bool active);
+    void setActivePoint(bool active);
     bool control();
     void setControl(bool ctl);
     qreal radius() const;

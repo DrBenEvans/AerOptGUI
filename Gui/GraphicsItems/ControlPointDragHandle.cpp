@@ -24,18 +24,14 @@ ControlPointDragHandle::ControlPointDragHandle(QPointF point, bool top_left, Con
 
 void ControlPointDragHandle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget */*widget*/)
 {
-    QPen pen;
-    QBrush brush;
 
-    pen = QPen(Qt::black, 1, Qt::SolidLine);
-    brush = QBrush(Qt::red);
+    QPen pen = QPen(Qt::black, 1, Qt::SolidLine);
+    QBrush brush = QBrush(Qt::white);
+    pen.setJoinStyle(Qt::MiterJoin);
     painter->setBrush(brush);
     painter->setPen(pen);
 
-    QPainterPath path;
-    path.addRect(mHandleRect);
-    painter->fillPath(path, brush);
-    painter->drawPath(path);
+    painter->drawRect(mHandleRect);
 }
 
 QRectF ControlPointDragHandle::boundingRect() const

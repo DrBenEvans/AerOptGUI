@@ -15,10 +15,12 @@ public:
 
     void topLeftMoved(QPointF pos);
     void bottomRightMoved(QPointF pos);
+    void setActivePoint(bool active);
 private:
     QRectF mControlPointRect;
     ControlPointDragHandle* mTopLeft;
     ControlPointDragHandle* mTopRight;
+    bool mActive;
 };
 
 #endif // CONTROLPOINTBOUNDINGBOXVIEW_H

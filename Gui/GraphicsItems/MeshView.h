@@ -15,6 +15,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
     void showControlPoints(bool visible);
     void setBoundaryPoints(Boundaries& boundaryPoints);
+    void clearBoundaryPoint();
 
 public slots:
     void meshChanged();

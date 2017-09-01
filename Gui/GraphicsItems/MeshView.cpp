@@ -23,6 +23,9 @@ void MeshView::setMesh(std::shared_ptr<Mesh> mesh) {
 }
 
 void MeshView::meshChanged() {
+    if(mMesh) {
+        setBoundaryPoints(mMesh->getMeshBoundary());
+    }
     calcBoundingBox();
     prepareGeometryChange();
     QGraphicsItem::update();

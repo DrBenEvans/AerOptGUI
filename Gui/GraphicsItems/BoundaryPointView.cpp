@@ -14,7 +14,7 @@ BoundaryPointView::BoundaryPointView(int scale, QGraphicsItem* parent) :
 {
     setZValue(1);
 
-    setFlags(ItemIsSelectable | ItemIgnoresParentOpacity | ItemIgnoresTransformations);
+    setFlags(ItemIsSelectable | ItemIgnoresParentOpacity);
     setAcceptHoverEvents(true);
 
     qreal r = radius();
@@ -38,10 +38,11 @@ void BoundaryPointView::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     QPen pen;
     QBrush brush;
     if(active()) {
-        pen = QPen(Qt::green, 2, Qt::SolidLine);
+        pen = QPen(Qt::blue, 2, Qt::SolidLine);
     } else {
-        pen = QPen(Qt::blue, 1, Qt::SolidLine);
+        pen = QPen(Qt::black, 2, Qt::SolidLine);
     }
+    pen.setJoinStyle(Qt::MiterJoin);
 
     if(mControl) {
         brush = QBrush(Qt::red);
@@ -62,7 +63,7 @@ bool BoundaryPointView::active() const {
     return mActive;
 }
 
-void BoundaryPointView::setActive(bool active) {
+void BoundaryPointView::setActivePoint(bool active) {
     mActive = active;
     foreach(auto& view, scene()->views()) {
         if(active) {
@@ -70,6 +71,10 @@ void BoundaryPointView::setActive(bool active) {
         } else {
             view->setDragMode(QGraphicsView::ScrollHandDrag);
         }
+    }
+
+    if(mControlPointHandles != nullptr) {
+        mControlPointHandles->setActivePoint(active);
     }
 
     prepareGeometryChange();
@@ -86,7 +91,7 @@ void BoundaryPointView::setControl(bool ctl) {
     mControlPointHandles->setVisible(ctl);
 
     mControl = ctl;
-    setActive(ctl);
+    setActivePoint(ctl);
 }
 
 bool BoundaryPointView::control() {
@@ -95,7 +100,7 @@ bool BoundaryPointView::control() {
 
 void BoundaryPointView::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    setActive(true);
+    setActivePoint(true);
     foreach(auto& view, scene()->views()) {
         view->setDragMode(QGraphicsView::NoDrag);
         view->setCursor(Qt::ArrowCursor);
@@ -107,7 +112,7 @@ void BoundaryPointView::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void BoundaryPointView::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    setActive(false);
+    setActivePoint(false);
     foreach(auto& view, scene()->views()) {
         view->setDragMode(QGraphicsView::ScrollHandDrag);
     }
