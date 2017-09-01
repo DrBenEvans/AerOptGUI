@@ -54,24 +54,25 @@ SOURCES += \
     Gui/Dialogs/MeshDialog.cpp \
     Gui/Plotter/qcustomplot.cpp \
     Gui/GuiComponents/Arrow.cpp \
-    Gui/GuiComponents/BoundaryPoint.cpp \
     Gui/Dialogs/ConfigSimulationDialog.cpp \
     #Gui/AppController.cpp \
     Gui/Dialogs/OptimisationManagerDialog.cpp \
     Gui/MainWindow.cpp \
     Core/Mesh.cpp \
-    Core/ProfileModel.cpp \
     Core/Profile.cpp \
     #Gui/Dialogs/PlotterDialog.cpp \
     Core/Optimisation.cpp \
     #Core/Simulation.cpp \
-    Core/OptimisationModel.cpp \
     Gui/GuiComponents/ZoomPanView.cpp \
     Gui/GraphicsItems/BoundaryPointView.cpp \
     Gui/GraphicsItems/MeshView.cpp \
     Gui/GraphicsItems/ProfileView.cpp \
     Gui/GraphicsItems/ControlPointBoundingBox.cpp \
-    Gui/GraphicsItems/ControlPointDragHandle.cpp
+    Gui/GraphicsItems/ControlPointDragHandle.cpp \
+    Core/BoundaryPoint.cpp \
+    Gui/Models/BoundaryPointModel.cpp \
+    Gui/Models/ProfileModel.cpp \
+    Gui/Models/OptimisationModel.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -79,26 +80,27 @@ HEADERS  += \
     Gui/Dialogs/MeshDialog.h \
     Gui/Plotter/qcustomplot.h \
     Gui/GuiComponents/Arrow.h \
-    Gui/GuiComponents/BoundaryPoint.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
     #Gui/AppController.h \
     Gui/Dialogs/OptimisationManagerDialog.h \
     Gui/MainWindow.h \
     Core/Mesh.h \
-    Core/ProfileModel.h \
     Core/Profile.h \
     Core/Enumerations.h \
     Core/CustomTypes.h \
     #Gui/Dialogs/PlotterDialog.h \
     Core/Optimisation.h \
     #Core/Simulation.h \
-    Core/OptimisationModel.h \
     Gui/GuiComponents/ZoomPanView.h \
     Gui/GraphicsItems/MeshView.h \
     Gui/GraphicsItems/ProfileView.h \
     Gui/GraphicsItems/BoundaryPointView.h \
     Gui/GraphicsItems/ControlPointBoundingBox.h \
-    Gui/GraphicsItems/ControlPointDragHandle.h
+    Gui/GraphicsItems/ControlPointDragHandle.h \
+    Core/BoundaryPoint.h \
+    Gui/Models/BoundaryPointModel.h \
+    Gui/Models/ProfileModel.h \
+    Gui/Models/OptimisationModel.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
@@ -115,6 +117,7 @@ INCLUDEPATH += \
     Gui/GuiComponents \
     Gui/GraphicsItems \
     Gui/Plotter \
+    Gui/Models \
     Core
 
 RESOURCES += \

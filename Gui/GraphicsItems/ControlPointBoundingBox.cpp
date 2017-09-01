@@ -19,11 +19,13 @@ QRectF ControlPointBoundingBox::controlPointRect() const {
 void ControlPointBoundingBox::topLeftMoved(QPointF pos) {
     mBoundaryPoint.setTopLeftBound(pos);
     prepareGeometryChange();
+    update();
 }
 
 void ControlPointBoundingBox::bottomRightMoved(QPointF pos) {
     mBoundaryPoint.setBottomRightBound(pos);
     prepareGeometryChange();
+    update();
 }
 
 QRectF ControlPointBoundingBox::boundingRect() const {

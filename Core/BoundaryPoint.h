@@ -25,17 +25,18 @@ public:
 
     qreal x() const;
     qreal y() const;
-    void getBoundCoords(qreal *x1,qreal *y1,qreal *x2,qreal *y2);
-    void setBoundCoords(qreal x1,qreal y1,qreal x2,qreal y2);
+    QRectF controlPointRect();
     bool isControlPoint();
     uint getSmoothing();
     uint getSmoothFactor();
     void setSmoothing(uint smoothing);
+    void setTopLeftBound(QPointF pos);
+    void setBottomRightBound(QPointF pos);
 
 private:
     QPointF mCoord;
     bool mIsControlPoint = false;
-    QRectF mBounds;
+    QRectF mControlPointRect;
     uint mSmooth = 0.0;
 
 };

@@ -3,7 +3,7 @@
 #include <cmath>
 #include <QDebug>
 
-Mesh::Mesh() :
+Mesh::Mesh(QObject *parent): QObject(parent),
     mMeshDensity(Enum::Mesh::COURSE),
     mProfilePoints()
 {

@@ -14,12 +14,12 @@
 
 BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord) :
     mCoord(xcoord,ycoord),
-    mBounds(0,0,0,0)
+    mControlPointRect(-10,-10,20,20)
 {
 }
 
-void BoundaryPoint::getBoundCoords(qreal *x1,qreal *y1,qreal *x2,qreal *y2) {
-    mBounds.getCoords(x1,y1,x2,y2);
+QRectF BoundaryPoint::controlPointRect() {
+    return mControlPointRect;
 }
 
 qreal BoundaryPoint::x() const {
@@ -28,11 +28,6 @@ qreal BoundaryPoint::x() const {
 
 qreal BoundaryPoint::y() const {
     return mCoord.y();
-}
-
-void BoundaryPoint::setBoundCoords(qreal x1,qreal y1,qreal x2,qreal y2) {
-    mIsControlPoint = true;
-    mBounds.setCoords(x1,y1,x2,y2);
 }
 
 uint BoundaryPoint::getSmoothing() {
@@ -51,3 +46,10 @@ bool BoundaryPoint::isControlPoint() {
     return mIsControlPoint;
 }
 
+void BoundaryPoint::setTopLeftBound(QPointF pos) {
+    mControlPointRect.setTopLeft(pos);
+}
+
+void BoundaryPoint::setBottomRightBound(QPointF pos) {
+    mControlPointRect.setBottomRight(pos);
+}

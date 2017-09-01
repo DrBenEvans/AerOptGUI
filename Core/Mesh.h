@@ -13,7 +13,7 @@ class Mesh : public QObject
 {
     Q_OBJECT
 public:
-    Mesh();
+    Mesh(QObject* parent = 0);
 
     // Getters
     int getNumBoundaryLayers();
