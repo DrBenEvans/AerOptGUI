@@ -12,27 +12,6 @@
 #include <iostream>
 #include "BoundaryPoint.h"
 
-BoundaryPoint::BoundaryPoint(QPointF coords, QRectF bounding_box) :
-    mCoord(coords),
-    mBounds(bounding_box)
-{
-    mIsControlPoint = false;
-}
-
-BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord, qreal bb_x, qreal bb_y, qreal bb_width, qreal bb_height) :
-    mCoord(xcoord,ycoord),
-    mBounds(bb_x,bb_y,bb_width,bb_height)
-{
-    mIsControlPoint = false;
-}
-
-BoundaryPoint::BoundaryPoint(QPointF coords) :
-    mCoord(coords),
-    mBounds(0,0,0,0)
-{
-    mIsControlPoint = false;
-}
-
 BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord) :
     mCoord(xcoord,ycoord),
     mBounds(0,0,0,0)

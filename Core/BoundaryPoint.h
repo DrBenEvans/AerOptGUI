@@ -21,10 +21,7 @@ public:
     void setPoint(QPointF ctl_point);
     void setBounds(QRectF ctl_bounds);
 
-    BoundaryPoint(QPointF coords);
     BoundaryPoint(qreal xcoord, qreal ycoord);
-    BoundaryPoint(QPointF coords, QRectF bounding_box);
-    BoundaryPoint(qreal xcoord, qreal ycoord, qreal bb_x, qreal bb_y, qreal bb_width, qreal bb_height);
 
     qreal x() const;
     qreal y() const;
