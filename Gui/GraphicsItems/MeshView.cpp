@@ -31,13 +31,6 @@ void MeshView::meshChanged() {
     QGraphicsItem::update();
 }
 
-void MeshView::showControlPoints(bool visible) {
-    foreach(auto& item, this->childItems()) {
-        item->setVisible(visible);
-    }
-
-}
-
 void MeshView::calcBoundingBox() {
     if(!mMesh) return;
 

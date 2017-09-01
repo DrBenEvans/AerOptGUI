@@ -29,8 +29,6 @@ public:
 public slots:
     void runMesher();
     void setProfile();
-    void controlPointStackedWidget();
-    void meshStackedWidget();
 
 private slots:
     void on_profile_currentIndexChanged(int index);

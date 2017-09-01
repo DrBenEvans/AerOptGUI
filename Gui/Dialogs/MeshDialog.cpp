@@ -32,15 +32,6 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
         mMeshView->meshChanged();
     });
 
-    // Stacked Widget Controls
-    connect(ui->nextButton,&QPushButton::clicked,[this]() {
-        controlPointStackedWidget();
-    });
-    connect(ui->prevButton,&QPushButton::clicked,[this]() {
-        meshStackedWidget();
-    });
-    ui->stackedWidget->setCurrentIndex(0);
-
     // profiles QComboBox setup
     ui->profile->setModel(&mProfileModel);
 
@@ -101,23 +92,7 @@ void MeshDialog::setMeshActive(bool meshIsActive, bool doToggleProfile) {
     if(doToggleProfile) {
         ui->toggleProfile->setChecked(!meshIsActive);
     }
-    ui->nextButton->setDefault(meshIsActive);
     ui->meshButton->setDefault(!meshIsActive);
-    ui->nextButton->setDisabled(!meshIsActive);
-}
-
-void MeshDialog::controlPointStackedWidget() {
-    ui->stackedWidget->setCurrentIndex(1);
-    mMeshView->setOpacity(0.3);
-    mProfileView->setOpacity(0.3);
-    mMeshView->showControlPoints(true);
-}
-
-void MeshDialog::meshStackedWidget() {
-    ui->stackedWidget->setCurrentIndex(0);
-    mMeshView->setOpacity(1);
-    mProfileView->setOpacity(1);
-    mMeshView->showControlPoints(false);
 }
 
 void MeshDialog::accept()

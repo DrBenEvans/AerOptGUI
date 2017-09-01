@@ -71,7 +71,8 @@ SOURCES += \
     Gui/GraphicsItems/ControlPointDragHandle.cpp \
     Core/BoundaryPoint.cpp \
     Gui/Models/ProfileModel.cpp \
-    Gui/Models/OptimisationModel.cpp
+    Gui/Models/OptimisationModel.cpp \
+    Gui/GuiComponents/ControlPointView.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -98,7 +99,8 @@ HEADERS  += \
     Gui/GraphicsItems/ControlPointDragHandle.h \
     Core/BoundaryPoint.h \
     Gui/Models/ProfileModel.h \
-    Gui/Models/OptimisationModel.h
+    Gui/Models/OptimisationModel.h \
+    Gui/GuiComponents/ControlPointView.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
@@ -107,7 +109,8 @@ FORMS    += \
     Gui/Dialogs/ConfigSimulationDialog.ui \
     Gui/Dialogs/OptimisationManagerDialog.ui \
     Gui/MainWindow.ui \
-    Gui/Dialogs/MeshDialog.ui
+    Gui/Dialogs/MeshDialog.ui \
+    Gui/GuiComponents/ControlPointView.ui
 
 INCLUDEPATH += \
     Gui \
