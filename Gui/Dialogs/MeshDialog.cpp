@@ -4,7 +4,6 @@
 #include <QGraphicsView>
 #include <QWheelEvent>
 #include <QFileDialog>
-#include <BoundaryPointGraphicsItem.h>
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
@@ -14,8 +13,8 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
     mMesh(initMesh),
     mScene(new QGraphicsScene(this)),
     mProfileModel(profileModel),
-    mProfileGraphicsItem(new ProfileGraphicsItem(mScale)),
-    mMeshGraphicsItem(new MeshGraphicsItem(mScale))
+    mProfileView(new ProfileView(mScale)),
+    mMeshView(new MeshView(mScale))
 {
 	ui->setupUi(this);
 
@@ -26,11 +25,11 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
     connect(ui->meshButton,&QPushButton::clicked,this,&MeshDialog::runMesher);
 
     connect(ui->toggleProfile,&QCheckBox::toggled,[this](bool checked) {
-        mProfileGraphicsItem->setVisible(checked);
+        mProfileView->setVisible(checked);
     });
 
     connect(mMesh.get(),&Mesh::meshChanged,[this]() {
-        mMeshGraphicsItem->meshChanged();
+        mMeshView->meshChanged();
     });
 
     // Stacked Widget Controls
@@ -65,8 +64,8 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
     ui->layers->setValue(mMesh->getNumBoundaryLayers());
     ui->thickness->setValue(mMesh->getBoundaryLayerThickness());
 
-    mScene->addItem(mProfileGraphicsItem);
-    mScene->addItem(mMeshGraphicsItem);
+    mScene->addItem(mProfileView);
+    mScene->addItem(mMeshView);
 
     setProfile();
 
@@ -78,7 +77,7 @@ void MeshDialog::setProfile() {
     ProfilePoints profilePoints = ui->profile->currentData(Qt::UserRole).value<ProfilePoints>();
     mMesh->setProfilePoints(profilePoints);
     setMeshActive(false);
-    mProfileGraphicsItem->setProfilePoints(mMesh->profilePoints());
+    mProfileView->setProfilePoints(mMesh->profilePoints());
 }
 
 MeshDialog::~MeshDialog()
@@ -94,7 +93,7 @@ void MeshDialog::runMesher() {
     // set profile
     mMesh->runMesher();
 
-    mMeshGraphicsItem->setMesh(mMesh);
+    mMeshView->setMesh(mMesh);
     setMeshActive(true);
 }
 
@@ -109,16 +108,16 @@ void MeshDialog::setMeshActive(bool meshIsActive, bool doToggleProfile) {
 
 void MeshDialog::controlPointStackedWidget() {
     ui->stackedWidget->setCurrentIndex(1);
-    mMeshGraphicsItem->setOpacity(0.3);
-    mProfileGraphicsItem->setOpacity(0.3);
-    mMeshGraphicsItem->showControlPoints(true);
+    mMeshView->setOpacity(0.3);
+    mProfileView->setOpacity(0.3);
+    mMeshView->showControlPoints(true);
 }
 
 void MeshDialog::meshStackedWidget() {
     ui->stackedWidget->setCurrentIndex(0);
-    mMeshGraphicsItem->setOpacity(1);
-    mProfileGraphicsItem->setOpacity(1);
-    mMeshGraphicsItem->showControlPoints(false);
+    mMeshView->setOpacity(1);
+    mProfileView->setOpacity(1);
+    mMeshView->showControlPoints(false);
 }
 
 void MeshDialog::accept()

@@ -1,8 +1,8 @@
-#include "ProfileGraphicsItem.h"
+#include "ProfileView.h"
 #include <QtWidgets>
 #include <QPainter>
 
-ProfileGraphicsItem::ProfileGraphicsItem(int scale, QGraphicsItem* parent) :
+ProfileView::ProfileView(int scale, QGraphicsItem* parent) :
     QGraphicsItem(parent),
     mScale(scale)
 {
@@ -11,13 +11,13 @@ ProfileGraphicsItem::ProfileGraphicsItem(int scale, QGraphicsItem* parent) :
 }
 
 
-void ProfileGraphicsItem::setProfilePoints(ProfilePoints profilePoints) {
+void ProfileView::setProfilePoints(ProfilePoints profilePoints) {
     mProfile = profilePoints;
     prepareGeometryChange();
     QGraphicsItem::update();
 }
 
-QRectF ProfileGraphicsItem::boundingRect() const
+QRectF ProfileView::boundingRect() const
 {
     float x, y;
     float xmax =  -std::numeric_limits<float>::infinity();
@@ -44,7 +44,7 @@ QRectF ProfileGraphicsItem::boundingRect() const
     return QRectF(xmin-margin, ymin-margin, (xmax-xmin)+2*margin, (ymax-ymin)+2*margin);
 }
 
-void ProfileGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void ProfileView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QPen pen(Qt::blue, 1, Qt::SolidLine);
     painter->setBrush(Qt::NoBrush);
@@ -76,10 +76,10 @@ void ProfileGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsIte
     }
 }
 
-qreal ProfileGraphicsItem::w(qreal width) {
+qreal ProfileView::w(qreal width) {
     return width*mScale;
 }
 
-qreal ProfileGraphicsItem::h(qreal height) {
+qreal ProfileView::h(qreal height) {
     return height*mScale;
 }

@@ -4,10 +4,10 @@
 #include <QGraphicsItem>
 #include "Mesh.h"
 
-class MeshGraphicsItem : public QGraphicsItem
+class MeshView : public QGraphicsItem
 {
 public:
-    MeshGraphicsItem(int scale, QGraphicsItem *parent = 0);
+    MeshView(int scale, QGraphicsItem *parent = 0);
 
     void setMesh(std::shared_ptr<Mesh> mesh);
     QRectF boundingRect() const override;

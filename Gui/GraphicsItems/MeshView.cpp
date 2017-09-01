@@ -1,8 +1,8 @@
-#include "MeshGraphicsItem.h"
-#include "BoundaryPointGraphicsItem.h"
+#include "MeshView.h"
+#include "BoundaryPointView.h"
 #include <QtWidgets>
 
-MeshGraphicsItem::MeshGraphicsItem(int scale, QGraphicsItem* parent) :
+MeshView::MeshView(int scale, QGraphicsItem* parent) :
     mScale(scale)
 {
     this->color = QColor(0,255,0);
@@ -16,26 +16,26 @@ MeshGraphicsItem::MeshGraphicsItem(int scale, QGraphicsItem* parent) :
     mYmin =  std::numeric_limits<float>::infinity();
 }
 
-void MeshGraphicsItem::setMesh(std::shared_ptr<Mesh> mesh) {
+void MeshView::setMesh(std::shared_ptr<Mesh> mesh) {
     mMesh = mesh;
     setBoundaryPoints(mMesh->getMeshBoundary());
     meshChanged();
 }
 
-void MeshGraphicsItem::meshChanged() {
+void MeshView::meshChanged() {
     calcBoundingBox();
     prepareGeometryChange();
     QGraphicsItem::update();
 }
 
-void MeshGraphicsItem::showControlPoints(bool visible) {
+void MeshView::showControlPoints(bool visible) {
     foreach(auto& item, this->childItems()) {
         item->setVisible(visible);
     }
 
 }
 
-void MeshGraphicsItem::calcBoundingBox() {
+void MeshView::calcBoundingBox() {
     if(!mMesh) return;
 
     float x, y;
@@ -61,7 +61,7 @@ void MeshGraphicsItem::calcBoundingBox() {
     mBoundingBox = QRectF(mXmin-margin, mYmin-margin, (mXmax-mXmin)+2*margin, (mYmax-mYmin)+2*margin);
 }
 
-void MeshGraphicsItem::setBoundaryPoints(Boundaries& boundaryPoints) {
+void MeshView::setBoundaryPoints(Boundaries& boundaryPoints) {
     foreach(auto& item, this->childItems()) {
         delete item;
     }
@@ -69,24 +69,24 @@ void MeshGraphicsItem::setBoundaryPoints(Boundaries& boundaryPoints) {
     // Draw control point objects, if mMesh is set
     for (auto& p : boundaryPoints)
     {
-        BoundaryPointGraphicsItem* cp = new BoundaryPointGraphicsItem(mScale, this);
+        BoundaryPointView* cp = new BoundaryPointView(mScale, this);
         cp->setPos(w(p.x()), h(p.y()));
     }
 }
 
-QRectF MeshGraphicsItem::boundingRect() const
+QRectF MeshView::boundingRect() const
 {
     return mBoundingBox;
 }
 
-QPainterPath MeshGraphicsItem::shape() const
+QPainterPath MeshView::shape() const
 {
     QPainterPath path;
     path.addRect(boundingRect());
     return path;
 }
 
-void MeshGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
     if(!mMesh) return;
@@ -195,14 +195,14 @@ void MeshGraphicsItem::paint(QPainter *painter, const QStyleOptionGraphicsItem *
     }
 }
 
-uint MeshGraphicsItem::getBrushSize() {
+uint MeshView::getBrushSize() {
     return 0;
 }
 
-qreal MeshGraphicsItem::w(qreal width) {
+qreal MeshView::w(qreal width) {
     return width*mScale;
 }
 
-qreal MeshGraphicsItem::h(qreal height) {
+qreal MeshView::h(qreal height) {
     return height*mScale;
 }

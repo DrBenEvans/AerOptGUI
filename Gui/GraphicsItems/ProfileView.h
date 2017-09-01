@@ -4,10 +4,10 @@
 #include "CustomTypes.h"
 #include <QGraphicsItem>
 
-class ProfileGraphicsItem : public QGraphicsItem
+class ProfileView : public QGraphicsItem
 {
 public:
-    ProfileGraphicsItem(int scale, QGraphicsItem *parent = 0);
+    ProfileView(int scale, QGraphicsItem *parent = 0);
 
     void setProfilePoints(ProfilePoints profilePoints);
     QRectF boundingRect() const override;

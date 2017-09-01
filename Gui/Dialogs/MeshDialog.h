@@ -5,8 +5,8 @@
 #include <QDialog>
 #include <QGraphicsScene>
 #include "ProfileModel.h"
-#include "ProfileGraphicsItem.h"
-#include "MeshGraphicsItem.h"
+#include "ProfileView.h"
+#include "MeshView.h"
 
 #include "Enumerations.h"
 #include "Mesh.h"
@@ -50,8 +50,8 @@ private:
     QGraphicsScene* mScene;
     ProfileModel& mProfileModel;
     int mScale = 1000;
-    ProfileGraphicsItem* mProfileGraphicsItem;
-    MeshGraphicsItem* mMeshGraphicsItem;
+    ProfileView* mProfileView;
+    MeshView* mMeshView;
 };
 
 #endif // MESHDIALOG_H

@@ -55,8 +55,6 @@ SOURCES += \
     Gui/Plotter/qcustomplot.cpp \
     Gui/GuiComponents/Arrow.cpp \
     Gui/GuiComponents/BoundaryPoint.cpp \
-    Gui/GuiComponents/ProfileGraphicsItem.cpp \
-    Gui/GuiComponents/MeshGraphicsItem.cpp \
     Gui/Dialogs/ConfigSimulationDialog.cpp \
     #Gui/AppController.cpp \
     Gui/Dialogs/OptimisationManagerDialog.cpp \
@@ -69,7 +67,11 @@ SOURCES += \
     #Core/Simulation.cpp \
     Core/OptimisationModel.cpp \
     Gui/GuiComponents/ZoomPanView.cpp \
-    Gui/GuiComponents/BoundaryPointGraphicsItem.cpp
+    Gui/GraphicsItems/BoundaryPointView.cpp \
+    Gui/GraphicsItems/MeshView.cpp \
+    Gui/GraphicsItems/ProfileView.cpp \
+    Gui/GraphicsItems/ControlPointBoundingBox.cpp \
+    Gui/GraphicsItems/ControlPointDragHandle.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -78,8 +80,6 @@ HEADERS  += \
     Gui/Plotter/qcustomplot.h \
     Gui/GuiComponents/Arrow.h \
     Gui/GuiComponents/BoundaryPoint.h \
-    Gui/GuiComponents/ProfileGraphicsItem.h \
-    Gui/GuiComponents/MeshGraphicsItem.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
     #Gui/AppController.h \
     Gui/Dialogs/OptimisationManagerDialog.h \
@@ -94,7 +94,11 @@ HEADERS  += \
     #Core/Simulation.h \
     Core/OptimisationModel.h \
     Gui/GuiComponents/ZoomPanView.h \
-    Gui/GuiComponents/BoundaryPointGraphicsItem.h
+    Gui/GraphicsItems/MeshView.h \
+    Gui/GraphicsItems/ProfileView.h \
+    Gui/GraphicsItems/BoundaryPointView.h \
+    Gui/GraphicsItems/ControlPointBoundingBox.h \
+    Gui/GraphicsItems/ControlPointDragHandle.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
@@ -109,6 +113,7 @@ INCLUDEPATH += \
     Gui \
     Gui/Dialogs \
     Gui/GuiComponents \
+    Gui/GraphicsItems \
     Gui/Plotter \
     Core
 
