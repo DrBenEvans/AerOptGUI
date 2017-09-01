@@ -12,10 +12,12 @@
 #include <utility>
 #include <vector>
 #include <QRectF>
+#include <QObject>
 
 #include "Enumerations.h"
 
-class BoundaryPoint {
+class BoundaryPoint : public QObject {
+    Q_OBJECT
 
 public:
     void setPoint(QPointF ctl_point);
@@ -33,6 +35,9 @@ public:
     void setTopLeftBound(QPointF pos);
     void setBottomRightBound(QPointF pos);
 
+signals:
+    void controlRectChanged();
+
 private:
     QPointF mCoord;
     bool mIsControlPoint = false;
@@ -41,6 +46,6 @@ private:
 
 };
 
-typedef std::vector<BoundaryPoint> Boundaries;
+typedef std::vector<std::shared_ptr<BoundaryPoint>> Boundaries;
 
 #endif // BOUNDARY_POINT_H

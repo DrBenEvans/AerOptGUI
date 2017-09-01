@@ -37,12 +37,6 @@ public:
      * Gets a reference to the current bounday data.
      */
     Boundaries &getMeshBoundary();
-    /**
-     * @brief getControlPoints
-     * @return A reference to the list of control point indices.
-     * Gets a reference to the current list of selected control points.
-     */
-    const std::list<unsigned int>& getControlPoints() const;
 
     // Setters
     void setNumBoundaryLayers(int num_layers);
@@ -132,16 +126,6 @@ public:
      * Gets a reference to the list of results data.
      */
     const MeshResults& getMeshData() const;
-    /**
-     * @brief getControlPoint
-     * @param index Index of the boundary point
-     * of interest.
-     * @return A point and a rectangle representing
-     * the control point of interest.
-     * This function returns a reference to the control
-     * point of interest.
-     */
-    BoundaryPoint &getControlPoint(const uint& index);
     /**
      * @brief checkBoundaryIntegrity
      * @return True if the boundary integrity is OK.

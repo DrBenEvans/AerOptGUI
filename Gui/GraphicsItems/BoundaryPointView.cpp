@@ -6,7 +6,7 @@
 #include <QGraphicsSceneMouseEvent>
 #include "BoundaryPointView.h"
 
-BoundaryPointView::BoundaryPointView(BoundaryPoint& boundaryPoint, QGraphicsItem* parent) :
+BoundaryPointView::BoundaryPointView(std::shared_ptr<BoundaryPoint> boundaryPoint, QGraphicsItem* parent) :
     QGraphicsObject(parent),
     mActive(false),
     mBoundaryPoint(boundaryPoint)

@@ -777,11 +777,6 @@ void Mesh::selectControlPoint(const unsigned int& index)
     mControlPoints.sort();
 }
 
-BoundaryPoint& Mesh::getControlPoint(const uint& index)
-{
-    return mMeshProfile.at(index);
-}
-
 bool Mesh::checkBoundaryIntegrity()
 {
     bool r = true;
@@ -860,7 +855,8 @@ void Mesh::clear() {
 
 void Mesh::addBoundaryPoint(const float& x, const float& y)
 {
-    mMeshProfile.emplace_back(x,y);
+    std::shared_ptr<BoundaryPoint> bp(new BoundaryPoint(x, y));
+    mMeshProfile.push_back(bp);
 }
 
 bool Mesh::loadResults(const std::string& filePath)
@@ -889,9 +885,4 @@ void Mesh::setNumBoundaryLayers(int num) {
 
 void Mesh::setBoundaryLayerThickness(qreal thickness) {
     mBoundaryLayerThickness = thickness;
-}
-
-const std::list<unsigned int>& Mesh::getControlPoints() const
-{
-    return mControlPoints;
 }

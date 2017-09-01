@@ -73,7 +73,7 @@ void MeshView::setBoundaryPoints(Boundaries& boundaryPoints) {
     for (auto& bp : boundaryPoints)
     {
         BoundaryPointView* cp = new BoundaryPointView(bp, this);
-        cp->setPos(w(bp.x()), h(bp.y()));
+        cp->setPos(w(bp->x()), h(bp->y()));
     }
 }
 
@@ -190,10 +190,10 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         uint b = bConnects.at(j).second - 1;
 
         painter->drawLine(
-                    w( boundary.at(a).x() ),
-                    h( boundary.at(a).y() ),
-                    w( boundary.at(b).x() ),
-                    h( boundary.at(b).y() )
+                    w( boundary.at(a)->x() ),
+                    h( boundary.at(a)->y() ),
+                    w( boundary.at(b)->x() ),
+                    h( boundary.at(b)->y() )
                     );
     }
 }

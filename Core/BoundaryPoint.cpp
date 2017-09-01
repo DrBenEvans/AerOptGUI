@@ -48,8 +48,10 @@ bool BoundaryPoint::isControlPoint() {
 
 void BoundaryPoint::setTopLeftBound(QPointF pos) {
     mControlPointRect.setTopLeft(pos);
+    emit controlRectChanged();
 }
 
 void BoundaryPoint::setBottomRightBound(QPointF pos) {
     mControlPointRect.setBottomRight(pos);
+    emit controlRectChanged();
 }

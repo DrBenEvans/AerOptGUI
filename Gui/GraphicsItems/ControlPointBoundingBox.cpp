@@ -1,8 +1,8 @@
 #include "ControlPointBoundingBox.h"
 #include <QPainter>
 
-ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPoint &bp, QGraphicsItem *parent) :
-    QGraphicsItem(parent),
+ControlPointBoundingBox::ControlPointBoundingBox(std::shared_ptr<BoundaryPoint> bp, QGraphicsItem *parent) :
+    QGraphicsObject(parent),
     mActive(false),
     mBoundaryPoint(bp)
 {
@@ -10,22 +10,26 @@ ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPoint &bp, QGraphicsIte
     mTopLeft = new ControlPointDragHandle(rect.topLeft(), true, this);
     mBottomRight = new ControlPointDragHandle(rect.bottomRight(), false, this);
 
+    // connect boundary point signals
+    connect(mBoundaryPoint.get(), &BoundaryPoint::controlRectChanged, this, &ControlPointBoundingBox::controlRectChanged);
+
 }
 
 QRectF ControlPointBoundingBox::controlPointRect() const {
-    return mBoundaryPoint.controlPointRect();
+    return mBoundaryPoint->controlPointRect();
+}
+
+void ControlPointBoundingBox::controlRectChanged() {
+    prepareGeometryChange();
+    update();
 }
 
 void ControlPointBoundingBox::topLeftMoved(QPointF pos) {
-    mBoundaryPoint.setTopLeftBound(pos);
-    prepareGeometryChange();
-    update();
+    mBoundaryPoint->setTopLeftBound(pos);
 }
 
 void ControlPointBoundingBox::bottomRightMoved(QPointF pos) {
-    mBoundaryPoint.setBottomRightBound(pos);
-    prepareGeometryChange();
-    update();
+    mBoundaryPoint->setBottomRightBound(pos);
 }
 
 QRectF ControlPointBoundingBox::boundingRect() const {

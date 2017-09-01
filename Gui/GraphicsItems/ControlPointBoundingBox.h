@@ -7,9 +7,10 @@
 
 class ControlPointDragHandle;
 
-class ControlPointBoundingBox : public QGraphicsItem {
+class ControlPointBoundingBox : public QGraphicsObject {
+    Q_OBJECT
 public:
-    ControlPointBoundingBox(BoundaryPoint& bp, QGraphicsItem *parent);
+    ControlPointBoundingBox(std::shared_ptr<BoundaryPoint> bp, QGraphicsItem *parent);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
@@ -17,12 +18,15 @@ public:
     void topLeftMoved(QPointF pos);
     void bottomRightMoved(QPointF pos);
     void setActivePoint(bool active);
+public slots:
+    void controlRectChanged();
+
 private:
     QRectF controlPointRect() const;
     ControlPointDragHandle* mTopLeft;
     ControlPointDragHandle* mBottomRight;
     bool mActive;
-    BoundaryPoint& mBoundaryPoint;
+    std::shared_ptr<BoundaryPoint> mBoundaryPoint;
 };
 
 #endif // CONTROLPOINTBOUNDINGBOXVIEW_H

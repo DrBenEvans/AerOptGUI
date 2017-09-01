@@ -70,7 +70,6 @@ SOURCES += \
     Gui/GraphicsItems/ControlPointBoundingBox.cpp \
     Gui/GraphicsItems/ControlPointDragHandle.cpp \
     Core/BoundaryPoint.cpp \
-    Gui/Models/BoundaryPointModel.cpp \
     Gui/Models/ProfileModel.cpp \
     Gui/Models/OptimisationModel.cpp
 
@@ -98,7 +97,6 @@ HEADERS  += \
     Gui/GraphicsItems/ControlPointBoundingBox.h \
     Gui/GraphicsItems/ControlPointDragHandle.h \
     Core/BoundaryPoint.h \
-    Gui/Models/BoundaryPointModel.h \
     Gui/Models/ProfileModel.h \
     Gui/Models/OptimisationModel.h
 

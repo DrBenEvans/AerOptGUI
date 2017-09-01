@@ -8,7 +8,7 @@
 class BoundaryPointView : public QGraphicsObject
 {
 public:
-    BoundaryPointView(BoundaryPoint& boundaryPoint, QGraphicsItem *parent = 0);
+    BoundaryPointView(std::shared_ptr<BoundaryPoint> boundaryPoint, QGraphicsItem *parent = 0);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
@@ -26,7 +26,7 @@ private:
     bool mActive;
     bool mControl = false;
     ControlPointBoundingBox* mControlPointHandles = nullptr;
-    BoundaryPoint& mBoundaryPoint;
+    std::shared_ptr<BoundaryPoint> mBoundaryPoint;
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;
