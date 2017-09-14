@@ -24,9 +24,12 @@ public:
         BOTTOMRIGHT
     };
     void setControlBoundaryCorner(int index, QPointF pos, CornerPosition corner );
+    void setActiveIndex(int index);
+
 signals:
     void boundaryPointsReset();
     void controlBoundsChanged(int);
+    void activeIndexChanged(int);
 
 public slots:
 

@@ -24,6 +24,8 @@ BoundaryPointView::BoundaryPointView(BoundaryPointModel *model, int index, ViewS
     // set position
     BoundaryPoint* bp = mBoundaryPointModel->point(mBoundaryPointIndex);
     setPos(mScale->w(bp->x()), mScale->h(bp->y()));
+
+    connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &BoundaryPointView::setActivePoint);
 }
 
 qreal BoundaryPointView::radius() const {
@@ -100,7 +102,7 @@ void BoundaryPointView::setControl(bool ctl) {
     mControlPointHandles->setVisible(ctl);
 
     mControl = ctl;
-    emit pointActivated(mBoundaryPointIndex);
+    mBoundaryPointModel->setActiveIndex(mBoundaryPointIndex);
 }
 
 bool BoundaryPointView::control() {
@@ -109,7 +111,7 @@ bool BoundaryPointView::control() {
 
 void BoundaryPointView::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    emit pointActivated(mBoundaryPointIndex);
+    mBoundaryPointModel->setActiveIndex(mBoundaryPointIndex);
     foreach(auto& view, scene()->views()) {
         view->setDragMode(QGraphicsView::NoDrag);
         view->setCursor(Qt::ArrowCursor);

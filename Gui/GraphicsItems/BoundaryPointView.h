@@ -18,9 +18,6 @@ public:
 public slots:
     void setActivePoint(int index);
 
-signals:
-    void pointActivated(int);
-
 private:
     bool activated() const;
     void setActivated(bool active);

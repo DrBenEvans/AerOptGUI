@@ -16,8 +16,9 @@ void BoundaryPointModel::setPoints(std::list<std::pair<float, float> > points)
     emit boundaryPointsReset();
 }
 
-void BoundaryPointModel::setCurrentBoundaryPoint(int index) {
+void BoundaryPointModel::setActiveIndex(int index) {
     mCurrentIndex = index;
+    emit activeIndexChanged(index);
 }
 
 int BoundaryPointModel::count() {

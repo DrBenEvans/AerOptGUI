@@ -20,6 +20,7 @@ public:
     void setModel(BoundaryPointModel *boundaryPointModel);
 
 public slots:
+    void activePointChanged(int index);
     void smoothingValueChanged(double value);
     void controlPointChanged(bool value);
     void controlBoundaryChanged();

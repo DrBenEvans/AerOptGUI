@@ -73,8 +73,6 @@ void MeshView::boundaryPointsReset()
         for (int index=0; index < mBoundaryPointModel->count(); index++)
         {
             BoundaryPointView* bpView = new BoundaryPointView(mBoundaryPointModel, index, mScale, this);
-            connect(bpView, &BoundaryPointView::pointActivated, this, &MeshView::pointActivated);
-            connect(this, &MeshView::pointActivated, bpView, &BoundaryPointView::setActivePoint);
         }
     }
     QGraphicsItem::update();

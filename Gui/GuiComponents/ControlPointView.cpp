@@ -14,15 +14,11 @@ ControlPointView::ControlPointView(QWidget *parent) :
     connect(ui->xBoundMax, valChangedSignal, [this](double) { controlBoundaryChanged(); });
     connect(ui->yBoundMin, valChangedSignal, [this](double) { controlBoundaryChanged(); });
     connect(ui->yBoundMax, valChangedSignal, [this](double) { controlBoundaryChanged(); });
-
-    // controlPointParams retains size when hidden
-    QSizePolicy sp = ui->controlPointParams->sizePolicy();
-    sp.setRetainSizeWhenHidden(true);
-    ui->controlPointParams->setSizePolicy(sp);
 }
 
 void ControlPointView::setModel(BoundaryPointModel *boundaryPointModel) {
     mBoundaryPointModel = boundaryPointModel;
+    connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &ControlPointView::activePointChanged);
     updateViewData();
 }
 
@@ -34,7 +30,8 @@ void ControlPointView::setPointCoords(qreal x, qreal y) {
 
 void ControlPointView::updateViewData() {
     BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
-    if(!boundaryPoint) {
+    if(boundaryPoint) {
+        setVisible(true);
         qreal x = boundaryPoint->x();
         qreal y = boundaryPoint->y();
         setPointCoords(x, y);
@@ -53,7 +50,7 @@ void ControlPointView::updateViewData() {
 
 void ControlPointView::controlBoundaryChanged() {
     BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
-    if(!boundaryPoint) {
+    if(boundaryPoint) {
         qreal ymax = ui->yBoundMax->value();
         qreal ymin = ui->yBoundMin->value();
         qreal xmax = ui->xBoundMax->value();
@@ -66,14 +63,18 @@ void ControlPointView::controlBoundaryChanged() {
 
 void ControlPointView::smoothingValueChanged(double value) {
     BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
-    if(!boundaryPoint) {
+    if(boundaryPoint) {
         boundaryPoint->setSmoothing(value);
     }
 }
 
+void ControlPointView::activePointChanged(int index) {
+    setVisible(true);
+}
+
 void ControlPointView::controlPointChanged(bool value) {
     BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
-    if(!boundaryPoint) {
+    if(boundaryPoint) {
         boundaryPoint->setControlPoint(value);
     }
 }
