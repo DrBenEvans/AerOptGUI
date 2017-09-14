@@ -9,7 +9,7 @@
 #include "MeshView.h"
 
 #include "Enumerations.h"
-#include "Mesh.h"
+#include "MeshDialogModel.h"
 
 namespace Ui {
 class MeshDialog;
@@ -22,9 +22,10 @@ class MeshDialog : public QDialog
 	Q_OBJECT
 
 public:
-    explicit MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileModel, QWidget* parent = 0);
+    explicit MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profileModel, QWidget* parent = 0);
     ~MeshDialog();
     void accept();
+    void setBoundaryPointModel(BoundaryPointModel* model);
 
 public slots:
     void runMesher();
@@ -44,12 +45,13 @@ private:
     void setMeshActive(bool meshIsActive, bool doToggleProfile = true);
 
     Ui::MeshDialog *ui;
-    std::shared_ptr<Mesh> mMesh;
+    MeshDialogModel* mMeshDialogModel;
     QGraphicsScene* mScene;
     ProfileModel& mProfileModel;
-    int mScale = 1000;
+    ViewScaler* mScale;
     ProfileView* mProfileView;
     MeshView* mMeshView;
+    BoundaryPointModel* mBoundaryPointModel;
 };
 
 #endif // MESHDIALOG_H

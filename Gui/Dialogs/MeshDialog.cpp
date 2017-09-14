@@ -1,26 +1,33 @@
-#include <QDebug>
+
 #include "MeshDialog.h"
 #include "ui_MeshDialog.h"
+#include "ControlPointView.h"
 #include <QGraphicsView>
 #include <QWheelEvent>
 #include <QFileDialog>
+#include <QDebug>
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
-MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileModel, QWidget* parent) :
+MeshDialog::MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profileModel, QWidget* parent) :
 	QDialog(parent),
 	ui(new Ui::MeshDialog),
-    mMesh(initMesh),
+    mMeshDialogModel(initMeshDialogModel),
     mScene(new QGraphicsScene(this)),
+    mScale(new ViewScaler(1000)),
     mProfileModel(profileModel),
     mProfileView(new ProfileView(mScale)),
-    mMeshView(new MeshView(mScale))
+    mMeshView(new MeshView(mScale)),
+    mBoundaryPointModel(initMeshDialogModel->boundaryPointModel())
 {
 	ui->setupUi(this);
 
-    ui->graphicsView->setSceneRect(QRectF(-51*mScale,-51*mScale,102*mScale,102*mScale));
+    ui->graphicsView->setSceneRect(mScale->rect(-51,-51,102,102));
     ui->graphicsView->setScene(mScene);
-    ui->graphicsView->centerOn(0.5*mScale,0);
+    ui->graphicsView->centerOn(mScale->w(0.5),0);
+
+    mMeshView->setMeshModel(mMeshDialogModel);
+    mMeshView->setBoundaryPointModel(mBoundaryPointModel);
 
     connect(ui->meshButton,&QPushButton::clicked,this,&MeshDialog::runMesher);
 
@@ -28,9 +35,7 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
         mProfileView->setVisible(checked);
     });
 
-    connect(mMesh.get(),&Mesh::meshChanged,[this]() {
-        mMeshView->meshChanged();
-    });
+    connect(mMeshDialogModel,&MeshDialogModel::meshChanged,mMeshView, &MeshView::meshChanged);
 
     // profiles QComboBox setup
     ui->profile->setModel(&mProfileModel);
@@ -39,7 +44,8 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
     ui->density->addItem(QString("Medium"), QVariant::fromValue(Enum::Mesh::MEDIUM));
     ui->density->addItem(QString("Fine"), QVariant::fromValue(Enum::Mesh::FINE));
 
-    switch (mMesh->getMeshDensity())
+    Mesh* mesh = mMeshDialogModel->currentMesh();
+    switch (mesh->meshDensity())
 	{
 		case Enum::Mesh::COURSE :
             ui->density->setCurrentIndex(0);
@@ -52,8 +58,8 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
             break;
 	}
 
-    ui->layers->setValue(mMesh->getNumBoundaryLayers());
-    ui->thickness->setValue(mMesh->getBoundaryLayerThickness());
+    ui->layers->setValue(mesh->numberBoundaryLayers());
+    ui->thickness->setValue(mesh->boundaryLayerThickness());
 
     mScene->addItem(mProfileView);
     mScene->addItem(mMeshView);
@@ -65,10 +71,12 @@ MeshDialog::MeshDialog(std::shared_ptr<Mesh> initMesh, ProfileModel &profileMode
 
 void MeshDialog::setProfile() {
 
+    Mesh* mesh = mMeshDialogModel->currentMesh();
     ProfilePoints profilePoints = ui->profile->currentData(Qt::UserRole).value<ProfilePoints>();
-    mMesh->setProfilePoints(profilePoints);
+    mesh->setProfilePoints(profilePoints);
     setMeshActive(false);
-    mProfileView->setProfilePoints(mMesh->profilePoints());
+    mProfileView->setProfilePoints(mesh->profilePoints());
+    mMeshView->update();
 }
 
 MeshDialog::~MeshDialog()
@@ -77,14 +85,14 @@ MeshDialog::~MeshDialog()
 }
 
 void MeshDialog::runMesher() {
-    mMesh->setMeshDensity(ui->density->currentData().value<Enum::Mesh>());
-    mMesh->setNumBoundaryLayers(ui->layers->value());
-    mMesh->setBoundaryLayerThickness(ui->thickness->value());
+    Mesh* mesh = mMeshDialogModel->currentMesh();
+    mesh->setMeshDensity(ui->density->currentData().value<Enum::Mesh>());
+    mesh->setNumberBoundaryLayers(ui->layers->value());
+    mesh->setBoundaryLayerThickness(ui->thickness->value());
 
     // set profile
-    mMesh->runMesher();
+    mMeshDialogModel->runMesher();
 
-    mMeshView->setMesh(mMesh);
     setMeshActive(true);
 }
 
@@ -144,7 +152,8 @@ void MeshDialog::on_profile_currentIndexChanged(int index)
 
 void MeshDialog::on_density_currentIndexChanged(int index)
 {
-    if(mMesh->getMeshDensity() != ui->density->currentData().value<Enum::Mesh>()) {
+    Mesh* mesh = mMeshDialogModel->currentMesh();
+    if(mesh->meshDensity() != ui->density->currentData().value<Enum::Mesh>()) {
         setMeshActive(false,false);
     }
 }

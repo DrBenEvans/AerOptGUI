@@ -2,7 +2,6 @@
 #define CUSTOMTYPES_H
 
 #include <QMetaType>
-#include "BoundaryPoint.h"
 #include <list>
 
 //Abbreviate long type names

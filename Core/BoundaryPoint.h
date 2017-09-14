@@ -16,27 +16,30 @@
 
 #include "Enumerations.h"
 
-class BoundaryPoint : public QObject {
-    Q_OBJECT
+class BoundaryPoint {
 
 public:
     void setPoint(QPointF ctl_point);
-    void setBounds(QRectF ctl_bounds);
 
-    BoundaryPoint(qreal xcoord, qreal ycoord);
+    BoundaryPoint(qreal xcoord, qreal ycoord, QObject* parent = 0);
 
+    // point position
     qreal x() const;
     qreal y() const;
-    QRectF controlPointRect();
+    QPointF pos();
+
+    // control points bounds
+    void setControlPoint(bool isCtl);
     bool isControlPoint();
-    uint getSmoothing();
-    uint getSmoothFactor();
-    void setSmoothing(uint smoothing);
+    QRectF controlPointRect();
+    QRectF setControlPointRect(QRectF ctlPointRect);
     void setTopLeftBound(QPointF pos);
     void setBottomRightBound(QPointF pos);
 
-signals:
-    void controlRectChanged();
+
+    uint getSmoothing();
+    uint getSmoothFactor();
+    void setSmoothing(uint smoothing);
 
 private:
     QPointF mCoord;
@@ -45,7 +48,5 @@ private:
     uint mSmooth = 0.0;
 
 };
-
-typedef std::vector<std::shared_ptr<BoundaryPoint>> Boundaries;
 
 #endif // BOUNDARY_POINT_H

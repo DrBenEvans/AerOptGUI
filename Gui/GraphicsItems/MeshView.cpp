@@ -2,8 +2,10 @@
 #include "BoundaryPointView.h"
 #include <QtWidgets>
 
-MeshView::MeshView(int scale, QGraphicsItem* parent) :
-    mScale(scale)
+MeshView::MeshView(ViewScaler* scale, QGraphicsItem* parent) :
+    mScale(scale),
+    mMeshModel(nullptr),
+    mBoundaryPointModel(nullptr)
 {
     this->color = QColor(0,255,0);
     setZValue(-10);
@@ -16,30 +18,33 @@ MeshView::MeshView(int scale, QGraphicsItem* parent) :
     mYmin =  std::numeric_limits<float>::infinity();
 }
 
-void MeshView::setMesh(std::shared_ptr<Mesh> mesh) {
-    mMesh = mesh;
-    setBoundaryPoints(mMesh->getMeshBoundary());
+void MeshView::setMeshModel(MeshDialogModel* model) {
+    mMeshModel = model;
     meshChanged();
 }
 
+void MeshView::setBoundaryPointModel(BoundaryPointModel* model) {
+    mBoundaryPointModel = model;
+    connect(mBoundaryPointModel, &BoundaryPointModel::boundaryPointsReset, this, &MeshView::boundaryPointsReset);
+    boundaryPointsReset();
+}
+
 void MeshView::meshChanged() {
-    if(mMesh) {
-        setBoundaryPoints(mMesh->getMeshBoundary());
-    }
     calcBoundingBox();
     prepareGeometryChange();
     QGraphicsItem::update();
 }
 
 void MeshView::calcBoundingBox() {
-    if(!mMesh) return;
+    const Mesh* mesh = mMeshModel->currentMesh();
+    if(!mesh) return;
 
     float x, y;
 
-    for (auto& p : mMesh->getMeshPoints())
+    for (auto& p : mesh->getMeshPoints())
     {
-        x = p.first*mScale;
-        y = p.second*mScale;
+        x = mScale->w(p.first);
+        y = mScale->h(p.second);
 
         if(x>mXmax)
             mXmax = x;
@@ -57,17 +62,22 @@ void MeshView::calcBoundingBox() {
     mBoundingBox = QRectF(mXmin-margin, mYmin-margin, (mXmax-mXmin)+2*margin, (mYmax-mYmin)+2*margin);
 }
 
-void MeshView::setBoundaryPoints(Boundaries& boundaryPoints) {
+void MeshView::boundaryPointsReset()
+{
     foreach(auto& item, this->childItems()) {
         delete item;
     }
 
-    // Draw control point objects, if mMesh is set
-    for (auto& bp : boundaryPoints)
-    {
-        BoundaryPointView* cp = new BoundaryPointView(bp, this);
-        cp->setPos(w(bp->x()), h(bp->y()));
+    // Draw control point objects, if mesh is set
+    if(mBoundaryPointModel) {
+        for (int index=0; index < mBoundaryPointModel->count(); index++)
+        {
+            BoundaryPointView* bpView = new BoundaryPointView(mBoundaryPointModel, index, mScale, this);
+            connect(bpView, &BoundaryPointView::pointActivated, this, &MeshView::pointActivated);
+            connect(this, &MeshView::pointActivated, bpView, &BoundaryPointView::setActivePoint);
+        }
     }
+    QGraphicsItem::update();
 }
 
 QRectF MeshView::boundingRect() const
@@ -85,7 +95,8 @@ QPainterPath MeshView::shape() const
 void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     Q_UNUSED(widget);
-    if(!mMesh) return;
+    const Mesh* mesh = mMeshModel->currentMesh();
+    if(!mesh) return;
 
     painter->setRenderHint(QPainter::Antialiasing, false);
     painter->setBrush(QBrush(QColor(255, 255, 255, 0)));
@@ -94,11 +105,10 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     rect.setWidth( 7 );
     rect.setHeight( 7 );
 
-    const auto& boundary = mMesh->getMeshBoundary();
-    const auto& bConnects = mMesh->getBConnects();
-    const auto& meshpoints = mMesh->getMeshPoints();
-    const auto& meshconnects = mMesh->getMeshConnectivities();
-    const auto& resultsdata = mMesh->getMeshData();
+    const auto& bConnects = mesh->getBConnects();
+    const auto& meshpoints = mesh->getMeshPoints();
+    const auto& meshconnects = mesh->getMeshConnectivities();
+    const auto& resultsdata = mesh->getMeshData();
 
 
     //This scope is for rendering the mesh when available
@@ -139,66 +149,38 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 QColor qcolour(255,0,0,0);
 
                 QPainterPath path;
-                path.moveTo( qreal(w( p1.first )), qreal(h( p1.second )) );
-                path.lineTo( qreal(w( p2.first )), qreal(h( p2.second )) );
-                path.lineTo( qreal(w( p3.first )), qreal(h( p3.second )) );
-                path.lineTo( qreal(w( p1.first )), qreal(h( p1.second )) );
+                path.moveTo( qreal(mScale->w( p1.first )), qreal(mScale->h( p1.second )) );
+                path.lineTo( qreal(mScale->w( p2.first )), qreal(mScale->h( p2.second )) );
+                path.lineTo( qreal(mScale->w( p3.first )), qreal(mScale->h( p3.second )) );
+                path.lineTo( qreal(mScale->w( p1.first )), qreal(mScale->h( p1.second )) );
                 painter->fillPath(path, QBrush(qcolour));
             }
 
             //Draw triangle boundary here
             painter->drawLine(
-                        w( p1.first ),
-                        h( p1.second ),
-                        w( p2.first ),
-                        h( p2.second )
+                        mScale->w( p1.first ),
+                        mScale->h( p1.second ),
+                        mScale->w( p2.first ),
+                        mScale->h( p2.second )
                         );
 
             painter->drawLine(
-                        w( p2.first ),
-                        h( p2.second ),
-                        w( p3.first ),
-                        h( p3.second )
+                        mScale->w( p2.first ),
+                        mScale->h( p2.second ),
+                        mScale->w( p3.first ),
+                        mScale->h( p3.second )
                         );
 
             painter->drawLine(
-                        w( p3.first ),
-                        h( p3.second ),
-                        w( p1.first ),
-                        h( p1.second )
+                        mScale->w( p3.first ),
+                        mScale->h( p3.second ),
+                        mScale->w( p1.first ),
+                        mScale->h( p1.second )
                         );
         }
-    }
-
-    //This scope is for rendering initial and last boundaries
-    painter->setRenderHint(QPainter::Antialiasing, true);
-    uint inc = bConnects.size()-1;
-    if (inc < 1) inc = 1;
-
-    painter->setPen( QPen(Qt::red, getBrushSize()*2, Qt::SolidLine) );
-
-    for (uint j = 0; j < bConnects.size(); ++j)
-    {
-        uint a = bConnects.at(j).first - 1;
-        uint b = bConnects.at(j).second - 1;
-
-        painter->drawLine(
-                    w( boundary.at(a)->x() ),
-                    h( boundary.at(a)->y() ),
-                    w( boundary.at(b)->x() ),
-                    h( boundary.at(b)->y() )
-                    );
     }
 }
 
 uint MeshView::getBrushSize() {
     return 0;
-}
-
-qreal MeshView::w(qreal width) {
-    return width*mScale;
-}
-
-qreal MeshView::h(qreal height) {
-    return height*mScale;
 }

@@ -7,7 +7,7 @@
 #include <QDir>
 #include "Enumerations.h"
 #include "CustomTypes.h"
-#include "BoundaryPoint.h"
+#include "BoundaryPointModel.h"
 
 class Mesh : public QObject
 {
@@ -15,15 +15,26 @@ class Mesh : public QObject
 public:
     Mesh(QObject* parent = 0);
 
-    // Getters
-    int getNumBoundaryLayers();
-    qreal getBoundaryLayerThickness();
+    // getters
+
+    int numberBoundaryLayers() const;
+    Enum::Mesh meshDensity() const;
+    qreal boundaryLayerThickness() const;
+    ProfilePoints boundaryPoints();
+
     /**
-     * @brief getMeshConnectivities
-     * @return A reference to the list of mesh connectivities.
-     * Gets a reference to the mesh connectivity indices.
+     * @brief profilePoints
+     * @return list of profile points from which the mesh has been or will be constructed
      */
-    const MeshConnectivities& getMeshConnectivities() const;
+    ProfilePoints profilePoints() const;
+
+    /**
+     * @brief getMeshPoints
+     * @return A reference to the list of x y pairs.
+     * Gets a reference to the current list of mesh points.
+     */
+    const MeshPoints& getMeshPoints() const;
+
     /**
      * @brief getBConnects
      * @return A reference to the current boundary connectivities.
@@ -31,35 +42,50 @@ public:
      * boundary connectivities.
      */
     const BConnectivities& getBConnects() const;
-    /**
-     * @brief getMeshBoundary
-     * @return A reference to the current mesh boundary.
-     * Gets a reference to the current bounday data.
-     */
-    Boundaries &getMeshBoundary();
 
-    // Setters
-    void setNumBoundaryLayers(int num_layers);
+    /**
+     * @brief getMeshConnectivities
+     * @return A reference to the list of mesh connectivities.
+     * Gets a reference to the mesh connectivity indices.
+     */
+    const MeshConnectivities& getMeshConnectivities() const;
+
+    /**
+     * @brief getMeshData
+     * @return A reference to the results data.
+     * Gets a reference to the list of results data.
+     */
+    const MeshResults& getMeshData() const;
+
+    // setters
+
+    void setNumberBoundaryLayers(int num_layers);
     void setBoundaryLayerThickness(qreal layer_thickness);
     void setMeshDensity(const Enum::Mesh& meshDensity);
-    void stopMesher();
+    void setProfilePoints(ProfilePoints profilePoints);
 
-    // Other
-    /**
-     * @brief runMesher
-     * run the mesher
-     */
-    void runMesher();
-    /**
-     * @brief loadResults
-     * loads the results
-     */
-    bool loadResults(const std::string& filePath);
+    // actions
+    bool createFiles(QString meshInFile, QString meshBacFile, QString meshGeoFile, QString meshDatFile);
+
     /**
      * @brief loadMesh
      * loads the mesh
      */
     bool loadMesh(const QString &filePath);
+
+    /**
+     * @brief clear
+     * clears all mesh data
+     */
+    void clear();
+private:
+
+    // Other
+    /**
+     * @brief loadResults
+     * loads the results
+     */
+    bool loadResults(const std::string& filePath);
     /**
      * @brief loadMeshProfile
      * Loads the mesh profile
@@ -95,19 +121,6 @@ public:
      * Clears the current mesh points.
      */
     void clearMeshPoints();
-    /**
-     * @brief getMeshPoints
-     * @return A reference to the list of x y pairs.
-     * Gets a reference to the current list of mesh points.
-     */
-    const MeshPoints& getMeshPoints() const;
-    //mesh connectivity
-    /**
-     * @brief addMeshConnectivity
-     * @param tuple A triple of indices representing a triangular cell.
-     * Adds mesh cell connectivity indeces.
-     */
-    void addMeshConnectivity(const std::tuple<uint, uint, uint>& tuple);
     //mesh results
     /**
      * @brief addMeshData
@@ -120,12 +133,6 @@ public:
      * Clears the mesh results data.
      */
     void clearMeshData();
-    /**
-     * @brief getMeshData
-     * @return A reference to the results data.
-     * Gets a reference to the list of results data.
-     */
-    const MeshResults& getMeshData() const;
     /**
      * @brief checkBoundaryIntegrity
      * @return True if the boundary integrity is OK.
@@ -142,11 +149,6 @@ public:
      * Resets the boundary back to the initial boundary.
      */
     void resetBoundary();
-    /**
-     * @brief clear
-     * clears all mesh data
-     */
-    void clear();
     //mesh boundary points
     /**
      * @brief addBoundaryPoint
@@ -165,27 +167,15 @@ public:
      */
     void addBConnectivity(const uint& a, const uint& b);
 
-    Enum::Mesh getMeshDensity() const;
-    ProfilePoints profilePoints();
-    void setProfilePoints(ProfilePoints profilePoints);
-
-signals:
-    void meshChanged();
-
-private slots:
-    void meshingFinished(int exitCode, QProcess::ExitStatus exitStatus);
-
 private:
     bool createInputFile(const std::string& meshInFile,
                          const std::string& meshBacFile,
                          const std::string& meshGeoFile,
-                         const std::string& mMeshDatFile);
+                         const std::string& meshDatFile);
     bool createBacFile(const std::string& meshBacFile);
     bool createGeoFile(const std::string& meshGeoFile);
     bool loadMeshProfileType1(const QString& filePath);
     bool loadMeshProfileType2(const QString& filePath);
-    void writeStdOutToLog();
-    void writeStdErrToLog();
     /**
      * @brief loadMeshType1
      * @param filePath
@@ -200,22 +190,27 @@ private:
      * @return
      */
     bool loadMeshType2(const QString& filePath);
+    //mesh connectivity
+    /**
+     * @brief addMeshConnectivity
+     * @param tuple A triple of indices representing a triangular cell.
+     * Adds mesh cell connectivity indeces.
+     */
+    void addMeshConnectivity(const std::tuple<uint, uint, uint>& tuple);
 
     // Mesher attributes
-    QProcess mMeshProcess;
-    QDir mMeshPath;
     Enum::Mesh mMeshDensity;
-    QString mMeshDatFile;
     ProfilePoints mProfilePoints;
 
     //Mesh Attributes
-    Boundaries mMeshProfile;
     BConnectivities mBoundConnects;
     void resetBConnectivity();
     std::list<uint> mControlPoints;
     MeshPoints mMeshPoints;
     MeshConnectivities mMeshConnectivities;
     MeshResults mMeshResults;
+
+    ProfilePoints mBoundaryPoints;
 
     // boundary layer parameters
     int mNumBoundaryLayers;

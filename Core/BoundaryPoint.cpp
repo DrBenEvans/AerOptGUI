@@ -12,10 +12,14 @@
 #include <iostream>
 #include "BoundaryPoint.h"
 
-BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord) :
+BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord, QObject *parent) :
     mCoord(xcoord,ycoord),
     mControlPointRect(-10,-10,20,20)
 {
+}
+
+void BoundaryPoint::setControlPoint(bool isCtl) {
+    mIsControlPoint = isCtl;
 }
 
 QRectF BoundaryPoint::controlPointRect() {
@@ -48,10 +52,16 @@ bool BoundaryPoint::isControlPoint() {
 
 void BoundaryPoint::setTopLeftBound(QPointF pos) {
     mControlPointRect.setTopLeft(pos);
-    emit controlRectChanged();
 }
 
 void BoundaryPoint::setBottomRightBound(QPointF pos) {
     mControlPointRect.setBottomRight(pos);
-    emit controlRectChanged();
+}
+
+QRectF BoundaryPoint::setControlPointRect(QRectF ctlPointRect) {
+    mControlPointRect = ctlPointRect;
+}
+
+QPointF BoundaryPoint::pos() {
+    return mCoord;
 }

@@ -3,19 +3,27 @@
 
 #include <QGraphicsItem>
 #include "ControlPointBoundingBox.h"
-#include "BoundaryPoint.h"
+#include "BoundaryPointModel.h"
+#include "ViewScaler.h"
 
 class BoundaryPointView : public QGraphicsObject
 {
+    Q_OBJECT
 public:
-    BoundaryPointView(std::shared_ptr<BoundaryPoint> boundaryPoint, QGraphicsItem *parent = 0);
+    BoundaryPointView(BoundaryPointModel *model, int index, ViewScaler* scaler, QGraphicsItem *parent = 0);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
 
+public slots:
+    void setActivePoint(int index);
+
+signals:
+    void pointActivated(int);
+
 private:
-    bool active() const;
-    void setActivePoint(bool active);
+    bool activated() const;
+    void setActivated(bool active);
     bool control();
     void setControl(bool ctl);
     qreal radius() const;
@@ -26,7 +34,9 @@ private:
     bool mActive;
     bool mControl = false;
     ControlPointBoundingBox* mControlPointHandles = nullptr;
-    std::shared_ptr<BoundaryPoint> mBoundaryPoint;
+    BoundaryPointModel* mBoundaryPointModel;
+    int mBoundaryPointIndex;
+    ViewScaler* mScale;
 
 protected:
     void hoverEnterEvent(QGraphicsSceneHoverEvent *event) override;

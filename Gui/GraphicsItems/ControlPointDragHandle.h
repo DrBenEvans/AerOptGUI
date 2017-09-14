@@ -1,7 +1,7 @@
 #ifndef CONTROLPOINTHANDLE_H
 #define CONTROLPOINTHANDLE_H
 
-#include "ControlPointBoundingBox.h"
+#include "BoundaryPointModel.h"
 #include <QGraphicsItem>
 
 class ControlPointBoundingBox;
@@ -9,7 +9,7 @@ class ControlPointBoundingBox;
 class ControlPointDragHandle : public QGraphicsItem
 {
 public:
-    ControlPointDragHandle(QPointF point, bool top_left, ControlPointBoundingBox *parent);
+    ControlPointDragHandle(BoundaryPointModel* model, int index, bool isTopLeft, QGraphicsItem* parent = 0);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget */*widget*/) override;
@@ -21,9 +21,11 @@ private:
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
     bool mTopLeft;
-    ControlPointBoundingBox* mParent;
     QRectF mHandleRect;
     QRectF mHoverRect;
+    BoundaryPointModel* mBoundaryPointModel;
+    int mBoundaryPointIndex;
+    BoundaryPoint* mBoundaryPoint;
 };
 
 

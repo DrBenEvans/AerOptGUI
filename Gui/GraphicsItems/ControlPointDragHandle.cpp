@@ -2,15 +2,24 @@
 #include <QPainter>
 #include <QGraphicsView>
 
-ControlPointDragHandle::ControlPointDragHandle(QPointF point, bool top_left, ControlPointBoundingBox *parent):
+ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int index, bool isTopLeft, QGraphicsItem* parent) :
     QGraphicsItem(parent),
-    mTopLeft(top_left),
-    mParent(parent)
+    mTopLeft(isTopLeft),
+    mBoundaryPointModel(model),
+    mBoundaryPointIndex(index),
+    mBoundaryPoint(mBoundaryPointModel->point(mBoundaryPointIndex))
 {
     setFlags(ItemIsMovable | ItemSendsScenePositionChanges);
     setZValue(1);
-    setPos(point);
     setAcceptHoverEvents(true);
+
+
+    QRectF rect = mBoundaryPoint->controlPointRect();
+    if(mTopLeft) {
+        setPos(rect.topLeft());
+    } else {
+        setPos(rect.bottomRight());
+    }
 
     // build handle rect
     qreal size = 4.0;
@@ -78,7 +87,7 @@ QVariant ControlPointDragHandle::itemChange(GraphicsItemChange change, const QVa
                 pos.setY(0);
             }
 
-            mParent->topLeftMoved(pos);
+            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, pos, BoundaryPointModel::TOPLEFT);
 
             return pos;
 
@@ -92,7 +101,7 @@ QVariant ControlPointDragHandle::itemChange(GraphicsItemChange change, const QVa
                 pos.setY(0);
             }
 
-            mParent->bottomRightMoved(pos);
+            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, pos, BoundaryPointModel::BOTTOMRIGHT);
 
             return pos;
         }

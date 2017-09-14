@@ -2,38 +2,44 @@
 #define MESHGRAPHICSITEM_H
 
 #include <QGraphicsItem>
-#include "Mesh.h"
+#include "MeshDialogModel.h"
+#include "BoundaryPointModel.h"
+#include "ViewScaler.h"
 
-class MeshView : public QGraphicsItem
+class MeshView : public QGraphicsObject
 {
+    Q_OBJECT
 public:
-    MeshView(int scale, QGraphicsItem *parent = 0);
+    MeshView(ViewScaler *scale, QGraphicsItem *parent = 0);
 
-    void setMesh(std::shared_ptr<Mesh> mesh);
+    void setMeshModel(MeshDialogModel* meshModel);
+    void setBoundaryPointModel(BoundaryPointModel* model);
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
-    void setBoundaryPoints(Boundaries& boundaryPoints);
     void clearBoundaryPoint();
 
 public slots:
     void meshChanged();
+    void boundaryPointsReset();
+
+signals:
+    void pointActivated(int);
 
 private:
     void calcBoundingBox();
     uint getBrushSize();
-    qreal w(qreal width);
-    qreal h(qreal height);
 
     QColor color;
-    std::shared_ptr<Mesh> mMesh;
-    int mScale;
+    MeshDialogModel* mMeshModel;
+    ViewScaler* mScale;
 
     float mXmax;
     float mYmax;
     float mXmin;
     float mYmin;
     QRectF mBoundingBox;
+    BoundaryPointModel* mBoundaryPointModel;
 
 };
 

@@ -72,7 +72,10 @@ SOURCES += \
     Core/BoundaryPoint.cpp \
     Gui/Models/ProfileModel.cpp \
     Gui/Models/OptimisationModel.cpp \
-    Gui/GuiComponents/ControlPointView.cpp
+    Gui/GuiComponents/ControlPointView.cpp \
+    Core/BoundaryPointModel.cpp \
+    Core/MeshDialogModel.cpp \
+    Gui/GraphicsItems/ViewScaler.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -100,7 +103,10 @@ HEADERS  += \
     Core/BoundaryPoint.h \
     Gui/Models/ProfileModel.h \
     Gui/Models/OptimisationModel.h \
-    Gui/GuiComponents/ControlPointView.h
+    Gui/GuiComponents/ControlPointView.h \
+    Core/BoundaryPointModel.h \
+    Core/MeshDialogModel.h \
+    Gui/GraphicsItems/ViewScaler.h
 
 FORMS    += \
     Gui/DebugOutput.ui \

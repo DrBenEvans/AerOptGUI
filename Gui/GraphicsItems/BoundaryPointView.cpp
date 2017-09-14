@@ -6,10 +6,12 @@
 #include <QGraphicsSceneMouseEvent>
 #include "BoundaryPointView.h"
 
-BoundaryPointView::BoundaryPointView(std::shared_ptr<BoundaryPoint> boundaryPoint, QGraphicsItem* parent) :
+BoundaryPointView::BoundaryPointView(BoundaryPointModel *model, int index, ViewScaler* scaler, QGraphicsItem* parent) :
     QGraphicsObject(parent),
     mActive(false),
-    mBoundaryPoint(boundaryPoint)
+    mBoundaryPointModel(model),
+    mBoundaryPointIndex(index),
+    mScale(scaler)
 {
     setZValue(1);
 
@@ -18,6 +20,10 @@ BoundaryPointView::BoundaryPointView(std::shared_ptr<BoundaryPoint> boundaryPoin
 
     qreal r = radius();
     mPointRect = QRectF(-r,-r,2*r,2*r);
+
+    // set position
+    BoundaryPoint* bp = mBoundaryPointModel->point(mBoundaryPointIndex);
+    setPos(mScale->w(bp->x()), mScale->h(bp->y()));
 }
 
 qreal BoundaryPointView::radius() const {
@@ -36,7 +42,7 @@ void BoundaryPointView::paint(QPainter *painter, const QStyleOptionGraphicsItem 
 {
     QPen pen;
     QBrush brush;
-    if(active()) {
+    if(activated()) {
         pen = QPen(Qt::blue, 2, Qt::SolidLine);
     } else {
         pen = QPen(Qt::black, 2, Qt::SolidLine);
@@ -58,11 +64,15 @@ void BoundaryPointView::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     painter->drawPath(path);
 }
 
-bool BoundaryPointView::active() const {
+bool BoundaryPointView::activated() const {
     return mActive;
 }
 
-void BoundaryPointView::setActivePoint(bool active) {
+void BoundaryPointView::setActivePoint(int index) {
+    setActivated(index == mBoundaryPointIndex);
+}
+
+void BoundaryPointView::setActivated(bool active) {
     mActive = active;
     foreach(auto& view, scene()->views()) {
         if(active) {
@@ -73,7 +83,7 @@ void BoundaryPointView::setActivePoint(bool active) {
     }
 
     if(mControlPointHandles != nullptr) {
-        mControlPointHandles->setActivePoint(active);
+        mControlPointHandles->setActivated(active);
     }
 
     prepareGeometryChange();
@@ -84,13 +94,13 @@ void BoundaryPointView::setActivePoint(bool active) {
 void BoundaryPointView::setControl(bool ctl) {
     //build control handles
     if(mControlPointHandles == nullptr && ctl) {
-        mControlPointHandles = new ControlPointBoundingBox(mBoundaryPoint, this);
+        mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, this);
     }
 
     mControlPointHandles->setVisible(ctl);
 
     mControl = ctl;
-    setActivePoint(ctl);
+    emit pointActivated(mBoundaryPointIndex);
 }
 
 bool BoundaryPointView::control() {
@@ -99,7 +109,7 @@ bool BoundaryPointView::control() {
 
 void BoundaryPointView::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 {
-    setActivePoint(true);
+    emit pointActivated(mBoundaryPointIndex);
     foreach(auto& view, scene()->views()) {
         view->setDragMode(QGraphicsView::NoDrag);
         view->setCursor(Qt::ArrowCursor);
@@ -111,7 +121,6 @@ void BoundaryPointView::hoverEnterEvent(QGraphicsSceneHoverEvent *event)
 
 void BoundaryPointView::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
-    setActivePoint(false);
     foreach(auto& view, scene()->views()) {
         view->setDragMode(QGraphicsView::ScrollHandDrag);
     }

@@ -29,8 +29,8 @@ MainWindow::~MainWindow()
 
 void MainWindow::newOptimisation() {
     auto optimisation = std::make_shared<Optimisation>();
-    auto initMesh = optimisation->initMesh();
-    MeshDialog meshdiag(initMesh,mProfileModel,this);
+    MeshDialogModel meshDialogModel(this);
+    MeshDialog meshdiag(&meshDialogModel, mProfileModel, this);
     if(meshdiag.exec() == QDialog::Accepted) {
         optimisation->setLabel(QString("Optimisation %1").arg(mOptimisationModel->rowCount()+1));
 

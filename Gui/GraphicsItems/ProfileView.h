@@ -3,22 +3,20 @@
 
 #include "CustomTypes.h"
 #include <QGraphicsItem>
+#include "ViewScaler.h"
 
 class ProfileView : public QGraphicsItem
 {
 public:
-    ProfileView(int scale, QGraphicsItem *parent = 0);
+    ProfileView(ViewScaler *scale, QGraphicsItem *parent = 0);
 
     void setProfilePoints(ProfilePoints profilePoints);
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
 
 private:
-    qreal w(qreal width);
-    qreal h(qreal width);
-
     ProfilePoints mProfile;
-    int mScale;
+    ViewScaler* mScale;
 };
 
 #endif // PROFILEGRAPHICSITEM_H

@@ -2,7 +2,7 @@
 #include <QtWidgets>
 #include <QPainter>
 
-ProfileView::ProfileView(int scale, QGraphicsItem* parent) :
+ProfileView::ProfileView(ViewScaler* scale, QGraphicsItem* parent) :
     QGraphicsItem(parent),
     mScale(scale)
 {
@@ -27,8 +27,8 @@ QRectF ProfileView::boundingRect() const
 
     for (auto& p : mProfile)
     {
-        x = p.first*mScale;
-        y = p.second*mScale;
+        x = mScale->w(p.first);
+        y = mScale->h(p.second);
 
         if(x>xmax)
             xmax = x;
@@ -55,12 +55,12 @@ void ProfileView::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
 
     auto& firstPoint = mProfile.front();
 
-    path.moveTo( QPoint(w(firstPoint.first), h(firstPoint.second)));
+    path.moveTo( QPoint(mScale->w(firstPoint.first), mScale->h(firstPoint.second)));
     for (auto& p : mProfile)
     {
-        path.lineTo( QPoint(w(p.first), h(p.second)) );
+        path.lineTo( QPoint(mScale->w(p.first), mScale->h(p.second)) );
     }
-    path.lineTo( QPoint(w(firstPoint.first), h(firstPoint.second)));
+    path.lineTo( QPoint(mScale->w(firstPoint.first), mScale->h(firstPoint.second)));
 
     painter->drawPath(path);
 
@@ -68,18 +68,10 @@ void ProfileView::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     for (auto& p : mProfile)
     {
         path = QPainterPath();
-        QPoint center = QPoint(w(p.first), h(p.second));
+        QPoint center = QPoint(mScale->w(p.first), mScale->h(p.second));
         qreal radius = 3.0;
         path.addEllipse(center,radius,radius);
         painter->fillPath(path, Qt::blue);
         painter->drawPath(path);
     }
-}
-
-qreal ProfileView::w(qreal width) {
-    return width*mScale;
-}
-
-qreal ProfileView::h(qreal height) {
-    return height*mScale;
 }

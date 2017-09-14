@@ -1,22 +1,15 @@
 #include "ControlPointBoundingBox.h"
 #include <QPainter>
 
-ControlPointBoundingBox::ControlPointBoundingBox(std::shared_ptr<BoundaryPoint> bp, QGraphicsItem *parent) :
+ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int index, QGraphicsItem *parent) :
     QGraphicsObject(parent),
     mActive(false),
-    mBoundaryPoint(bp)
+    mBoundaryPointModel(model),
+    mBoundaryPointIndex(index)
 {
-    QRectF rect = controlPointRect();
-    mTopLeft = new ControlPointDragHandle(rect.topLeft(), true, this);
-    mBottomRight = new ControlPointDragHandle(rect.bottomRight(), false, this);
-
-    // connect boundary point signals
-    connect(mBoundaryPoint.get(), &BoundaryPoint::controlRectChanged, this, &ControlPointBoundingBox::controlRectChanged);
-
-}
-
-QRectF ControlPointBoundingBox::controlPointRect() const {
-    return mBoundaryPoint->controlPointRect();
+    mTopLeft = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, true, this);
+    mBottomRight = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, false, this);
+    connect(mBoundaryPointModel, &BoundaryPointModel::controlBoundsChanged, this, &ControlPointBoundingBox::controlRectChanged);
 }
 
 void ControlPointBoundingBox::controlRectChanged() {
@@ -24,22 +17,16 @@ void ControlPointBoundingBox::controlRectChanged() {
     update();
 }
 
-void ControlPointBoundingBox::topLeftMoved(QPointF pos) {
-    mBoundaryPoint->setTopLeftBound(pos);
-}
-
-void ControlPointBoundingBox::bottomRightMoved(QPointF pos) {
-    mBoundaryPoint->setBottomRightBound(pos);
-}
-
 QRectF ControlPointBoundingBox::boundingRect() const {
-    QRectF r = controlPointRect();
+    BoundaryPoint* boundaryPoint = mBoundaryPointModel->point(mBoundaryPointIndex);
+    QRectF r = boundaryPoint->controlPointRect();
     qreal margin = 2.0;
     r.adjust(-margin,-margin,margin,margin);
     return r;
 }
 
 void ControlPointBoundingBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
+    QRectF rect = mBoundaryPointModel->point(mBoundaryPointIndex)->controlPointRect();
     painter->setBrush(Qt::NoBrush);
     QPen pen;
     if(mActive) {
@@ -49,10 +36,10 @@ void ControlPointBoundingBox::paint(QPainter *painter, const QStyleOptionGraphic
     }
     pen.setJoinStyle(Qt::MiterJoin);
     painter->setPen(pen);
-    painter->drawRect(controlPointRect());
+    painter->drawRect(rect);
 }
 
-void ControlPointBoundingBox::setActivePoint(bool active) {
+void ControlPointBoundingBox::setActivated(bool active) {
     mActive = active;
     update();
 }
