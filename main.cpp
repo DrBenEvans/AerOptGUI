@@ -40,7 +40,5 @@ int main(int argc, char *argv[])
     w.setOptimisationModel(optimisationModel);
     w.show();
 
-    w.newOptimisation();
-
     return app.exec();
 }

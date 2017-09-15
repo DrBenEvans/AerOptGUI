@@ -71,8 +71,6 @@ MeshDialog::MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profi
     mScene->addItem(mMeshView);
 
     setProfile();
-
-    runMesher();
 }
 
 void MeshDialog::setProfile() {
