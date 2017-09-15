@@ -16,6 +16,7 @@ ControlPointView::ControlPointView(QWidget *parent) :
     connect(ui->yBoundMax, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
     connect(ui->controlPointCheckBox, &QCheckBox::toggled, this, &ControlPointView::updateModelControlPointState);
 
+    ui->controlPointCheckBox->setEnabled(false);
     ui->controlPointCheckBox->setVisible(false);
 
     controlPointParamsVisible(false);
@@ -95,6 +96,13 @@ void ControlPointView::updateModelControlPointState(bool isControlPoint) {
 }
 
 // reflects changes in the model to the view
+void ControlPointView::controlPointBoundsChanged(int index) {
+    int currentIndex = mBoundaryPointModel->currentIndex();
+    if(index == currentIndex) {
+        updateViewData();
+    }
+}
+
 void ControlPointView::controlPointStateChanged(int index, bool isControlPoint) {
     int currentIndex = mBoundaryPointModel->currentIndex();
     if(index == currentIndex) {

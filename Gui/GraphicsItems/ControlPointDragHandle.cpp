@@ -28,7 +28,6 @@ ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int in
     // build hover rect
     size = 7.0;
     mHoverRect = QRectF(-size,-size,size*2,size*2);
-
 }
 
 void ControlPointDragHandle::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget */*widget*/)

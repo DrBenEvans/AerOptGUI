@@ -23,6 +23,7 @@ public slots:
     void activePointChanged(int index);
     void smoothingValueChanged(double value);
     void controlPointStateChanged(int index, bool isControlPoint);
+    void controlPointBoundsChanged(int index);
     void updateModelControlPointState(bool isControlPoint);
     void controlBoundaryChanged();
 
