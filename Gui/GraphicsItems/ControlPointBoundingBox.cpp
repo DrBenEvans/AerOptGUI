@@ -14,6 +14,9 @@ ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int 
 
 void ControlPointBoundingBox::boundsChanged(int index) {
     if(index == mBoundaryPointIndex) {
+        QRectF rect = mBoundaryPointModel->point(mBoundaryPointIndex)->controlPointRect();
+        mTopLeft->setPos(rect.topLeft());
+        mBottomRight->setPos(rect.bottomRight());
         prepareGeometryChange();
         update();
     }

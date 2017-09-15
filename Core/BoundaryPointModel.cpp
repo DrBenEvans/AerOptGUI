@@ -52,16 +52,32 @@ void BoundaryPointModel::setControlPointState(int index, bool isControlPoint ) {
 }
 
 
-void BoundaryPointModel::setControlBoundaryCorner(int index, QPointF position, CornerPosition corner ) {
+void BoundaryPointModel::setControlBoundaryCorner(int index, QPointF position, CornerPosition corner) {
+    QRectF currentRect = point(index)->controlPointRect();
     if(corner == CornerPosition::TOPLEFT) {
-        point(index)->setTopLeftBound(position);
+        if(currentRect.topLeft() != position) {
+            point(index)->setTopLeftBound(position);
+            emit controlPointBoundsChanged(index);
+        }
     } else {
-        point(index)->setBottomRightBound(position);
+        if(currentRect.bottomRight() != position) {
+            point(index)->setBottomRightBound(position);
+            emit controlPointBoundsChanged(index);
+        }
     }
-
-    emit controlPointBoundsChanged(index);
 }
 
 int BoundaryPointModel::currentIndex() {
     return mCurrentIndex;
+}
+
+void BoundaryPointModel::setControlPointBounds(int index, QRectF ctlBounds) {
+    BoundaryPoint* boundaryPoint = point(index);
+    if(boundaryPoint) {
+        QRectF currentRect = point(index)->controlPointRect();
+        if(currentRect != ctlBounds) {
+            boundaryPoint->setControlPointRect(ctlBounds);
+            emit controlPointBoundsChanged(index);
+        }
+    }
 }

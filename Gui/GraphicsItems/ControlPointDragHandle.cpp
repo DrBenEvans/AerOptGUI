@@ -13,7 +13,6 @@ ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int in
     setZValue(1);
     setAcceptHoverEvents(true);
 
-
     QRectF rect = mBoundaryPoint->controlPointRect();
     if(mTopLeft) {
         setPos(rect.topLeft());

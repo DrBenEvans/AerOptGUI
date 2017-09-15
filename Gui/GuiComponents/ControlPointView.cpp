@@ -58,17 +58,15 @@ void ControlPointView::updateViewData() {
     }
 }
 
+// update changes to the model
 void ControlPointView::controlBoundaryChanged() {
-    BoundaryPoint* boundaryPoint = mBoundaryPointModel->point(mBoundaryPointIndex);
-    if(boundaryPoint) {
-        qreal ymax = ui->yBoundMax->value();
-        qreal ymin = ui->yBoundMin->value();
-        qreal xmax = ui->xBoundMax->value();
-        qreal xmin = ui->xBoundMin->value();
+    qreal ymax = ui->yBoundMax->value();
+    qreal ymin = ui->yBoundMin->value();
+    qreal xmax = ui->xBoundMax->value();
+    qreal xmin = ui->xBoundMin->value();
 
-        QRectF ctlBounds = QRectF(xmin, ymin, xmax - xmin, ymax - ymin);
-        //boundaryPoint->setControlPointRect(ctlBounds);
-    }
+    QRectF ctlBounds = QRectF(xmin, ymin, xmax - xmin, ymax - ymin);
+    mBoundaryPointModel->setControlPointBounds(mBoundaryPointIndex, ctlBounds);
 }
 
 void ControlPointView::smoothingValueChanged(int value) {
