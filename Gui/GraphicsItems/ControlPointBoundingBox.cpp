@@ -12,9 +12,11 @@ ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int 
     connect(mBoundaryPointModel, &BoundaryPointModel::controlPointBoundsChanged, this, &ControlPointBoundingBox::boundsChanged);
 }
 
-void ControlPointBoundingBox::boundsChanged() {
-    prepareGeometryChange();
-    update();
+void ControlPointBoundingBox::boundsChanged(int index) {
+    if(index == mBoundaryPointIndex) {
+        prepareGeometryChange();
+        update();
+    }
 }
 
 QRectF ControlPointBoundingBox::boundingRect() const {

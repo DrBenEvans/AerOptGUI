@@ -21,7 +21,7 @@ public:
 
 public slots:
     void activePointChanged(int index);
-    void smoothingValueChanged(double value);
+    void smoothingValueChanged(int value);
     void controlPointStateChanged(int index, bool isControlPoint);
     void controlPointBoundsChanged(int index);
     void updateModelControlPointState(bool isControlPoint);
@@ -32,6 +32,7 @@ private:
     void controlPointParamsVisible(bool visible);
     Ui::ControlPointView *ui;
     BoundaryPointModel* mBoundaryPointModel;
+    int mBoundaryPointIndex = -1;
 };
 
 #endif // CONTROLPOINTVIEW_H

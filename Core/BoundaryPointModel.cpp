@@ -43,10 +43,6 @@ BoundaryPoint* BoundaryPointModel::point(int index) {
     }
 }
 
-BoundaryPoint* BoundaryPointModel::currentPoint() {
-    return point(mCurrentIndex);
-}
-
 void BoundaryPointModel::setControlPointState(int index, bool isControlPoint ) {
     bool controlPrevState = point(index)->isControlPoint();
     if(controlPrevState != isControlPoint) {

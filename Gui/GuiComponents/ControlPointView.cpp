@@ -8,12 +8,13 @@ ControlPointView::ControlPointView(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    auto valChangedSignal = QOverload<double>::of(&QDoubleSpinBox::valueChanged);
-    connect(ui->smoothingValue, valChangedSignal, this, &ControlPointView::smoothingValueChanged);
-    connect(ui->xBoundMin, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
-    connect(ui->xBoundMax, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
-    connect(ui->yBoundMin, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
-    connect(ui->yBoundMax, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
+    auto dblSpinBoxSignal = QOverload<double>::of(&QDoubleSpinBox::valueChanged);
+    auto spinBoxSignal = QOverload<int>::of(&QSpinBox::valueChanged);
+    connect(ui->smoothingValue, spinBoxSignal, this, &ControlPointView::smoothingValueChanged);
+    connect(ui->xBoundMin, dblSpinBoxSignal, this, &ControlPointView::controlBoundaryChanged);
+    connect(ui->xBoundMax, dblSpinBoxSignal, this, &ControlPointView::controlBoundaryChanged);
+    connect(ui->yBoundMin, dblSpinBoxSignal, this, &ControlPointView::controlBoundaryChanged);
+    connect(ui->yBoundMax, dblSpinBoxSignal, this, &ControlPointView::controlBoundaryChanged);
     connect(ui->controlPointCheckBox, &QCheckBox::toggled, this, &ControlPointView::updateModelControlPointState);
 
     ui->controlPointCheckBox->setEnabled(false);
@@ -26,7 +27,7 @@ void ControlPointView::setModel(BoundaryPointModel *boundaryPointModel) {
     mBoundaryPointModel = boundaryPointModel;
     connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &ControlPointView::activePointChanged);
     connect(mBoundaryPointModel, &BoundaryPointModel::controlPointStateChanged, this, &ControlPointView::controlPointStateChanged);
-    updateViewData();
+    connect(mBoundaryPointModel, &BoundaryPointModel::controlPointBoundsChanged, this, &ControlPointView::controlPointBoundsChanged);
 }
 
 void ControlPointView::setPointCoords(qreal x, qreal y) {
@@ -36,7 +37,7 @@ void ControlPointView::setPointCoords(qreal x, qreal y) {
 }
 
 void ControlPointView::updateViewData() {
-    BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
+    BoundaryPoint* boundaryPoint = mBoundaryPointModel->point(mBoundaryPointIndex);
     ui->controlPointCheckBox->setVisible(boundaryPoint);
     adjustSize();
     if(boundaryPoint) {
@@ -58,7 +59,7 @@ void ControlPointView::updateViewData() {
 }
 
 void ControlPointView::controlBoundaryChanged() {
-    BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
+    BoundaryPoint* boundaryPoint = mBoundaryPointModel->point(mBoundaryPointIndex);
     if(boundaryPoint) {
         qreal ymax = ui->yBoundMax->value();
         qreal ymin = ui->yBoundMin->value();
@@ -66,18 +67,19 @@ void ControlPointView::controlBoundaryChanged() {
         qreal xmin = ui->xBoundMin->value();
 
         QRectF ctlBounds = QRectF(xmin, ymin, xmax - xmin, ymax - ymin);
-        boundaryPoint->setControlPointRect(ctlBounds);
+        //boundaryPoint->setControlPointRect(ctlBounds);
     }
 }
 
-void ControlPointView::smoothingValueChanged(double value) {
-    BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
+void ControlPointView::smoothingValueChanged(int value) {
+    BoundaryPoint* boundaryPoint = mBoundaryPointModel->point(mBoundaryPointIndex);
     if(boundaryPoint) {
         boundaryPoint->setSmoothing(value);
     }
 }
 
 void ControlPointView::activePointChanged(int index) {
+    mBoundaryPointIndex = index;
     setVisible(true);
     updateViewData();
 }
@@ -90,22 +92,19 @@ void ControlPointView::controlPointParamsVisible(bool visible) {
 
 void ControlPointView::updateModelControlPointState(bool isControlPoint) {
     if(mBoundaryPointModel) {
-        int currentIndex = mBoundaryPointModel->currentIndex();
-        mBoundaryPointModel->setControlPointState(currentIndex, isControlPoint);
+        mBoundaryPointModel->setControlPointState(mBoundaryPointIndex, isControlPoint);
     }
 }
 
 // reflects changes in the model to the view
 void ControlPointView::controlPointBoundsChanged(int index) {
-    int currentIndex = mBoundaryPointModel->currentIndex();
-    if(index == currentIndex) {
+    if(index == mBoundaryPointIndex) {
         updateViewData();
     }
 }
 
 void ControlPointView::controlPointStateChanged(int index, bool isControlPoint) {
-    int currentIndex = mBoundaryPointModel->currentIndex();
-    if(index == currentIndex) {
+    if(index == mBoundaryPointIndex) {
         updateViewData();
     }
 }

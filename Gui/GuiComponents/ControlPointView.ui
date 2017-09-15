@@ -90,16 +90,31 @@
      </property>
      <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="1">
-       <widget class="QDoubleSpinBox" name="xBoundMax">
+       <widget class="QDoubleSpinBox" name="xBoundMin">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="minimum">
+         <double>-9999.899999999999636</double>
+        </property>
+        <property name="maximum">
+         <double>0.000000000000000</double>
         </property>
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QDoubleSpinBox" name="xBoundMin">
+       <widget class="QDoubleSpinBox" name="xBoundMax">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
         </property>
        </widget>
       </item>
@@ -114,9 +129,15 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="yBoundMin">
+       <widget class="QDoubleSpinBox" name="yBoundMax">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="maximum">
+         <double>9999.989999999999782</double>
         </property>
        </widget>
       </item>
@@ -147,13 +168,6 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
-       <widget class="QDoubleSpinBox" name="smoothingValue">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="2">
        <widget class="QLabel" name="xBoundMaxLabel">
         <property name="enabled">
@@ -165,9 +179,28 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="yBoundMax">
+       <widget class="QDoubleSpinBox" name="yBoundMin">
         <property name="enabled">
          <bool>true</bool>
+        </property>
+        <property name="decimals">
+         <number>4</number>
+        </property>
+        <property name="minimum">
+         <double>-9999.989999999999782</double>
+        </property>
+        <property name="maximum">
+         <double>0.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QSpinBox" name="smoothingValue">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="maximum">
+         <number>10</number>
         </property>
        </widget>
       </item>
