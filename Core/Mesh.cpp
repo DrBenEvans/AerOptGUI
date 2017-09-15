@@ -316,6 +316,14 @@ void Mesh::setMeshDensity(const Enum::Mesh& meshDensity)
     mMeshDensity = meshDensity;
 }
 
+qreal Mesh::growthFactor() const {
+    return mGrowthFactor;
+}
+
+void Mesh::setGrowthFactor(qreal factor) {
+    mGrowthFactor = factor;
+}
+
 int Mesh::numberBoundaryLayers() const {
     return mNumBoundaryLayers;
 }
@@ -525,13 +533,19 @@ bool Mesh::createGeoFile(const std::string& meshGeoFile)
     int noPoints = 0;
     int noSegments = 6;
     int noDomainPoints = 4;
-    int nViscSegments = 2;
 
     std::ofstream outfile(meshGeoFile, std::ofstream::out);
     r &= outfile.is_open();
 
     noPoints = mProfilePoints.size();
     int nLayers = numberBoundaryLayers();
+
+    int nViscSegments;
+    if(nLayers>0) {
+        nViscSegments = 2;
+    } else {
+        nViscSegments = 0;
+    }
 
     if (r)
     {
@@ -599,10 +613,9 @@ bool Mesh::createGeoFile(const std::string& meshGeoFile)
     }
 
     qreal thickness = boundaryLayerThickness();
-    qreal dist = 0;
     for(int i=0; i<nLayers; i++) {
-        dist += thickness;
-        outfile << dist << std::endl;
+        outfile << thickness << std::endl;
+        thickness *= growthFactor();
     }
 
     outfile.close();

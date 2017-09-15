@@ -40,6 +40,8 @@ private slots:
 
     void on_thickness_valueChanged(double arg1);
 
+    void on_growthFactor_valueChanged(double arg1);
+
 private:
     void on_pushButton_clicked();
     void setMeshActive(bool meshIsActive, bool doToggleProfile = true);

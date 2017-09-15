@@ -137,6 +137,16 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Growth Factor</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="growthFactor"/>
+      </item>
+      <item>
        <widget class="QCheckBox" name="toggleProfile">
         <property name="text">
          <string>Show Profile</string>

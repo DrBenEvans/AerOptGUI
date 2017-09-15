@@ -60,6 +60,7 @@ MeshDialog::MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profi
 
     ui->layers->setValue(mesh->numberBoundaryLayers());
     ui->thickness->setValue(mesh->boundaryLayerThickness());
+    ui->growthFactor->setValue(mesh->growthFactor());
 
     // create control point view
     ControlPointView* controlPointView = new ControlPointView(this);
@@ -95,6 +96,7 @@ void MeshDialog::runMesher() {
     mesh->setMeshDensity(ui->density->currentData().value<Enum::Mesh>());
     mesh->setNumberBoundaryLayers(ui->layers->value());
     mesh->setBoundaryLayerThickness(ui->thickness->value());
+    mesh->setGrowthFactor(ui->growthFactor->value());
 
     // set profile
     mMeshDialogModel->runMesher();
@@ -170,6 +172,11 @@ void MeshDialog::on_layers_valueChanged(int arg1)
 }
 
 void MeshDialog::on_thickness_valueChanged(double arg1)
+{
+    setMeshActive(false,false);
+}
+
+void MeshDialog::on_growthFactor_valueChanged(double arg1)
 {
     setMeshActive(false,false);
 }

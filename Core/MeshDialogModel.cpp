@@ -16,6 +16,7 @@ void MeshDialogModel::runMesher() {
 
     mMeshPath = workDir;
     mBoundaryPointModel->clearPoints();
+    mMesh->clear();
 
     QString meshInFile;
     QString meshBacFile;

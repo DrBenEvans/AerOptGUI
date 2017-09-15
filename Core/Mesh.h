@@ -20,6 +20,7 @@ public:
     int numberBoundaryLayers() const;
     Enum::Mesh meshDensity() const;
     qreal boundaryLayerThickness() const;
+    double growthFactor() const;
     ProfilePoints boundaryPoints();
 
     /**
@@ -61,6 +62,7 @@ public:
 
     void setNumberBoundaryLayers(int num_layers);
     void setBoundaryLayerThickness(qreal layer_thickness);
+    void setGrowthFactor(qreal factor);
     void setMeshDensity(const Enum::Mesh& meshDensity);
     void setProfilePoints(ProfilePoints profilePoints);
 
@@ -214,6 +216,7 @@ private:
 
     // boundary layer parameters
     int mNumBoundaryLayers;
+    qreal mGrowthFactor = 2.7182818285;
     qreal mBoundaryLayerThickness;
 
 };
