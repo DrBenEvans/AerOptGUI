@@ -10,7 +10,7 @@ class BoundaryPointModel : public QObject
 public:
     explicit BoundaryPointModel(QObject *parent = nullptr);
 
-    void clear();
+    void clearPoints();
     void setPoints(std::list<std::pair<float,float>> points);
     void setCurrentBoundaryPoint(int index);
     int count();

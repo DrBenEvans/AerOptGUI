@@ -7,6 +7,11 @@ BoundaryPointModel::BoundaryPointModel(QObject *parent) : QObject(parent),
 {
 }
 
+void BoundaryPointModel::clearPoints() {
+    mBoundaryPoints.clear();
+    emit boundaryPointsReset();
+}
+
 void BoundaryPointModel::setPoints(std::list<std::pair<float, float> > points)
 {
     for (auto coord : points)

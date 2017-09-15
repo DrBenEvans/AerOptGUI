@@ -17,12 +17,12 @@ public:
 
 public slots:
     void setActivePoint(int index);
+    void refreshControlPointState(int index, bool ctl);
 
 private:
     bool activated() const;
     void setActivated(bool active);
     bool control();
-    void setControl(bool ctl);
     qreal radius() const;
     qreal w(qreal width);
     qreal h(qreal width);

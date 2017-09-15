@@ -81,6 +81,7 @@ void MeshDialog::setProfile() {
     mesh->setProfilePoints(profilePoints);
     setMeshActive(false);
     mProfileView->setProfilePoints(mesh->profilePoints());
+    mBoundaryPointModel->clearPoints();
     mMeshView->update();
 }
 

@@ -17,8 +17,12 @@ ControlPointView::ControlPointView(QWidget *parent) :
     connect(ui->yBoundMax, dblSpinBoxSignal, this, &ControlPointView::controlBoundaryChanged);
     connect(ui->controlPointCheckBox, &QCheckBox::toggled, this, &ControlPointView::updateModelControlPointState);
 
-    ui->controlPointCheckBox->setEnabled(false);
+    resetView();
+}
+
+void ControlPointView::resetView() {
     ui->controlPointCheckBox->setVisible(false);
+    ui->coord->setText("No control points selected.");
 
     controlPointParamsVisible(false);
 }
@@ -28,6 +32,7 @@ void ControlPointView::setModel(BoundaryPointModel *boundaryPointModel) {
     connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &ControlPointView::activePointChanged);
     connect(mBoundaryPointModel, &BoundaryPointModel::controlPointStateChanged, this, &ControlPointView::controlPointStateChanged);
     connect(mBoundaryPointModel, &BoundaryPointModel::controlPointBoundsChanged, this, &ControlPointView::controlPointBoundsChanged);
+    connect(mBoundaryPointModel, &BoundaryPointModel::boundaryPointsReset, this, &ControlPointView::resetView);
 }
 
 void ControlPointView::setPointCoords(qreal x, qreal y) {

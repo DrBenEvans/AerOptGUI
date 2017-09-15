@@ -28,6 +28,7 @@ public slots:
     void controlBoundaryChanged();
 
 private:
+    void resetView();
     void setPointCoords(qreal x, qreal y);
     void controlPointParamsVisible(bool visible);
     Ui::ControlPointView *ui;

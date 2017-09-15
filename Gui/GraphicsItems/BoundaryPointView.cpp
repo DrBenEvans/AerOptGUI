@@ -26,6 +26,7 @@ BoundaryPointView::BoundaryPointView(BoundaryPointModel *model, int index, ViewS
     setPos(mScale->w(bp->x()), mScale->h(bp->y()));
 
     connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &BoundaryPointView::setActivePoint);
+    connect(mBoundaryPointModel, &BoundaryPointModel::controlPointStateChanged, this, &BoundaryPointView::refreshControlPointState);
 }
 
 qreal BoundaryPointView::radius() const {
@@ -93,17 +94,17 @@ void BoundaryPointView::setActivated(bool active) {
     update();
 }
 
-void BoundaryPointView::setControl(bool ctl) {
-    //build control handles
-    if(mControlPointHandles == nullptr && ctl) {
-        mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, this);
+void BoundaryPointView::refreshControlPointState(int index, bool ctl) {
+    if(index == mBoundaryPointIndex) {
+        //build bounding box, unless it exists
+        if(mControlPointHandles == nullptr && ctl)
+            mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, this);
+
+        mControlPointHandles->setVisible(ctl);
+
+        mControl = ctl;
+        mBoundaryPointModel->setActiveIndex(mBoundaryPointIndex);
     }
-
-    mControlPointHandles->setVisible(ctl);
-
-    mControl = ctl;
-    mBoundaryPointModel->setActiveIndex(mBoundaryPointIndex);
-    mBoundaryPointModel->setControlPointState(mBoundaryPointIndex, ctl);
 }
 
 bool BoundaryPointView::control() {
@@ -134,7 +135,7 @@ void BoundaryPointView::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 
 void BoundaryPointView::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     if(mPointRect.contains(event->pos())) {
-        setControl(!mControl);
+        mBoundaryPointModel->setControlPointState(mBoundaryPointIndex, !mControl);
     }
 
     QGraphicsItem::mouseDoubleClickEvent(event);
