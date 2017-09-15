@@ -61,6 +61,11 @@ MeshDialog::MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profi
     ui->layers->setValue(mesh->numberBoundaryLayers());
     ui->thickness->setValue(mesh->boundaryLayerThickness());
 
+    // create control point view
+    ControlPointView* controlPointView = new ControlPointView(this);
+    controlPointView->setModel(mBoundaryPointModel);
+    controlPointView->move(30,110);
+
     mScene->addItem(mProfileView);
     mScene->addItem(mMeshView);
 

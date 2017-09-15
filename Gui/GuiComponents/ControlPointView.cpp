@@ -10,10 +10,14 @@ ControlPointView::ControlPointView(QWidget *parent) :
 
     auto valChangedSignal = QOverload<double>::of(&QDoubleSpinBox::valueChanged);
     connect(ui->smoothingValue, valChangedSignal, this, &ControlPointView::smoothingValueChanged);
-    connect(ui->xBoundMin, valChangedSignal, [this](double) { controlBoundaryChanged(); });
-    connect(ui->xBoundMax, valChangedSignal, [this](double) { controlBoundaryChanged(); });
-    connect(ui->yBoundMin, valChangedSignal, [this](double) { controlBoundaryChanged(); });
-    connect(ui->yBoundMax, valChangedSignal, [this](double) { controlBoundaryChanged(); });
+    connect(ui->xBoundMin, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
+    connect(ui->xBoundMax, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
+    connect(ui->yBoundMin, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
+    connect(ui->yBoundMax, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
+    connect(ui->controlPointCheckBox, &QCheckBox::toggled, this, &ControlPointView::controlPointChanged);
+    connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &ControlPointView::activePointChanged);
+
+    controlPointChanged(false);
 }
 
 void ControlPointView::setModel(BoundaryPointModel *boundaryPointModel) {
@@ -37,11 +41,10 @@ void ControlPointView::updateViewData() {
         setPointCoords(x, y);
 
         QRectF rect = boundaryPoint->controlPointRect();
-        //QDoubleSpinBox* spin = ui->yBoundMax;
-        //spin->setValue(10.0);
-        //ui->yBoundMin->setValue(rect.top());
-        //ui->xBoundMax->setValue(rect.right());
-        //ui->xBoundMin->setValue(rect.left());
+        ui->yBoundMax->setValue(rect.bottom());
+        ui->yBoundMin->setValue(rect.top());
+        ui->xBoundMax->setValue(rect.right());
+        ui->xBoundMin->setValue(rect.left());
 
         ui->smoothingValue->setValue(boundaryPoint->getSmoothing());
         ui->controlPointCheckBox->setChecked(boundaryPoint->isControlPoint());
@@ -70,12 +73,19 @@ void ControlPointView::smoothingValueChanged(double value) {
 
 void ControlPointView::activePointChanged(int index) {
     setVisible(true);
+    updateViewData();
 }
 
 void ControlPointView::controlPointChanged(bool value) {
-    BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
-    if(boundaryPoint) {
-        boundaryPoint->setControlPoint(value);
+    ui->groupBox->setVisible(value);
+    ui->groupBox->setAttribute(Qt::WA_TransparentForMouseEvents, !value);
+    adjustSize();
+
+    if(mBoundaryPointModel) {
+        BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
+        if(boundaryPoint) {
+            boundaryPoint->setControlPoint(value);
+        }
     }
 }
 
