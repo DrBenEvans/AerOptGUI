@@ -21,7 +21,7 @@ class BoundaryPoint {
 public:
     void setPoint(QPointF ctl_point);
 
-    BoundaryPoint(qreal xcoord, qreal ycoord, QObject* parent = 0);
+    BoundaryPoint(qreal xcoord, qreal ycoord);
 
     // point position
     qreal x() const;
@@ -46,7 +46,6 @@ private:
     bool mIsControlPoint = false;
     QRectF mControlPointRect;
     uint mSmooth = 0.0;
-
 };
 
 #endif // BOUNDARY_POINT_H

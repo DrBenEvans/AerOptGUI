@@ -9,10 +9,10 @@ ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int 
 {
     mTopLeft = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, true, this);
     mBottomRight = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, false, this);
-    connect(mBoundaryPointModel, &BoundaryPointModel::controlBoundsChanged, this, &ControlPointBoundingBox::controlRectChanged);
+    connect(mBoundaryPointModel, &BoundaryPointModel::controlPointBoundsChanged, this, &ControlPointBoundingBox::boundsChanged);
 }
 
-void ControlPointBoundingBox::controlRectChanged() {
+void ControlPointBoundingBox::boundsChanged() {
     prepareGeometryChange();
     update();
 }

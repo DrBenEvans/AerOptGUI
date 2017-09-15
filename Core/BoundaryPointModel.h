@@ -17,6 +17,7 @@ public:
     BoundaryPoint* point(int index);
     BoundaryPoint *currentPoint();
     bool currentPointSet();
+    int currentIndex();
 
     enum CornerPosition
     {
@@ -25,11 +26,13 @@ public:
     };
     void setControlBoundaryCorner(int index, QPointF pos, CornerPosition corner );
     void setActiveIndex(int index);
+    void setControlPointState(int index, bool isControlPoint );
 
 signals:
     void boundaryPointsReset();
-    void controlBoundsChanged(int);
+    void controlPointBoundsChanged(int);
     void activeIndexChanged(int);
+    void controlPointStateChanged(int);
 
 public slots:
 

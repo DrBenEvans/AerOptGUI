@@ -22,7 +22,7 @@ public:
 public slots:
     void activePointChanged(int index);
     void smoothingValueChanged(double value);
-    void controlPointChanged(bool value);
+    void controlPointStateChanged(bool isControlPoint);
     void controlBoundaryChanged();
 
 private:

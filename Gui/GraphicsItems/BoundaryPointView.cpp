@@ -103,6 +103,7 @@ void BoundaryPointView::setControl(bool ctl) {
 
     mControl = ctl;
     mBoundaryPointModel->setActiveIndex(mBoundaryPointIndex);
+    mBoundaryPointModel->setControlPointState(mBoundaryPointIndex, ctl);
 }
 
 bool BoundaryPointView::control() {

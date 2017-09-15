@@ -47,6 +47,12 @@ BoundaryPoint* BoundaryPointModel::currentPoint() {
     return point(mCurrentIndex);
 }
 
+void BoundaryPointModel::setControlPointState(int index, bool isControlPoint ) {
+    point(index)->setControlPoint(isControlPoint);
+    emit controlPointStateChanged(index);
+}
+
+
 void BoundaryPointModel::setControlBoundaryCorner(int index, QPointF position, CornerPosition corner ) {
     if(corner == CornerPosition::TOPLEFT) {
         point(index)->setTopLeftBound(position);
@@ -54,5 +60,9 @@ void BoundaryPointModel::setControlBoundaryCorner(int index, QPointF position, C
         point(index)->setBottomRightBound(position);
     }
 
-    emit controlBoundsChanged(index);
+    emit controlPointBoundsChanged(index);
+}
+
+int BoundaryPointModel::currentIndex() {
+    return mCurrentIndex;
 }

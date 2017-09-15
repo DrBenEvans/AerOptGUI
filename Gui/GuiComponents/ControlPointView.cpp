@@ -14,10 +14,11 @@ ControlPointView::ControlPointView(QWidget *parent) :
     connect(ui->xBoundMax, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
     connect(ui->yBoundMin, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
     connect(ui->yBoundMax, valChangedSignal, this, &ControlPointView::controlBoundaryChanged);
-    connect(ui->controlPointCheckBox, &QCheckBox::toggled, this, &ControlPointView::controlPointChanged);
+    connect(ui->controlPointCheckBox, &QCheckBox::toggled, this, &ControlPointView::controlPointStateChanged);
     connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &ControlPointView::activePointChanged);
+    connect(mBoundaryPointModel, &BoundaryPointModel::controlPointStateChanged, this, &ControlPointView::controlPointStateChanged);
 
-    controlPointChanged(false);
+    controlPointStateChanged(false);
 }
 
 void ControlPointView::setModel(BoundaryPointModel *boundaryPointModel) {
@@ -76,16 +77,14 @@ void ControlPointView::activePointChanged(int index) {
     updateViewData();
 }
 
-void ControlPointView::controlPointChanged(bool value) {
-    ui->groupBox->setVisible(value);
-    ui->groupBox->setAttribute(Qt::WA_TransparentForMouseEvents, !value);
+void ControlPointView::controlPointStateChanged(bool isControlPoint) {
+    ui->groupBox->setVisible(isControlPoint);
+    ui->groupBox->setAttribute(Qt::WA_TransparentForMouseEvents, !isControlPoint);
     adjustSize();
 
     if(mBoundaryPointModel) {
-        BoundaryPoint* boundaryPoint = mBoundaryPointModel->currentPoint();
-        if(boundaryPoint) {
-            boundaryPoint->setControlPoint(value);
-        }
+        int currentIndex = mBoundaryPointModel->currentIndex();
+        mBoundaryPointModel->setControlPointState(currentIndex, isControlPoint);
     }
 }
 

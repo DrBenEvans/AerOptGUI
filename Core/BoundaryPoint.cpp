@@ -12,7 +12,7 @@
 #include <iostream>
 #include "BoundaryPoint.h"
 
-BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord, QObject *parent) :
+BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord) :
     mCoord(xcoord,ycoord),
     mControlPointRect(-10,-10,20,20)
 {

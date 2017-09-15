@@ -20,7 +20,7 @@ public:
     void setActivated(bool active);
 
 public slots:
-    void controlRectChanged();
+    void boundsChanged();
 
 private:
     ControlPointDragHandle* mTopLeft;
