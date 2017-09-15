@@ -22,11 +22,13 @@ public:
 public slots:
     void activePointChanged(int index);
     void smoothingValueChanged(double value);
-    void controlPointStateChanged(bool isControlPoint);
+    void controlPointStateChanged(int index, bool isControlPoint);
+    void updateModelControlPointState(bool isControlPoint);
     void controlBoundaryChanged();
 
 private:
     void setPointCoords(qreal x, qreal y);
+    void controlPointParamsVisible(bool visible);
     Ui::ControlPointView *ui;
     BoundaryPointModel* mBoundaryPointModel;
 };

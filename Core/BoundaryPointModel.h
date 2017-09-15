@@ -30,9 +30,9 @@ public:
 
 signals:
     void boundaryPointsReset();
-    void controlPointBoundsChanged(int);
-    void activeIndexChanged(int);
-    void controlPointStateChanged(int);
+    void controlPointBoundsChanged(int index);
+    void activeIndexChanged(int index);
+    void controlPointStateChanged(int index, bool isCtl);
 
 public slots:
 
