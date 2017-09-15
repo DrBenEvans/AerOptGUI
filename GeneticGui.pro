@@ -56,7 +56,6 @@ SOURCES += \
     Gui/GuiComponents/Arrow.cpp \
     Gui/Dialogs/ConfigSimulationDialog.cpp \
     #Gui/AppController.cpp \
-    Gui/Dialogs/OptimisationManagerDialog.cpp \
     Gui/MainWindow.cpp \
     Core/Mesh.cpp \
     Core/Profile.cpp \
@@ -85,7 +84,6 @@ HEADERS  += \
     Gui/GuiComponents/Arrow.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
     #Gui/AppController.h \
-    Gui/Dialogs/OptimisationManagerDialog.h \
     Gui/MainWindow.h \
     Core/Mesh.h \
     Core/Profile.h \
@@ -113,7 +111,6 @@ FORMS    += \
 #    Gui/Dialogs/ConstraintsDialog.ui \
 #    Gui/Plotter/PlotterDialog.ui \
     Gui/Dialogs/ConfigSimulationDialog.ui \
-    Gui/Dialogs/OptimisationManagerDialog.ui \
     Gui/MainWindow.ui \
     Gui/Dialogs/MeshDialog.ui \
     Gui/GuiComponents/ControlPointView.ui
