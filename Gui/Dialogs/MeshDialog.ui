@@ -189,7 +189,7 @@
       <item>
        <widget class="QPushButton" name="nextButton">
         <property name="enabled">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="text">
          <string>Next</string>
@@ -225,6 +225,22 @@
     <hint type="sourcelabel">
      <x>984</x>
      <y>428</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>565</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nextButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MeshDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>1084</x>
+     <y>71</y>
     </hint>
     <hint type="destinationlabel">
      <x>565</x>

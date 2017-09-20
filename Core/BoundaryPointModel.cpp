@@ -12,6 +12,15 @@ void BoundaryPointModel::clearPoints() {
     emit boundaryPointsReset();
 }
 
+int BoundaryPointModel::controlPointCount() {
+    int count = 0;
+    for( auto& bp : mBoundaryPoints )
+        if(bp.isControlPoint())
+            count++;
+
+    return count;
+}
+
 void BoundaryPointModel::setPoints(std::list<std::pair<float, float> > points)
 {
     for (auto coord : points)

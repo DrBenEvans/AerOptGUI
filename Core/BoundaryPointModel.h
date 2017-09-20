@@ -27,6 +27,7 @@ public:
     void setControlBoundaryCorner(int index, QPointF pos, CornerPosition corner);
     void setActiveIndex(int index);
     void setControlPointState(int index, bool isControlPoint );
+    int controlPointCount();
     void setControlPointBounds(int index, QRectF ctlBounds);
 
 signals:

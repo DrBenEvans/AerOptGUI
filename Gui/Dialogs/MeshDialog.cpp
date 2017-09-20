@@ -6,6 +6,7 @@
 #include <QWheelEvent>
 #include <QFileDialog>
 #include <QDebug>
+#include <QMessageBox>
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
@@ -111,6 +112,12 @@ void MeshDialog::setMeshActive(bool meshIsActive, bool doToggleProfile) {
 
 void MeshDialog::accept()
 {
+    if(mBoundaryPointModel->controlPointCount() == 0) {
+        QMessageBox::warning(this, "Message Box",
+                                      "No control points set. Please select some control points before proceeding",
+                                      QMessageBox::Ok);
+        return;
+    }
 	QDialog::accept();
 }
 
