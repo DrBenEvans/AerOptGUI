@@ -3,8 +3,9 @@
 #include <QtWidgets>
 
 MeshView::MeshView(ViewScaler* scale, QGraphicsItem* parent) :
-    mScale(scale),
+    QGraphicsObject(parent),
     mMeshModel(nullptr),
+    mScale(scale),
     mBoundaryPointModel(nullptr)
 {
     this->color = QColor(0,255,0);
@@ -117,8 +118,8 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
         const uint r = 4;//pressure, 0 = rho, 1 = u, 2 = v, 3 = energy
 
         //Determin scalar range
-        float min =  10000000;
-        float max = -10000000;
+        float min = std::numeric_limits<float>::infinity();
+        float max = -std::numeric_limits<float>::infinity();
         for (const auto& s : resultsdata)
         {
             const float& v = std::get<r>(s);
