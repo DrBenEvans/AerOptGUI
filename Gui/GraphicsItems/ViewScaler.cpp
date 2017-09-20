@@ -17,3 +17,12 @@ qreal ViewScaler::h(qreal height) {
 QRectF ViewScaler::rect(int a1, int a2, int a3, int a4) {
     return QRectF(a1*mScale, a2*mScale, a3*mScale, a4*mScale);
 }
+
+QRectF ViewScaler::toSceneScale(QRectF rect) {
+    QRectF scaled = QRectF(rect.topLeft()*mScale, rect.bottomRight()*mScale);
+    return scaled;
+}
+
+QPointF ViewScaler::fromSceneScale(QPointF point) {
+    return point/mScale;
+}

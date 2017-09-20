@@ -1,20 +1,23 @@
 #include "ControlPointBoundingBox.h"
 #include <QPainter>
 
-ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int index, QGraphicsItem *parent) :
+ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int index, ViewScaler* scaler, QGraphicsItem *parent) :
     QGraphicsObject(parent),
     mActive(false),
     mBoundaryPointModel(model),
-    mBoundaryPointIndex(index)
+    mBoundaryPointIndex(index),
+    mScale(scaler)
 {
-    mTopLeft = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, true, this);
-    mBottomRight = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, false, this);
+    mTopLeft = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, true, mScale, this);
+    mBottomRight = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, false, mScale, this);
     connect(mBoundaryPointModel, &BoundaryPointModel::controlPointBoundsChanged, this, &ControlPointBoundingBox::boundsChanged);
 }
 
 void ControlPointBoundingBox::boundsChanged(int index) {
     if(index == mBoundaryPointIndex) {
         QRectF rect = mBoundaryPointModel->point(mBoundaryPointIndex)->controlPointRect();
+        rect = mScale->toSceneScale(rect);
+
         mTopLeft->setPos(rect.topLeft());
         mBottomRight->setPos(rect.bottomRight());
         prepareGeometryChange();
@@ -25,6 +28,8 @@ void ControlPointBoundingBox::boundsChanged(int index) {
 QRectF ControlPointBoundingBox::boundingRect() const {
     BoundaryPoint* boundaryPoint = mBoundaryPointModel->point(mBoundaryPointIndex);
     QRectF r = boundaryPoint->controlPointRect();
+    r = mScale->toSceneScale(r);
+
     qreal margin = 2.0;
     r.adjust(-margin,-margin,margin,margin);
     return r;
@@ -32,6 +37,8 @@ QRectF ControlPointBoundingBox::boundingRect() const {
 
 void ControlPointBoundingBox::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     QRectF rect = mBoundaryPointModel->point(mBoundaryPointIndex)->controlPointRect();
+    rect = mScale->toSceneScale(rect);
+
     painter->setBrush(Qt::NoBrush);
     QPen pen;
     if(mActive) {

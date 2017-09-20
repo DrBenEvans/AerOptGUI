@@ -4,13 +4,14 @@
 #include "ControlPointDragHandle.h"
 #include "BoundaryPointModel.h"
 #include <QGraphicsItem>
+#include "ViewScaler.h"
 
 class ControlPointDragHandle;
 
 class ControlPointBoundingBox : public QGraphicsObject {
     Q_OBJECT
 public:
-    ControlPointBoundingBox(BoundaryPointModel *model, int index, QGraphicsItem *parent);
+    ControlPointBoundingBox(BoundaryPointModel *model, int index, ViewScaler* scaler, QGraphicsItem *parent);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
@@ -28,6 +29,7 @@ private:
     bool mActive;
     BoundaryPointModel* mBoundaryPointModel;
     int mBoundaryPointIndex;
+    ViewScaler* mScale;
 };
 
 #endif // CONTROLPOINTBOUNDINGBOXVIEW_H

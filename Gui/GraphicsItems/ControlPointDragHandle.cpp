@@ -2,18 +2,21 @@
 #include <QPainter>
 #include <QGraphicsView>
 
-ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int index, bool isTopLeft, QGraphicsItem* parent) :
+ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int index, bool isTopLeft, ViewScaler* scaler, QGraphicsItem* parent) :
     QGraphicsItem(parent),
     mTopLeft(isTopLeft),
     mBoundaryPointModel(model),
     mBoundaryPointIndex(index),
-    mBoundaryPoint(mBoundaryPointModel->point(mBoundaryPointIndex))
+    mBoundaryPoint(mBoundaryPointModel->point(mBoundaryPointIndex)),
+    mScale(scaler)
 {
     setFlags(ItemIsMovable | ItemSendsScenePositionChanges);
     setZValue(1);
     setAcceptHoverEvents(true);
 
     QRectF rect = mBoundaryPoint->controlPointRect();
+    rect = mScale->toSceneScale(rect);
+
     if(mTopLeft) {
         setPos(rect.topLeft());
     } else {
@@ -85,7 +88,7 @@ QVariant ControlPointDragHandle::itemChange(GraphicsItemChange change, const QVa
                 pos.setY(0);
             }
 
-            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, pos, BoundaryPointModel::TOPLEFT);
+            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, mScale->fromSceneScale(pos), BoundaryPointModel::TOPLEFT);
 
             return pos;
 
@@ -99,7 +102,7 @@ QVariant ControlPointDragHandle::itemChange(GraphicsItemChange change, const QVa
                 pos.setY(0);
             }
 
-            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, pos, BoundaryPointModel::BOTTOMRIGHT);
+            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, mScale->fromSceneScale(pos), BoundaryPointModel::BOTTOMRIGHT);
 
             return pos;
         }

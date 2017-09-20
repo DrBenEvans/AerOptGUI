@@ -52,6 +52,7 @@ void ControlPointView::updateViewData() {
         setPointCoords(x, y);
 
         QRectF rect = boundaryPoint->controlPointRect();
+
         ui->yBoundMax->setValue(rect.bottom());
         ui->yBoundMin->setValue(rect.top());
         ui->xBoundMax->setValue(rect.right());

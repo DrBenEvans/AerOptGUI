@@ -98,7 +98,7 @@ void BoundaryPointView::refreshControlPointState(int index, bool ctl) {
     if(index == mBoundaryPointIndex) {
         //build bounding box, unless it exists
         if(mControlPointHandles == nullptr && ctl)
-            mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, this);
+            mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, mScale, this);
 
         mControlPointHandles->setVisible(ctl);
 

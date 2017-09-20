@@ -14,7 +14,7 @@
 
 BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord) :
     mCoord(xcoord,ycoord),
-    mControlPointRect(-10,-10,20,20)
+    mControlPointRect(-0.01,-0.01,0.02,0.02)
 {
 }
 
