@@ -8,6 +8,7 @@
 #include <QAbstractListModel>
 
 #include "Optimisation.h"
+#include "FileManipulation.h"
 
 class Optimisation;
 class DatabaseManager;
@@ -22,6 +23,7 @@ public:
     };
 
     OptimisationModel(QObject* parent = 0);
+    ~OptimisationModel();
 
     QModelIndex addOptimisation(const Optimisation &optimisation);
     QModelIndex addOptimisation(std::shared_ptr<Optimisation> optimisation);
@@ -35,12 +37,21 @@ public:
 
     std::shared_ptr<Optimisation> currentOptimisation();
 
+    void run(std::shared_ptr<Optimisation> optimisation);
+
+public slots:
+    void aerOptFinished(int exitCode);
+
 private:
+    bool createAerOptInFile(const std::string& filePath, std::shared_ptr<Optimisation> optimisation);
+    bool createAerOptNodeFile(const std::string& filePath, std::shared_ptr<Optimisation> optimisation);
     bool isIndexValid(const QModelIndex& index) const;
 
 private:
     std::unique_ptr<std::vector<std::shared_ptr<Optimisation>>> mOptimisations;
     QItemSelectionModel* mSelectionModel;
+    QFileSystemWatcher mDirWatcher;
+    QProcess mOptProcess;
 };
 
 #endif // SIMULATIONMODEL_H

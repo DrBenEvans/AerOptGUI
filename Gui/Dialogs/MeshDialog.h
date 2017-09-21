@@ -22,10 +22,10 @@ class MeshDialog : public QDialog
 	Q_OBJECT
 
 public:
-    explicit MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profileModel, QWidget* parent = 0);
+    explicit MeshDialog(ProfileModel &profileModel, QWidget* parent = 0);
     ~MeshDialog();
     void accept();
-    void setBoundaryPointModel(BoundaryPointModel* model);
+    std::vector<BoundaryPoint*> controlPoints();
 
 public slots:
     void runMesher();
@@ -53,7 +53,6 @@ private:
     ViewScaler* mScale;
     ProfileView* mProfileView;
     MeshView* mMeshView;
-    BoundaryPointModel* mBoundaryPointModel;
 };
 
 #endif // MESHDIALOG_H

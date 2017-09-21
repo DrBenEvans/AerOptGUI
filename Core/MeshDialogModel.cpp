@@ -1,20 +1,25 @@
 #include "MeshDialogModel.h"
 #include <QDebug>
+#include <QSettings>
 
 MeshDialogModel::MeshDialogModel(QObject *parent) : QObject(parent),
   mMesh(new Mesh(this)),
-  mBoundaryPointModel(new BoundaryPointModel(this))
+  mBoundaryPointModel(new BoundaryPointModel)
 {
     mMeshProcess.setParent(this);
 }
 
-void MeshDialogModel::runMesher() {
+MeshDialogModel::~MeshDialogModel() {
+    mMeshProcess.kill();
+}
 
-    QDir workDir("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Project");
+void MeshDialogModel::runMesher() {
+    QSettings settings;
+    QDir scratchDir = QDir(settings.value("mesher/scratchDir").toString());
+    QString meshDatFile = settings.value("mesher/datFile").toString();
 
     bool r = true;
 
-    mMeshPath = workDir;
     mBoundaryPointModel->clearPoints();
     mMesh->clear();
 
@@ -22,21 +27,18 @@ void MeshDialogModel::runMesher() {
     QString meshBacFile;
     QString meshGeoFile;
 
-    QString mesherPath = "/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/FLITE/Mesher/MeshGenerator";
+    QString mesherPath = settings.value("mesher/exe").toString();
 
-    meshInFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".in").absolutePath();
+    meshInFile = QDir(scratchDir.absolutePath() + "/scratch.in").absolutePath();
     meshInFile = QDir::toNativeSeparators(meshInFile);
 
-    meshBacFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".bac").absolutePath();
+    meshBacFile = QDir(scratchDir.absolutePath() + "/scratch.bac").absolutePath();
     meshBacFile = QDir::toNativeSeparators(meshBacFile);
 
-    meshGeoFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".geo").absolutePath();
+    meshGeoFile = QDir(scratchDir.absolutePath() + "/scratch.geo").absolutePath();
     meshGeoFile = QDir::toNativeSeparators(meshGeoFile);
 
-    mMeshDatFile = QDir(mMeshPath.absolutePath() + QDir::separator() + mMeshPath.dirName() + ".dat").absolutePath();
-    mMeshDatFile = QDir::toNativeSeparators(mMeshDatFile);
-
-    r &= mMesh->createFiles(meshInFile, meshBacFile, meshGeoFile, mMeshDatFile);
+    r &= mMesh->createFiles(meshInFile, meshBacFile, meshGeoFile, meshDatFile);
 
     if (r)
     {
@@ -44,11 +46,11 @@ void MeshDialogModel::runMesher() {
         mMeshProcess.setStandardInputFile( meshInFile );
         mMeshProcess.start( mesherPath );
         mMeshProcess.waitForFinished();
-        meshingFinished(mMeshProcess.exitCode(),mMeshProcess.exitStatus());
+        meshingFinished(mMeshProcess.exitCode(), mMeshProcess.exitStatus(), meshDatFile);
     }
 }
 
-void MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus)
+void MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus, QString meshDatFile)
 {
     if (exitStatus == QProcess::NormalExit && exitCode == 0)
     {
@@ -58,12 +60,12 @@ void MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitSta
 
         //Set and/or check existance of output data file
         r &= mMeshProcess.exitCode() == 0;
-        r &= QFile::exists(mMeshDatFile);
+        r &= QFile::exists(meshDatFile);
 
         //Now load points into data object
         if (r)
         {
-            r &= mMesh->loadMesh(mMeshDatFile);
+            r &= mMesh->loadMesh(meshDatFile);
         }
 
         //When done set menu to 'Yes'

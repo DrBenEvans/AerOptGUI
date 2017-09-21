@@ -29,6 +29,7 @@ public:
     void setControlPointState(int index, bool isControlPoint );
     int controlPointCount();
     void setControlPointBounds(int index, QRectF ctlBounds);
+    std::vector<BoundaryPoint *> controlPoints();
 
 signals:
     void boundaryPointsReset();

@@ -1,11 +1,25 @@
 #include "ProfileModel.h"
 #include <QDebug>
+#include <QSettings>
+#include <QFileInfo>
 
 ProfileModel::ProfileModel(QObject *parent) : QAbstractListModel(parent)
 {
-    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Example_profile_files/NACA0024.prf"));
-    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Example_profile_files/NACA21120.prf"));
-    addProfileFromFilePath(QString("/Volumes/HardDrive/Users/mark/AerOpt/AerOpt/Example_profile_files/test.prf"));
+    QSettings settings;
+
+    int size = settings.beginReadArray("profiles");
+    for (int i = 0; i < size; ++i) {
+        settings.setArrayIndex(i);
+        QString profilePath = settings.value("filepath").toString();
+
+        QFileInfo finfo(profilePath);
+        if(finfo.exists() && finfo.size() > 0) {
+            addProfileFromFilePath(profilePath);
+        } else {
+            settings.remove("filepath");
+        }
+    }
+    settings.endArray();
 }
 
 void ProfileModel::addProfileFromFilePath(QString filePath) {

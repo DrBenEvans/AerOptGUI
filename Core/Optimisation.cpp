@@ -8,7 +8,9 @@
 
 #include <QDebug>
 #include <QPointF>
+#include <QSettings>
 #include <iostream>
+#include <fstream>
 #include "BoundaryPoint.h"
 #include "Optimisation.h"
 
@@ -147,4 +149,16 @@ QString Optimisation::label() const {
 
 void Optimisation::setLabel(QString label) {
     mLabel = label;
+}
+
+std::vector<BoundaryPoint*> Optimisation::controlPoints() {
+    return mControlPoints;
+}
+
+void Optimisation::setControlPoints(std::vector<BoundaryPoint*> controlPoints) {
+    mControlPoints = controlPoints;
+}
+
+int Optimisation::controlPointCount() {
+    return mControlPoints.size();
 }

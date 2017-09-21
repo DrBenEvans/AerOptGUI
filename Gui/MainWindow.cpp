@@ -29,14 +29,15 @@ MainWindow::~MainWindow()
 
 void MainWindow::newOptimisation() {
     auto optimisation = std::make_shared<Optimisation>();
-    MeshDialogModel meshDialogModel(this);
-    MeshDialog meshdiag(&meshDialogModel, mProfileModel, this);
-    if(meshdiag.exec() == QDialog::Accepted) {
+    MeshDialog meshDialog(mProfileModel, this);
+    if(meshDialog.exec() == QDialog::Accepted) {
         optimisation->setLabel(QString("Optimisation %1").arg(mOptimisationModel->rowCount()+1));
 
-        ConfigSimulationDialog diag(optimisation,this);
+        ConfigSimulationDialog diag(optimisation, this);
         if(diag.exec() == QDialog::Accepted) {
+            optimisation->setControlPoints(meshDialog.controlPoints());
             mOptimisationModel->addOptimisation(optimisation);
+            mOptimisationModel->run(optimisation);
         }
     }
 }

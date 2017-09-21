@@ -19,6 +19,7 @@
 #include "Mesh.h"
 #include "BoundaryPoint.h"
 #include <QString>
+#include <QFileSystemWatcher>
 
 /**
  * @brief The OptimisationRun class
@@ -169,6 +170,11 @@ public:
     void setLabel(QString label);
     std::shared_ptr<Mesh> initMesh();
 
+    // control points
+    std::vector<BoundaryPoint*> controlPoints();
+    void setControlPoints(std::vector<BoundaryPoint*> controlPoints);
+    int controlPointCount();
+
 private:
     ProfilePoints mProfilePoints;
 
@@ -191,7 +197,7 @@ private:
     int mNoTop;
 
     std::shared_ptr<Mesh> mInitMesh;
-
+    std::vector<BoundaryPoint*> mControlPoints;
 };
 
 #endif // OptimisationRun_H

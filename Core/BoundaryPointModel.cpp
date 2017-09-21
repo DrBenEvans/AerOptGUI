@@ -21,6 +21,15 @@ int BoundaryPointModel::controlPointCount() {
     return count;
 }
 
+std::vector<BoundaryPoint*> BoundaryPointModel::controlPoints() {
+    std::vector<BoundaryPoint*> ctlPoints;
+    for( auto& bp : mBoundaryPoints )
+        if(bp.isControlPoint())
+            ctlPoints.push_back(&bp);
+
+    return ctlPoints;
+}
+
 void BoundaryPointModel::setPoints(std::list<std::pair<float, float> > points)
 {
     for (auto coord : points)

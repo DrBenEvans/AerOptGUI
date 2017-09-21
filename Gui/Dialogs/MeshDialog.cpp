@@ -10,16 +10,15 @@
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
-MeshDialog::MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profileModel, QWidget* parent) :
+MeshDialog::MeshDialog(ProfileModel &profileModel, QWidget* parent) :
 	QDialog(parent),
 	ui(new Ui::MeshDialog),
-    mMeshDialogModel(initMeshDialogModel),
+    mMeshDialogModel(new MeshDialogModel(this)),
     mScene(new QGraphicsScene(this)),
     mScale(new ViewScaler(1000)),
     mProfileModel(profileModel),
     mProfileView(new ProfileView(mScale)),
-    mMeshView(new MeshView(mScale)),
-    mBoundaryPointModel(initMeshDialogModel->boundaryPointModel())
+    mMeshView(new MeshView(mScale))
 {
 	ui->setupUi(this);
 
@@ -28,7 +27,7 @@ MeshDialog::MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profi
     ui->graphicsView->centerOn(mScale->w(0.5),0);
 
     mMeshView->setMeshModel(mMeshDialogModel);
-    mMeshView->setBoundaryPointModel(mBoundaryPointModel);
+    mMeshView->setBoundaryPointModel(mMeshDialogModel->boundaryPointModel());
 
     connect(ui->meshButton,&QPushButton::clicked,this,&MeshDialog::runMesher);
 
@@ -65,7 +64,7 @@ MeshDialog::MeshDialog(MeshDialogModel* initMeshDialogModel, ProfileModel &profi
 
     // create control point view
     ControlPointView* controlPointView = new ControlPointView(this);
-    controlPointView->setModel(mBoundaryPointModel);
+    controlPointView->setModel(mMeshDialogModel->boundaryPointModel());
     controlPointView->move(30,110);
 
     mScene->addItem(mProfileView);
@@ -81,13 +80,17 @@ void MeshDialog::setProfile() {
     mesh->setProfilePoints(profilePoints);
     setMeshActive(false);
     mProfileView->setProfilePoints(mesh->profilePoints());
-    mBoundaryPointModel->clearPoints();
+    mMeshDialogModel->boundaryPointModel()->clearPoints();
     mMeshView->update();
 }
 
 MeshDialog::~MeshDialog()
 {
 	delete ui;
+}
+
+std::vector<BoundaryPoint*> MeshDialog::controlPoints() {
+    return mMeshDialogModel->boundaryPointModel()->controlPoints();
 }
 
 void MeshDialog::runMesher() {
@@ -112,7 +115,7 @@ void MeshDialog::setMeshActive(bool meshIsActive, bool doToggleProfile) {
 
 void MeshDialog::accept()
 {
-    if(mBoundaryPointModel->controlPointCount() == 0) {
+    if(mMeshDialogModel->boundaryPointModel()->controlPointCount() == 0) {
         QMessageBox::warning(this, "Message Box",
                                       "No control points set. Please select some control points before proceeding",
                                       QMessageBox::Ok);
