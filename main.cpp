@@ -107,15 +107,14 @@ void settings()
     meshDatFile = QDir::toNativeSeparators(meshDatFile);
     settings.setValue("mesher/datFile", meshDatFile);
 
-    QString inFolder = appPath;
-    inFolder += "/AerOpt/FLITE/Input_Data";
-    inFolder = QDir::toNativeSeparators(inFolder);
+    QString rootDir = QDir::toNativeSeparators(appPath + "/AerOpt/FLITE");
+    settings.setValue("AerOpt/rootDir", rootDir);
+
+    QString inFolder = QDir::toNativeSeparators(rootDir + "/Input_Data");
     QDir().mkdir(inFolder);
     settings.setValue("AerOpt/inFolder", inFolder);
 
-    QString outFolder = appPath;
-    outFolder += "/AerOpt/FLITE/Output_Data";
-    outFolder = QDir::toNativeSeparators(outFolder);
+    QString outFolder = QDir::toNativeSeparators(rootDir + "/Output_Data");
     QDir().mkdir(outFolder);
     settings.setValue("AerOpt/outFolder", outFolder);
 }
