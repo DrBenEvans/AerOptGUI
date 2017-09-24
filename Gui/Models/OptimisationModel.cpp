@@ -158,6 +158,8 @@ void OptimisationModel::run(std::shared_ptr<Optimisation> optimisation) {
 bool OptimisationModel::createAerOptInFile(const std::string& filePath, std::shared_ptr<Optimisation> optimisation)
 {
     bool r = true;
+    QSettings settings;
+    QString rootDir = settings.value("AerOpt/rootDir").toString();
 
     std::ofstream outfile(filePath, std::ofstream::out);
     r &= outfile.is_open();
@@ -201,11 +203,10 @@ bool OptimisationModel::createAerOptInFile(const std::string& filePath, std::sha
         outfile << "IV%zrange = 0.00" << std::endl;
         outfile << "IV%angle = 0.0" << std::endl;
         outfile << "IV%Cnconnecttrans = 0" << std::endl;
-        outfile << "IV%CNconnectangle = 0" << std::endl;
         outfile << "IV%engFMF = 1.0" << std::endl;
         outfile << "IV%AlphaInflowDirection = " << std::to_string( optimisation->freeAlpha() ) << std::endl;// < angle of attack
         outfile << "IV%turbulencemodel = 0" << std::endl;
-        outfile << "IV%Top2Low = " << std::to_string(float(optimisation->getNoTop())/100) << std::endl;
+        outfile << "IV%Low2Top = " << std::to_string(float(optimisation->getNoTop())/100) << std::endl;
         outfile << "IV%NoSnap = " << std::to_string( optimisation->noAgents() ) << std::endl;
         outfile << "IV%NoCN = " << controlPointCount << std::endl;// < number of control nodes
         outfile << "IV%NoDim = 2" << std::endl;
@@ -244,6 +245,7 @@ bool OptimisationModel::createAerOptInFile(const std::string& filePath, std::sha
         outfile << "IV%meanP = .true." << std::endl;
 
         outfile << "! Strings" << std::endl;
+        outfile << "IV%filepath = '" << rootDir.toStdString() << "'" << std::endl;
         outfile << "IV%filename = 'Geometry'" << std::endl;
         outfile << "IV%runOnCluster = 'N'" << std::endl;
 
