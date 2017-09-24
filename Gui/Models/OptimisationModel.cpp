@@ -16,6 +16,8 @@ OptimisationModel::OptimisationModel(QObject* parent) :
 {
     mDirWatcher.setParent(this);
     mOptProcess.setParent(this);
+    connect(&mOptProcess, &QProcess::readyReadStandardOutput, this, &OptimisationModel::writeStdOutToLog);
+    connect(&mOptProcess, &QProcess::readyReadStandardError, this, &OptimisationModel::writeStdErrToLog);
 
     auto processFinished = QOverload<int>::of(&QProcess::finished);
     connect(&mOptProcess, processFinished, this, &OptimisationModel::aerOptFinished);
@@ -302,4 +304,32 @@ bool OptimisationModel::createAerOptNodeFile(const std::string& filePath, std::s
 
 void OptimisationModel::aerOptFinished(int exitCode) {
     qInfo() << "Optimisation Finished with exit code" << exitCode;
+}
+
+void OptimisationModel::writeStdOutToLog()
+{
+    mOptProcess.setReadChannel(QProcess::StandardOutput);
+    while(mOptProcess.canReadLine()) {
+        QByteArray byteArray = mOptProcess.readLine();
+        QStringList strLines = QString(byteArray).split("\n");
+
+        foreach (QString line, strLines){
+            line = line.trimmed();
+            if(!line.isEmpty())
+                qInfo() << line;
+        }
+    }
+}
+
+void OptimisationModel::writeStdErrToLog()
+{
+    mOptProcess.setReadChannel(QProcess::StandardError);
+    while(mOptProcess.canReadLine()) {
+        QByteArray byteArray = mOptProcess.readLine();
+        QStringList strLines = QString(byteArray).split("\n");
+
+        foreach (QString line, strLines){
+            qWarning() << line;
+        }
+    }
 }

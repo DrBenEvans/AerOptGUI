@@ -52,6 +52,8 @@ private:
     QItemSelectionModel* mSelectionModel;
     QFileSystemWatcher mDirWatcher;
     QProcess mOptProcess;
+    void writeStdOutToLog();
+    void writeStdErrToLog();
 };
 
 #endif // SIMULATIONMODEL_H
