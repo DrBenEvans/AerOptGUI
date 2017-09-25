@@ -1,11 +1,3 @@
-/*********************************************
-**
-**	Created on: 	09/04/2015 2015
-**	Author: 	matt - Matt Edmunds
-**	File:		OptimisationRun.h
-**
-**********************************************/
-
 #ifndef OptimisationRun_H
 #define OptimisationRun_H
 
@@ -20,6 +12,8 @@
 #include "ProcessManager.h"
 #include "BoundaryPoint.h"
 #include <QString>
+
+class OptimisationModel;
 
 /**
  * @brief The OptimisationRun class
@@ -180,6 +174,7 @@ public:
     void setControlPoints(std::vector<BoundaryPoint*> controlPoints);
     int controlPointCount();
     bool run();
+    void setModel(OptimisationModel* model);
 
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -215,6 +210,8 @@ private:
     std::vector<QVector<double>> mFitness;
 
     ProcessManager* mProcess = nullptr;
+
+    OptimisationModel* mOptimisationModel;
 };
 
 #endif // OptimisationRun_H

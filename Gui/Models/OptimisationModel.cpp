@@ -12,7 +12,6 @@ Q_DECLARE_METATYPE(std::shared_ptr<Optimisation>)
 
 OptimisationModel::OptimisationModel(QObject* parent) :
     QAbstractListModel(parent),
-    mOptimisations(new vector<std::shared_ptr<Optimisation>>()),
     mSelectionModel(nullptr)
 {
 }
@@ -21,24 +20,15 @@ QModelIndex OptimisationModel::addOptimisation(std::shared_ptr<Optimisation> opt
 {
     int rows = rowCount();
     beginInsertRows(QModelIndex(), rows, rows);
-    mOptimisations->push_back(optimisation);
-    endInsertRows();
-    return index(rows, 0);
-}
-
-QModelIndex OptimisationModel::addOptimisation(const Optimisation& optimisation)
-{
-    int rows = rowCount();
-    beginInsertRows(QModelIndex(), rows, rows);
-    unique_ptr<Optimisation>newOptimisation(new Optimisation(optimisation));
-    mOptimisations->push_back(move(newOptimisation));
+    mOptimisations.push_back(optimisation);
+    optimisation->setModel(this);
     endInsertRows();
     return index(rows, 0);
 }
 
 int OptimisationModel::rowCount(const QModelIndex& /*parent*/) const
 {
-    return mOptimisations->size();
+    return mOptimisations.size();
 }
 
 QVariant OptimisationModel::data(const QModelIndex& index, int role) const
@@ -49,11 +39,11 @@ QVariant OptimisationModel::data(const QModelIndex& index, int role) const
 
     switch (role) {
         case Qt::DisplayRole:
-            return  mOptimisations->at(index.row())->label();
+            return  mOptimisations.at(index.row())->label();
             break;
 
         case Roles::Object:
-            return QVariant::fromValue(mOptimisations->at(index.row()));
+            return QVariant::fromValue(mOptimisations.at(index.row()));
             break;
 
         default:
@@ -73,10 +63,10 @@ bool OptimisationModel::removeRows(int row, int count, const QModelIndex& parent
     beginRemoveRows(parent, row, row + count - 1);
     int countLeft = count;
     while(countLeft--) {
-        const Optimisation& optimisation = *mOptimisations->at(row + countLeft);
+        const Optimisation& optimisation = *mOptimisations.at(row + countLeft);
     }
-    mOptimisations->erase(mOptimisations->begin() + row,
-                    mOptimisations->begin() + row + count);
+    mOptimisations.erase(mOptimisations.begin() + row,
+                    mOptimisations.begin() + row + count);
     endRemoveRows();
 
 
@@ -93,11 +83,6 @@ bool OptimisationModel::isIndexValid(const QModelIndex& index) const
     return true;
 }
 
-std::shared_ptr<Optimisation> OptimisationModel::currentOptimisation() {
-    QModelIndex index = selectionModel()->currentIndex();
-    return data(index, Roles::Object).value<std::shared_ptr<Optimisation>>();
-}
-
 void OptimisationModel::setSelectionModel(QItemSelectionModel* model) {
     mSelectionModel = model;
 }
@@ -108,4 +93,13 @@ QItemSelectionModel* OptimisationModel::selectionModel() {
 
 void OptimisationModel::run(std::shared_ptr<Optimisation> optimisation) {
     optimisation->run();
+}
+
+void OptimisationModel::emitOptimisationDataChanged(Optimisation* optimisation) {
+    for(auto opt : mOptimisations) {
+        if(opt.get() == optimisation) {
+            emit optimisationDataChanged(opt);
+            return;
+        }
+    }
 }

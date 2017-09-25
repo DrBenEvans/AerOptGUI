@@ -23,7 +23,6 @@ public:
 
     OptimisationModel(QObject* parent = 0);
 
-    QModelIndex addOptimisation(const Optimisation &optimisation);
     QModelIndex addOptimisation(std::shared_ptr<Optimisation> optimisation);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
@@ -33,13 +32,16 @@ public:
     void setSelectionModel(QItemSelectionModel* model);
     QItemSelectionModel* selectionModel();
 
-    std::shared_ptr<Optimisation> currentOptimisation();
-
     void run(std::shared_ptr<Optimisation> optimisation);
+
+    void emitOptimisationDataChanged(Optimisation *optimisation);
+
+signals:
+    void optimisationDataChanged(std::shared_ptr<Optimisation> optimisation);
 
 private:
     bool isIndexValid(const QModelIndex& index) const;
-    std::unique_ptr<std::vector<std::shared_ptr<Optimisation>>> mOptimisations;
+    std::vector<std::shared_ptr<Optimisation>> mOptimisations;
     QItemSelectionModel* mSelectionModel;
 };
 

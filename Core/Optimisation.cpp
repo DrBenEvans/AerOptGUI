@@ -15,10 +15,12 @@
 #include <fstream>
 #include "BoundaryPoint.h"
 #include "Optimisation.h"
+#include "OptimisationModel.h"
 #include "FileManipulation.h"
 
 Optimisation::Optimisation() :
-    mInitMesh(new Mesh())
+    mInitMesh(new Mesh()),
+    mOptimisationModel(nullptr)
 {
     mObjFunc = Enum::ObjFunc::LIFTDRAG;
 
@@ -40,14 +42,23 @@ Optimisation::Optimisation() :
     auto finishedLambda = [this](int exitCode, QProcess::ExitStatus exitStatus) { optimiserFinished(exitCode, exitStatus); };
     mProcess->connect(mProcess, finished, finishedLambda);
 
-    mProcess->connect(mProcess, &ProcessManager::directoryChanged, [this](const QString& path) { readDirectory(path); });
+    auto dirReadLambda = [this](const QString& path) {
+        readDirectory(path);
+        if(mOptimisationModel != 0) {
+            mOptimisationModel->emitOptimisationDataChanged(this);
+        }
+    };
+    mProcess->connect(mProcess, &ProcessManager::directoryChanged, dirReadLambda);
 }
 
 Optimisation::~Optimisation() {
     mProcess->cleanupProcess();
 }
 
-//PRIVATE FUNCTIONS
+void Optimisation::setModel(OptimisationModel* model) {
+    mOptimisationModel = model;
+}
+
 Enum::OptMethod Optimisation::getOptimisationMethod() const
 {
     return mOptimisationMethod;
