@@ -14,6 +14,8 @@ public:
 
 signals:
     void directoryChanged(const QString&);
+    void stdOut(const QString);
+    void stdErr(const QString);
 
 public slots:
     void cleanupProcess();

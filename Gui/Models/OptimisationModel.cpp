@@ -11,8 +11,7 @@ using namespace std;
 Q_DECLARE_METATYPE(std::shared_ptr<Optimisation>)
 
 OptimisationModel::OptimisationModel(QObject* parent) :
-    QAbstractListModel(parent),
-    mSelectionModel(nullptr)
+    QAbstractListModel(parent)
 {
 }
 
@@ -83,12 +82,8 @@ bool OptimisationModel::isIndexValid(const QModelIndex& index) const
     return true;
 }
 
-void OptimisationModel::setSelectionModel(QItemSelectionModel* model) {
-    mSelectionModel = model;
-}
-
-QItemSelectionModel* OptimisationModel::selectionModel() {
-    return mSelectionModel;
+std::shared_ptr<Optimisation> OptimisationModel::optimisation(uint index) {
+    return mOptimisations.at(index);
 }
 
 void OptimisationModel::run(std::shared_ptr<Optimisation> optimisation) {
@@ -96,9 +91,18 @@ void OptimisationModel::run(std::shared_ptr<Optimisation> optimisation) {
 }
 
 void OptimisationModel::emitOptimisationDataChanged(Optimisation* optimisation) {
-    for(auto opt : mOptimisations) {
-        if(opt.get() == optimisation) {
-            emit optimisationDataChanged(opt);
+    for(int i=0; i<mOptimisations.size(); i++) {
+        if(mOptimisations.at(i).get() == optimisation) {
+            emit optimisationDataChanged(i);
+            return;
+        }
+    }
+}
+
+void OptimisationModel::emitOptimisationOutputChanged(Optimisation* optimisation) {
+    for(int i=0; i<mOptimisations.size(); i++) {
+        if(mOptimisations.at(i).get() == optimisation) {
+            emit optimisationOutputChanged(i);
             return;
         }
     }

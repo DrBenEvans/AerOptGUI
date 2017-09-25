@@ -21,14 +21,19 @@ public:
 
 public slots:
     void newOptimisation();
+    void setCurrentOptimisationIndex(int index);
+    void optimisationFitnessChanged(int index);
+    void optimisationOutputChanged(int index);
 
 private slots:
     void on_actionShowLog_triggered();
 
 private:
+    void setLogTextFromIndex(int index);
     Ui::MainWindow *ui;
     ProfileModel mProfileModel;
     OptimisationModel* mOptimisationModel;
+    int mCurrentOptimisationIndex = -1;
 };
 
 #endif // MAINWINDOW_H

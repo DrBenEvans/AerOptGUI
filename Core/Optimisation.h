@@ -173,8 +173,11 @@ public:
     std::vector<BoundaryPoint*> controlPoints();
     void setControlPoints(std::vector<BoundaryPoint*> controlPoints);
     int controlPointCount();
+
     bool run();
     void setModel(OptimisationModel* model);
+    std::vector<std::vector<double>> fitness();
+    QString outputText();
 
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
@@ -207,11 +210,14 @@ private:
     std::shared_ptr<Mesh> mInitMesh;
     std::vector<Mesh*> mMeshes;
     std::vector<BoundaryPoint*> mControlPoints;
-    std::vector<QVector<double>> mFitness;
+    std::vector<std::vector<double>> mFitness;
 
     ProcessManager* mProcess = nullptr;
 
     OptimisationModel* mOptimisationModel;
+
+    QString mOutputLog = "";
+
 };
 
 #endif // OptimisationRun_H

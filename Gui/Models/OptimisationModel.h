@@ -7,7 +7,7 @@
 
 #include <QAbstractListModel>
 
-#include "Optimisation.h"
+
 #include "FileManipulation.h"
 
 class Optimisation;
@@ -29,20 +29,20 @@ public:
     QVariant data(const QModelIndex& index, int role) const override;
     bool removeRows(int row, int count, const QModelIndex& parent) override;
 
-    void setSelectionModel(QItemSelectionModel* model);
-    QItemSelectionModel* selectionModel();
-
     void run(std::shared_ptr<Optimisation> optimisation);
 
     void emitOptimisationDataChanged(Optimisation *optimisation);
+    void emitOptimisationOutputChanged(Optimisation *optimisation);
+
+    std::shared_ptr<Optimisation> optimisation(uint index);
 
 signals:
-    void optimisationDataChanged(std::shared_ptr<Optimisation> optimisation);
+    void optimisationDataChanged(int index);
+    void optimisationOutputChanged(int index);
 
 private:
     bool isIndexValid(const QModelIndex& index) const;
     std::vector<std::shared_ptr<Optimisation>> mOptimisations;
-    QItemSelectionModel* mSelectionModel;
 };
 
 #endif // SIMULATIONMODEL_H

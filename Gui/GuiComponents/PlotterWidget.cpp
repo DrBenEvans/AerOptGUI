@@ -1,40 +1,57 @@
 #include "PlotterWidget.h"
 
-PlotterWidget::PlotterWidget(QCustomPlot *parent) :
+PlotterWidget::PlotterWidget(QWidget *parent) :
     QCustomPlot(parent)
 {
-    for (uint i = 0; i < 50; ++i) addGraph();
+    for (uint i = 0; i < 50; ++i)
+        addGraph();
 
     clearData();
 }
 
-void PlotterWidget::setData(const int gen, const QVector<double> nests)
+void PlotterWidget::setOptimisationModel(OptimisationModel* model) {
+    mOptimisationModel = model;
+}
+
+void PlotterWidget::setCurrentOptimisationIndex(int index) {
+    mCurrentOptimisationIndex = index;
+    updatePlot();
+}
+
+void PlotterWidget::currentOptimisationChanged(QModelIndex current, QModelIndex prev) {
+    QVariant var = mOptimisationModel->data(current, OptimisationModel::Object);
+}
+
+void PlotterWidget::updatePlot()
 {
+    std::shared_ptr<Optimisation> opt = mOptimisationModel->optimisation(mCurrentOptimisationIndex);
     bool r = true;
 
     //Get data for display
-    mGData.push_back(nests);
-    r &= mGData.size() == gen;
+    std::vector<std::vector<double>> fitness = opt->fitness();
+    uint nGens = fitness.size();
+    if(nGens == 0)
+        return;
+    int noColumns = fitness.back().size();
 
     if (r)
     {
 
         //Compute ranges
-        QVector<double> x(gen);
-        for (int i = 0; i < gen; ++i)
+        QVector<double> x(nGens);
+        for (int i = 0; i < nGens; ++i)
         {
             x[i] = i;
         }
 
 
         //for each fitness column do this
-        int noColumns = mGData.back().size();
         for (int fitCol = 0; fitCol < noColumns; ++fitCol)
         {
-            QVector<double> y(gen);
-            for (int i = 0; i < gen; ++i)
+            QVector<double> y(nGens);
+            for (int i = 0; i < nGens; ++i)
             {
-                y[i] = mGData.at(i).at(fitCol);
+                y[i] = fitness.at(i).at(fitCol);
             }
             //Build graph
             graph(fitCol)->setData(x, y);
@@ -48,13 +65,13 @@ void PlotterWidget::setData(const int gen, const QVector<double> nests)
         // set axes ranges, so we see all data:
         rescaleAxes(true);
 
-        if (gen < 11)
+        if (nGens < 11)
         {
             xAxis->setRange(0, 10);
         }
         else
         {
-            xAxis->setRange(0, gen);
+            xAxis->setRange(0, nGens);
         }
 
         xAxis->setAutoTickStep(false);
@@ -73,8 +90,6 @@ void PlotterWidget::setData(const int gen, const QVector<double> nests)
 
 void PlotterWidget::clearData()
 {
-    mGData.clear();
-
     // give the axes some labels:
     xAxis->setLabel("Generation No.");
     yAxis->setLabel("Fitness");

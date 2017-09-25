@@ -48,7 +48,24 @@ Optimisation::Optimisation() :
             mOptimisationModel->emitOptimisationDataChanged(this);
         }
     };
+
+    auto stdOutLambda = [this](const QString line) {
+        mOutputLog += line;
+        if(mOptimisationModel != 0) {
+            mOptimisationModel->emitOptimisationOutputChanged(this);
+        }
+    };
+
+    auto stdErrLambda = [this](const QString line) {
+        mOutputLog += "ERROR: "+line;
+        if(mOptimisationModel != 0) {
+            mOptimisationModel->emitOptimisationOutputChanged(this);
+        }
+    };
+
     mProcess->connect(mProcess, &ProcessManager::directoryChanged, dirReadLambda);
+    mProcess->connect(mProcess, &ProcessManager::stdOut, stdOutLambda);
+    mProcess->connect(mProcess, &ProcessManager::stdErr, stdErrLambda);
 }
 
 Optimisation::~Optimisation() {
@@ -542,7 +559,7 @@ void Optimisation::readFitness(const QString& path)
 
         //Extract from plotData gen no. and then nest values
         QStringList list1 = plotData.split(" ", QString::SkipEmptyParts);
-        QVector<double> nests;
+        std::vector<double> nests;
         uint genNo = 0;
         bool ok;
         for (int i = 0; i < list1.size(); ++i)
@@ -557,7 +574,7 @@ void Optimisation::readFitness(const QString& path)
                 int cols = noAgents() -1;
                 for (int j = 0; j < cols; ++j)
                 {
-                    nests.push_back( nests.first() );
+                    nests.push_back( nests.at(0) );
                 }
             }
         }
@@ -574,4 +591,12 @@ void Optimisation::readFitness(const QString& path)
 
     }
     infile.close();
+}
+
+std::vector<std::vector<double> > Optimisation::fitness() {
+    return mFitness;
+}
+
+QString Optimisation::outputText() {
+    return mOutputLog;
 }

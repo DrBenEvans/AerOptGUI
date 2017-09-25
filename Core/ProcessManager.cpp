@@ -39,14 +39,7 @@ void ProcessManager::writeStdOutToLog()
 {
     setReadChannel(QProcess::StandardOutput);
     while(canReadLine()) {
-        QByteArray byteArray = readLine();
-        QStringList strLines = QString(byteArray).split("\n");
-
-        foreach (QString line, strLines){
-            line = line.trimmed();
-            if(!line.isEmpty())
-                qInfo() << line;
-        }
+        emit stdOut(QString(readLine()));
     }
 }
 
@@ -54,11 +47,6 @@ void ProcessManager::writeStdErrToLog()
 {
     setReadChannel(QProcess::StandardError);
     while(canReadLine()) {
-        QByteArray byteArray = readLine();
-        QStringList strLines = QString(byteArray).split("\n");
-
-        foreach (QString line, strLines){
-            qWarning() << line;
-        }
+        emit stdOut(QString(readLine()));
     }
 }
