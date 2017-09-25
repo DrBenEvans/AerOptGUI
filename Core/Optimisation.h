@@ -17,9 +17,9 @@
 #include "Enumerations.h"
 #include "Profile.h"
 #include "Mesh.h"
+#include "ProcessManager.h"
 #include "BoundaryPoint.h"
 #include <QString>
-#include <QFileSystemWatcher>
 
 /**
  * @brief The OptimisationRun class
@@ -162,7 +162,12 @@ public:
      * @param returns the method index as defined by ordering in OptimiserDialog.ui.
      */
     Enum::OptMethod getOptimisationMethod() const;
-    std::shared_ptr<Mesh> newMesh();
+    /**
+     * @brief readFitness
+     * @param read the fitness for this optimisation
+     */
+    void readFitness(const QString& path);
+
     int getNoTop() const;
     void setNoTop(int noTop);
 
@@ -174,8 +179,15 @@ public:
     std::vector<BoundaryPoint*> controlPoints();
     void setControlPoints(std::vector<BoundaryPoint*> controlPoints);
     int controlPointCount();
+    bool run();
 
 private:
+    void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
+    void readDirectory(const QString& path);
+    bool createAerOptInFile(const QString &filePath);
+    bool createAerOptNodeFile(const QString &filePath);
+    bool saveCurrentProfile(const QString& path);
+
     ProfilePoints mProfilePoints;
 
     QString mLabel;
@@ -195,9 +207,14 @@ private:
 	int mNoAgents;
 	int mNoGens;
     int mNoTop;
+    uint mCurrentGen;
 
     std::shared_ptr<Mesh> mInitMesh;
+    std::vector<Mesh*> mMeshes;
     std::vector<BoundaryPoint*> mControlPoints;
+    std::vector<QVector<double>> mFitness;
+
+    ProcessManager* mProcess = nullptr;
 };
 
 #endif // OptimisationRun_H

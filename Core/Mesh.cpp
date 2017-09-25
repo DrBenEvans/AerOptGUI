@@ -447,12 +447,12 @@ void Mesh::clear() {
     mMeshResults.clear();
 }
 
-bool Mesh::loadResults(const std::string& filePath)
+bool Mesh::loadResults(const QString &filePath)
 {
     bool r = true;
 
     float i,rho,u,v,e,p;
-    std::ifstream infile(filePath, std::ifstream::in);
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
     r &= infile.is_open();
     if (r)
     {

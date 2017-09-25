@@ -74,6 +74,11 @@ public:
      * loads the mesh
      */
     bool loadMesh(const QString &filePath);
+    /**
+     * @brief loadResults
+     * loads the results
+     */
+    bool loadResults(const QString& filePath);
 
     /**
      * @brief clear
@@ -83,11 +88,6 @@ public:
 private:
 
     // Other
-    /**
-     * @brief loadResults
-     * loads the results
-     */
-    bool loadResults(const std::string& filePath);
     /**
      * @brief loadMeshProfile
      * Loads the mesh profile
