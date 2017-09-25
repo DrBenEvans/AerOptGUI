@@ -73,9 +73,6 @@ void PlotterWidget::updatePlot()
             xAxis->setRange(0, nGens);
         }
 
-        xAxis->setAutoTickStep(false);
-        xAxis->setTickStep(1.0);
-
         double min, max;
         max = yAxis->range().upper * 1.05;
         min = yAxis->range().lower * 0.95;
@@ -95,8 +92,6 @@ void PlotterWidget::clearData()
     // set axes ranges, so we see all data:
     xAxis->setRange(0, 10);
     yAxis->setRange(0, 1);
-    xAxis->setAutoTickStep(false);
-    xAxis->setTickStep(1.0);
 
     int num = graphCount();
     for (int i = 0; i < num; ++i)
