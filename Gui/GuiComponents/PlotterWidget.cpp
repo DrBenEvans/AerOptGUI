@@ -1,4 +1,5 @@
 #include "PlotterWidget.h"
+#include "Optimisation.h"
 
 PlotterWidget::PlotterWidget(QWidget *parent) :
     QCustomPlot(parent)
@@ -18,10 +19,6 @@ void PlotterWidget::setCurrentOptimisationIndex(int index) {
     updatePlot();
 }
 
-void PlotterWidget::currentOptimisationChanged(QModelIndex current, QModelIndex prev) {
-    QVariant var = mOptimisationModel->data(current, OptimisationModel::Object);
-}
-
 void PlotterWidget::updatePlot()
 {
     std::shared_ptr<Optimisation> opt = mOptimisationModel->optimisation(mCurrentOptimisationIndex);
@@ -30,8 +27,10 @@ void PlotterWidget::updatePlot()
     //Get data for display
     std::vector<std::vector<double>> fitness = opt->fitness();
     uint nGens = fitness.size();
-    if(nGens == 0)
+    if(nGens == 0) {
+        clearData();
         return;
+    }
     int noColumns = fitness.back().size();
 
     if (r)

@@ -13,9 +13,6 @@ public:
     void setOptimisationModel(OptimisationModel* model);
     void setCurrentOptimisationIndex(int index);
 
-public slots:
-    void currentOptimisationChanged(QModelIndex current, QModelIndex prev);
-
 private:
     OptimisationModel* mOptimisationModel;
     QItemSelectionModel* mSelectionModel;
