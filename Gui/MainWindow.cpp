@@ -13,6 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
     mOptimisationModel(nullptr)
 {
     ui->setupUi(this);
+    ui->logText->setReadOnly(true);
     connect(ui->newOptimisationButton,&QPushButton::clicked,this,&MainWindow::newOptimisation);
     connect(ui->actionNewOptimisation,&QAction::triggered,this,&MainWindow::newOptimisation);
 }
