@@ -4,10 +4,36 @@
 PlotterWidget::PlotterWidget(QWidget *parent) :
     QCustomPlot(parent)
 {
-    for (uint i = 0; i < 50; ++i)
-        addGraph();
+    for (uint i = 0; i < 50; ++i) {
+        QCPGraph* graph = addGraph();
+        graph->setSelectable(QCP::stSingleData);
+        mGraphs.push_back(graph);
+    }
+
+    connect(this, &PlotterWidget::selectionChangedByUser, this, &PlotterWidget::setCurrentlySelectedPoint);
 
     clearData();
+}
+
+void PlotterWidget::setCurrentlySelectedPoint() {
+    int iGen = -1;
+    int agent = -1;
+    foreach(QCPGraph* graph, selectedGraphs()) {
+        for(int i=0; i<mGraphs.size(); i++) {
+            if(graph==mGraphs.at(i)) {
+                iGen = i;
+            }
+        }
+        QCPDataSelection selection = graph->selection();
+        if(selection.dataRangeCount() > 0) {
+            QCPDataRange range = selection.dataRange();
+            agent = range.begin();
+        }
+    }
+
+    if(agent > 0 && iGen > 0) {
+        emit selectedPointChanged(iGen, agent);
+    }
 }
 
 void PlotterWidget::setOptimisationModel(OptimisationModel* model) {
