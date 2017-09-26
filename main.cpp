@@ -90,10 +90,6 @@ void settings()
     AerOptNodeFile = QDir::toNativeSeparators(AerOptNodeFile);
     settings.setValue("AerOpt/nodeFile", AerOptNodeFile);
 
-    QString path = appPath + "/AerOpt/FLITE/Output_Data/";
-    path = QDir::toNativeSeparators(path);
-    settings.setValue("AerOpt/outputData", path);
-
     QString projectDir = appPath + "/AerOpt/Scratch";
     projectDir = QDir::toNativeSeparators(projectDir);
     QDir projectDirObj = QDir(projectDir);
@@ -136,7 +132,6 @@ int main(int argc, char *argv[])
     // Setup optimisation model and selection model
     OptimisationModel* optimisationModel = new OptimisationModel();
     QItemSelectionModel* optimisationSelectionModel = new QItemSelectionModel(optimisationModel);
-    optimisationModel->setSelectionModel(optimisationSelectionModel);
 
     //Main window setup and show.
     MainWindow w;

@@ -50,18 +50,14 @@ TEMPLATE = app
 SOURCES += \
     main.cpp \
     Gui/DebugOutput.cpp \
-    #Gui/Dialogs/ConstraintsDialog.cpp \
     Gui/Dialogs/MeshDialog.cpp \
     Gui/Plotter/qcustomplot.cpp \
     Gui/GuiComponents/Arrow.cpp \
     Gui/Dialogs/ConfigSimulationDialog.cpp \
-    #Gui/AppController.cpp \
     Gui/MainWindow.cpp \
     Core/Mesh.cpp \
     Core/Profile.cpp \
-    #Gui/Dialogs/PlotterDialog.cpp \
     Core/Optimisation.cpp \
-    #Core/Simulation.cpp \
     Gui/GuiComponents/ZoomPanView.cpp \
     Gui/GraphicsItems/BoundaryPointView.cpp \
     Gui/GraphicsItems/MeshView.cpp \
@@ -73,25 +69,24 @@ SOURCES += \
     Gui/Models/OptimisationModel.cpp \
     Gui/GuiComponents/ControlPointView.cpp \
     Core/BoundaryPointModel.cpp \
-    Core/MeshDialogModel.cpp \
-    Gui/GraphicsItems/ViewScaler.cpp
+    Gui/GraphicsItems/ViewScaler.cpp \
+    Core/FileManipulation.cpp \
+    Core/ProcessManager.cpp \
+    Gui/GuiComponents/PlotterWidget.cpp \
+    Core/MeshDialogModel.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
-    #Gui/Dialogs/ConstraintsDialog.h \
     Gui/Dialogs/MeshDialog.h \
     Gui/Plotter/qcustomplot.h \
     Gui/GuiComponents/Arrow.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
-    #Gui/AppController.h \
     Gui/MainWindow.h \
     Core/Mesh.h \
     Core/Profile.h \
     Core/Enumerations.h \
     Core/CustomTypes.h \
-    #Gui/Dialogs/PlotterDialog.h \
     Core/Optimisation.h \
-    #Core/Simulation.h \
     Gui/GuiComponents/ZoomPanView.h \
     Gui/GraphicsItems/MeshView.h \
     Gui/GraphicsItems/ProfileView.h \
@@ -103,13 +98,14 @@ HEADERS  += \
     Gui/Models/OptimisationModel.h \
     Gui/GuiComponents/ControlPointView.h \
     Core/BoundaryPointModel.h \
-    Core/MeshDialogModel.h \
-    Gui/GraphicsItems/ViewScaler.h
+    Gui/GraphicsItems/ViewScaler.h \
+    Core/FileManipulation.h \
+    Core/ProcessManager.h \
+    Gui/GuiComponents/PlotterWidget.h \
+    Core/MeshDialogModel.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
-#    Gui/Dialogs/ConstraintsDialog.ui \
-#    Gui/Plotter/PlotterDialog.ui \
     Gui/Dialogs/ConfigSimulationDialog.ui \
     Gui/MainWindow.ui \
     Gui/Dialogs/MeshDialog.ui \
