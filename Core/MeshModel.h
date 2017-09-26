@@ -11,6 +11,7 @@ class MeshModel : public QObject
 public:
     MeshModel(QObject* parent);
     Mesh* currentMesh();
+    void setCurrentMesh(Mesh* mesh);
     BoundaryPointModel* boundaryPointModel();
 
 signals:

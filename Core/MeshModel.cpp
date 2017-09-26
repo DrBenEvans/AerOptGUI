@@ -15,3 +15,8 @@ Mesh* MeshModel::currentMesh() {
 BoundaryPointModel* MeshModel::boundaryPointModel() {
     return mBoundaryPointModel;
 }
+
+void MeshModel::setCurrentMesh(Mesh* mesh) {
+    mMesh = mesh;
+    emit meshChanged();
+}
