@@ -35,8 +35,6 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, QWidget* parent) :
         mProfileView->setVisible(checked);
     });
 
-    connect(mMeshDialogModel,&MeshDialogModel::meshChanged,mMeshView, &MeshView::meshChanged);
-
     // profiles QComboBox setup
     ui->profile->setModel(&mProfileModel);
 

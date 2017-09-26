@@ -21,6 +21,7 @@ MeshView::MeshView(ViewScaler* scale, QGraphicsItem* parent) :
 
 void MeshView::setMeshModel(MeshModel* model) {
     mMeshModel = model;
+    connect(mMeshModel, &MeshModel::meshChanged, this, &MeshView::meshChanged);
     meshChanged();
 }
 
