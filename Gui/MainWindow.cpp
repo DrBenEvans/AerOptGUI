@@ -4,13 +4,15 @@
 #include "Optimisation.h"
 #include "DebugOutput.h"
 #include "MeshDialog.h"
+#include "MeshView.h"
 #include "Mesh.h"
 //#include "MeshGraphicsItem.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow),
-    mOptimisationModel(nullptr)
+    mOptimisationModel(nullptr),
+    mCurrentMeshViewModel(new MeshModel(this))
 {
     ui->setupUi(this);
     ui->logText->setReadOnly(true);
@@ -20,11 +22,18 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->fitnessPlot, &PlotterWidget::selectedPointChanged, this, &MainWindow::onSelectedPointChange);
 
     connect(ui->agentSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::setSelectedPointFromSpinBox);
+
+    MeshView* meshView = new MeshView(new ViewScaler());
+    meshView->setMeshModel(mCurrentMeshViewModel);
+    QGraphicsScene* scene = new QGraphicsScene(this);
+    scene->addItem(meshView);
+    ui->graphicsView->setScene(scene);
 }
 
 void MainWindow::onSelectedPointChange(int iGen, int agent) {
     ui->genSpinBox->setValue(iGen+1);
     ui->agentSpinBox->setValue(agent+1);
+    setMeshViewSimulation(iGen, agent);
 }
 
 void MainWindow::setSelectedPointFromSpinBox() {
@@ -71,8 +80,13 @@ void MainWindow::setCurrentOptimisationIndex(int index) {
     }
 }
 
-MainWindow::~MainWindow()
-{
+void MainWindow::setMeshViewSimulation(int iGen, int agent) {
+    Optimisation* optimisation = mOptimisationModel->optimisation(mCurrentOptimisationIndex).get();
+    Mesh* mesh = optimisation->initMesh().get();
+    mCurrentMeshViewModel->setCurrentMesh(mesh);
+}
+
+MainWindow::~MainWindow() {
     delete ui;
 }
 
