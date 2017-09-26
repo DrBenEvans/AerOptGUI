@@ -15,7 +15,7 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, QWidget* parent) :
 	ui(new Ui::MeshDialog),
     mMeshDialogModel(new MeshDialogModel(this)),
     mScene(new QGraphicsScene(this)),
-    mScale(new ViewScaler(1000)),
+    mScale(new ViewScaler()),
     mProfileModel(profileModel),
     mProfileView(new ProfileView(mScale)),
     mMeshView(new MeshView(mScale))
