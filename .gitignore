@@ -8,3 +8,8 @@ build/
 build-*-Debug/
 build-*-Release/
 AerOpt/FortranFiles/AeroOpt/AerOpt
+FLITE/Input_Data/
+FLITE/Output_Data/
+FLITE/*.txt
+FLITE/*.bat
+FLITE/*.scr
