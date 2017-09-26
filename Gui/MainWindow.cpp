@@ -14,8 +14,23 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->logText->setReadOnly(true);
-    connect(ui->newOptimisationButton,&QPushButton::clicked,this,&MainWindow::newOptimisation);
-    connect(ui->actionNewOptimisation,&QAction::triggered,this,&MainWindow::newOptimisation);
+    ui->logText->setLineWrapMode(QTextEdit::NoWrap);
+    connect(ui->newOptimisationButton, &QPushButton::clicked, this, &MainWindow::newOptimisation);
+    connect(ui->actionNewOptimisation, &QAction::triggered, this, &MainWindow::newOptimisation);
+    connect(ui->fitnessPlot, &PlotterWidget::selectedPointChanged, this, &MainWindow::onSelectedPointChange);
+
+    connect(ui->agentSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::setSelectedPointFromSpinBox);
+}
+
+void MainWindow::onSelectedPointChange(int iGen, int agent) {
+    ui->genSpinBox->setValue(iGen+1);
+    ui->agentSpinBox->setValue(agent+1);
+}
+
+void MainWindow::setSelectedPointFromSpinBox() {
+    int iGen = ui->genSpinBox->value()-1;
+    int agent = ui->agentSpinBox->value()-1;
+    ui->fitnessPlot->setCurrentlySelectedPoint(iGen, agent);
 }
 
 void MainWindow::setOptimisationModel(OptimisationModel* optimisationModel) {

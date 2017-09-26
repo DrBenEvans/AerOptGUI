@@ -24,9 +24,11 @@ public slots:
     void setCurrentOptimisationIndex(int index);
     void optimisationFitnessChanged(int index);
     void optimisationOutputChanged(int index);
+    void onSelectedPointChange(int iGen, int agent);
 
 private slots:
     void on_actionShowLog_triggered();
+    void setSelectedPointFromSpinBox();
 
 private:
     void setLogTextFromIndex(int index);

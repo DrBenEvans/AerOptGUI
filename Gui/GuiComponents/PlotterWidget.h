@@ -13,12 +13,14 @@ public:
     void clearData();
     void setOptimisationModel(OptimisationModel* model);
     void setCurrentOptimisationIndex(int index);
+    void setCurrentlySelectedPoint(int iGen, int agent);
 
 signals:
     void selectedPointChanged(int iGen, int agent);
 
 private:
-    void setCurrentlySelectedPoint();
+    void signalCurrentlySelectedPoint();
+    std::pair<int,int> getSelection();
     OptimisationModel* mOptimisationModel;
     QItemSelectionModel* mSelectionModel;
     uint mCurrentOptimisationIndex;
