@@ -2,11 +2,10 @@
 #include <QDebug>
 #include <QSettings>
 
-MeshDialogModel::MeshDialogModel(QObject *parent) : QObject(parent),
-  mMesh(new Mesh(this)),
-  mBoundaryPointModel(new BoundaryPointModel)
+MeshDialogModel::MeshDialogModel(QObject *parent) : MeshModel(parent)
 {
     mMeshProcess.setParent(this);
+    mMesh = new Mesh(this);
 }
 
 MeshDialogModel::~MeshDialogModel() {
@@ -115,12 +114,4 @@ void MeshDialogModel::writeStdErrToLog()
     foreach (QString line, strLines){
         qCritical() << line;
     }
-}
-
-Mesh* MeshDialogModel::currentMesh() {
-    return mMesh;
-}
-
-BoundaryPointModel* MeshDialogModel::boundaryPointModel() {
-    return mBoundaryPointModel;
 }

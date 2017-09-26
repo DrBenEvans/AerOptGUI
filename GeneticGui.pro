@@ -73,7 +73,8 @@ SOURCES += \
     Core/FileManipulation.cpp \
     Core/ProcessManager.cpp \
     Gui/GuiComponents/PlotterWidget.cpp \
-    Core/MeshDialogModel.cpp
+    Core/MeshDialogModel.cpp \
+    Core/MeshModel.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -102,7 +103,8 @@ HEADERS  += \
     Core/FileManipulation.h \
     Core/ProcessManager.h \
     Gui/GuiComponents/PlotterWidget.h \
-    Core/MeshDialogModel.h
+    Core/MeshDialogModel.h \
+    Core/MeshModel.h
 
 FORMS    += \
     Gui/DebugOutput.ui \

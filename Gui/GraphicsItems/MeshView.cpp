@@ -19,7 +19,7 @@ MeshView::MeshView(ViewScaler* scale, QGraphicsItem* parent) :
     mYmin =  std::numeric_limits<float>::infinity();
 }
 
-void MeshView::setMeshModel(MeshDialogModel* model) {
+void MeshView::setMeshModel(MeshModel* model) {
     mMeshModel = model;
     meshChanged();
 }

@@ -2,7 +2,7 @@
 #define MESHGRAPHICSITEM_H
 
 #include <QGraphicsItem>
-#include "MeshDialogModel.h"
+#include "MeshModel.h"
 #include "BoundaryPointModel.h"
 #include "ViewScaler.h"
 
@@ -12,7 +12,7 @@ class MeshView : public QGraphicsObject
 public:
     MeshView(ViewScaler *scale, QGraphicsItem *parent = 0);
 
-    void setMeshModel(MeshDialogModel* meshModel);
+    void setMeshModel(MeshModel* meshModel);
     void setBoundaryPointModel(BoundaryPointModel* model);
     QRectF boundingRect() const override;
     QPainterPath shape() const override;
@@ -31,7 +31,7 @@ private:
     uint getBrushSize();
 
     QColor color;
-    MeshDialogModel* mMeshModel;
+    MeshModel* mMeshModel;
     ViewScaler* mScale;
 
     float mXmax;

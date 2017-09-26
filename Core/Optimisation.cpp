@@ -485,8 +485,6 @@ void Optimisation::readDirectory(const QString& path)
     }
 
     //When meshfiles exists, load it.
-    //get list of .dat files and trim "Geometry_" and ".dat"
-    //then compare number with previous iteration.
     bool c = true;
 
     //Fitness file

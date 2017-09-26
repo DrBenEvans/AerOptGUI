@@ -3,9 +3,10 @@
 
 #include <QObject>
 #include "Mesh.h"
+#include "MeshModel.h"
 #include "ProfileModel.h"
 
-class MeshDialogModel : public QObject
+class MeshDialogModel : public MeshModel
 {
     Q_OBJECT
 public:
@@ -14,11 +15,6 @@ public:
 
     void runMesher();
     void stopMesher();
-    Mesh* currentMesh();
-    BoundaryPointModel* boundaryPointModel();
-
-signals:
-    void meshChanged();
 
 private slots:
     void meshingFinished(int exitCode, QProcess::ExitStatus exitStatus, QString meshDatFile);
@@ -27,8 +23,6 @@ private:
     void writeStdOutToLog();
     void writeStdErrToLog();
 
-    Mesh* mMesh;
-    BoundaryPointModel* mBoundaryPointModel;
     QDir mMeshPath;
     QProcess mMeshProcess;
 };

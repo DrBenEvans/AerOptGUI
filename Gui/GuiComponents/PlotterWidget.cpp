@@ -40,6 +40,7 @@ std::pair<int, int> PlotterWidget::getSelection() {
 
     return agent_gen;
 }
+
 void PlotterWidget::signalCurrentlySelectedPoint() {
     std::pair<int, int> agent_gen = getSelection();
 
