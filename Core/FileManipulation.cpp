@@ -6,6 +6,14 @@ bool FileManipulation::emptyFolder(const QString& path)
     bool r = true;
 
     QDir dir(path);
+    if(!dir.exists()) {
+        dir.mkpath(".");
+        if(dir.exists())
+            return true;
+        else
+            return false;
+    }
+
     dir.setNameFilters(QStringList() << "*.*");
     dir.setFilter(QDir::Files);
     foreach(QString dirFile, dir.entryList())

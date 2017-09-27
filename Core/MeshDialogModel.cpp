@@ -30,10 +30,6 @@ void MeshDialogModel::runMesher() {
     QString meshBacFile;
     QString meshGeoFile;
 
-    if (!scratchDir.exists()) {
-        scratchDir.mkpath(".");
-    }
-
     meshInFile = QDir(scratchDir.absolutePath() + "/scratch.in").absolutePath();
     meshInFile = QDir::toNativeSeparators(meshInFile);
 
