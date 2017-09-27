@@ -190,6 +190,12 @@ void Optimisation::setLabel(QString label) {
     mLabel = label;
 }
 
+QString Optimisation::simulationDirectoryName() {
+    QString fileName = "run_" + mLabel;
+    fileName.replace(QRegExp(QString::fromUtf8("[^a-zA-Z\\d]")),"_");
+    return fileName;
+}
+
 std::vector<BoundaryPoint*> Optimisation::controlPoints() {
     return mControlPoints;
 }
@@ -202,24 +208,29 @@ int Optimisation::controlPointCount() {
     return mControlPoints.size();
 }
 
+QString Optimisation::outputDataDirectory() {
+    QSettings settings;
+    QString outputData = settings.value("AerOpt/workingDirectory").toString();
+    outputData += "/" + simulationDirectoryName() + "/Output_Data";
+    outputData = QDir::toNativeSeparators(outputData);
+    return outputData;
+}
+
 bool Optimisation::run() {
     // load settings
     QSettings settings;
     QString AerOptInFile = settings.value("AerOpt/inputFile").toString();
     QString AerOptNodeFile = settings.value("AerOpt/nodeFile").toString();
-    QString inFolder = settings.value("AerOpt/inFolder").toString();
-    QString outFolder = settings.value("AerOpt/outFolder").toString();
-    QString meshDatFile = settings.value("mesher/datFile").toString();
+    QString meshDatFile = settings.value("mesher/initMeshFile").toString();
     QString AerOpt = settings.value("AerOpt/executable").toString();
-    QString AerOptWorkDir = settings.value("AerOpt/workdir").toString();
-    QString outputData = settings.value("AerOpt/outputData").toString();
-
+    QString AerOptWorkDir = settings.value("AerOpt/workingDirectory").toString();
+    QDir scratchDir = QDir(settings.value("mesher/scratchDir").toString());
+    QString inFolder = settings.value("AerOpt/inFolder").toString();
 
     bool r = true;
 
-    //Empty the input and output directories
+    //Empty the input directory
     r &= FileManipulation::emptyFolder(inFolder);
-    r &= FileManipulation::emptyFolder(outFolder);
 
     //Copy mesh file as input to AerOpt from project directory to input directory
     QString dest = QDir::toNativeSeparators(inFolder + "/Mesh.dat");
@@ -232,7 +243,7 @@ bool Optimisation::run() {
     //then run aeropt
     if (r)
     {
-        mProcess->run(AerOpt, AerOptWorkDir, outputData);
+        mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
     }
     else
     {
@@ -245,7 +256,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
 {
     bool r = true;
     QSettings settings;
-    QString rootDir = settings.value("AerOpt/rootDir").toString();
+    QString workingDirectory = settings.value("AerOpt/workingDirectory").toString();
 
     std::ofstream outfile(filePath.toStdString(), std::ofstream::out);
     r &= outfile.is_open();
@@ -259,22 +270,31 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         std::string mxrange;
         std::string yrange;
         std::string myrange;
+        std::string smoothing;
 
         for (auto& point : controlPoints())
         {
             QRectF rect = point->controlPointRect();
+            float smoothFactor = point->getSmoothFactor();
 
-            xrange += " ";
-            xrange += std::to_string(rect.right());
+            xrange += " " + std::to_string(rect.right());
 
-            yrange += " ";
-            yrange += std::to_string(rect.bottom());
+            yrange += " " + std::to_string(rect.bottom());
 
-            mxrange += " ";
-            mxrange += std::to_string(rect.left());
+            mxrange += " " + std::to_string(rect.left());
 
-            myrange += " ";
-            myrange += std::to_string(rect.top());
+            myrange += " " + std::to_string(rect.top());
+
+            smoothing += " " + std::to_string(smoothFactor);
+        }
+
+        Enum::OptMethod optMethod = getOptimisationMethod();
+        uint optMethodIndex;
+        switch(optMethod) {
+            case Enum::OptMethod::MCS: optMethodIndex = 1;
+            case Enum::OptMethod::DE: optMethodIndex = 2;
+            case Enum::OptMethod::PSO: optMethodIndex = 3;
+            default: 1;
         }
 
         outfile << "&inputVariables" << std::endl;
@@ -287,13 +307,17 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         outfile << "IV%xrange =" << xrange << mxrange << std::endl;
         outfile << "IV%yrange =" << yrange << myrange << std::endl;
         outfile << "IV%zrange = 0.00" << std::endl;
+        outfile << "IV%smoothfactor =" << smoothing << std::endl;
+        outfile << "IV%smoothconvergence = -3" << std::endl;
         outfile << "IV%angle = 0.0" << std::endl;
         outfile << "IV%Cnconnecttrans = 0" << std::endl;
         outfile << "IV%engFMF = 1.0" << std::endl;
         outfile << "IV%AlphaInflowDirection = " << std::to_string( freeAlpha() ) << std::endl;// < angle of attack
+        outfile << "IV%YawInflowAngle = 0.0" << std::endl;
         outfile << "IV%turbulencemodel = 0" << std::endl;
         outfile << "IV%Low2Top = " << std::to_string(float(getNoTop())/100) << std::endl;
         outfile << "IV%NoSnap = " << std::to_string( noAgents() ) << std::endl;
+        outfile << "IV%NoNests = " << std::to_string( noAgents() ) << std::endl;
         outfile << "IV%NoCN = " << ctlPointCount << std::endl;// < number of control nodes
         outfile << "IV%NoDim = 2" << std::endl;
         outfile << "IV%DoF = 8" << std::endl;// < Degrees freedom
@@ -316,6 +340,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         //4 - min Drag
         //5 - max Downforce
         //6 - min Lift
+        outfile << "IV%Optimiser = " << std::to_string( optMethodIndex ) << std::endl;
 
         outfile << "! Test Parameters for Mesh Deformation" << std::endl;
         outfile << "IV%MeshMovement = 4" << std::endl;
@@ -331,8 +356,10 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         outfile << "IV%meanP = .true." << std::endl;
 
         outfile << "! Strings" << std::endl;
-        outfile << "IV%filepath = '" << rootDir.toStdString() << "'" << std::endl;
+        outfile << "IV%filepath = '" << workingDirectory.toStdString() << "'" << std::endl;
+        outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
         outfile << "IV%filename = 'Geometry'" << std::endl;
+        outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
         outfile << "IV%runOnCluster = 'N'" << std::endl;
 
 #ifdef Q_OS_UNIX
@@ -343,11 +370,13 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         // do windows stuff here
         outfile << "IV%SystemType = 'W'" << std::endl;
 #endif
+        outfile << "IV%NoProcessors = 1" << std::endl;
+        outfile << "IV%shapeenclosed = .true." << std::endl;
 
         outfile << "! Login Information" << std::endl;
         outfile << "IV%UserName = 'egnaumann'" << std::endl;
         outfile << "IV%Password = 'Fleur666'" << std::endl;
-        outfile << "IV%version = '2.3'" << std::endl;
+        outfile << "IV%version = '3.5'" << std::endl;
         outfile << "/" << std::endl;
     }
     else
@@ -395,7 +424,7 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
     QTimer::singleShot(1000, &loop, SLOT(quit()));
     loop.exec();
 
-    QDir lastPath(settings.value("AerOpt/workdir").toString());
+    QDir lastPath(settings.value("AerOpt/workingDirectory").toString());
     lastPath = QDir(lastPath.absolutePath() + QDir::separator() + "AerOpt/FLITE/Output_Data").absolutePath();
     lastPath = QDir::toNativeSeparators(lastPath.path());
     readDirectory(lastPath.path());
@@ -421,9 +450,7 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
     bool r = true;
 
     //Get source folders (input and output)
-    QDir appPath(settings.value("AerOpt/workdir").toString());
-    QDir appPathOut(settings.value("AerOpt/outFolder").toString());
-    QDir appPathIn(settings.value("AerOpt/inFolder").toString());
+    QDir appPath(settings.value("AerOpt/workingDirectory").toString());
 
     //Get destination folders (input and output)
     QDir projPath(settings.value("mesher/scratchDir").toString());
@@ -431,12 +458,6 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
     QDir projPathIn = QDir(projPath.absolutePath() + QDir::separator() + "Input_Data").absolutePath();
     projPathOut = QDir::toNativeSeparators(projPathOut.path());
     projPathIn = QDir::toNativeSeparators(projPathIn.path());
-
-    //Copy Output folders
-    r &= FileManipulation::copyFolder(appPathOut.path(), projPathOut.path());
-
-    //Copy Input folders
-    r &= FileManipulation::copyFolder(appPathIn.path(), projPathIn.path());
 
     //delete cruft(2D*, Delaunay*, FileCreateDir*)
     QString cruft = QDir(appPath.path() + QDir::separator() + "AerOpt/FLITE/").absolutePath();

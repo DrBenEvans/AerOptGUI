@@ -1,6 +1,7 @@
 #include "MeshDialogModel.h"
 #include <QDebug>
 #include <QSettings>
+#include "FileManipulation.h"
 
 MeshDialogModel::MeshDialogModel(QObject *parent) : MeshModel(parent)
 {
@@ -15,9 +16,12 @@ MeshDialogModel::~MeshDialogModel() {
 void MeshDialogModel::runMesher() {
     QSettings settings;
     QDir scratchDir = QDir(settings.value("mesher/scratchDir").toString());
-    QString meshDatFile = settings.value("mesher/datFile").toString();
+    QString meshDatFile = settings.value("mesher/initMeshFile").toString();
+    QString mesherPath = settings.value("mesher/exe").toString();
 
     bool r = true;
+
+    FileManipulation::emptyFolder(scratchDir.absolutePath());
 
     mBoundaryPointModel->clearPoints();
     mMesh->clear();
@@ -26,7 +30,9 @@ void MeshDialogModel::runMesher() {
     QString meshBacFile;
     QString meshGeoFile;
 
-    QString mesherPath = settings.value("mesher/exe").toString();
+    if (!scratchDir.exists()) {
+        scratchDir.mkpath(".");
+    }
 
     meshInFile = QDir(scratchDir.absolutePath() + "/scratch.in").absolutePath();
     meshInFile = QDir::toNativeSeparators(meshInFile);
@@ -41,7 +47,7 @@ void MeshDialogModel::runMesher() {
 
     if (r)
     {
-        mMeshProcess.setWorkingDirectory( mMeshPath.absolutePath() );
+        mMeshProcess.setWorkingDirectory(scratchDir.absolutePath());
         mMeshProcess.setStandardInputFile( meshInFile );
         mMeshProcess.start( mesherPath );
         mMeshProcess.waitForFinished();

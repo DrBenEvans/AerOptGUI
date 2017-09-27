@@ -38,7 +38,7 @@ public:
 
 
     uint getSmoothing();
-    uint getSmoothFactor();
+    float getSmoothFactor();
     void setSmoothing(uint smoothing);
 
 private:

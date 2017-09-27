@@ -23,7 +23,6 @@ private:
     void writeStdOutToLog();
     void writeStdErrToLog();
 
-    QDir mMeshPath;
     QProcess mMeshProcess;
 };
 

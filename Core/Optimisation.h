@@ -166,6 +166,7 @@ public:
     void setNoTop(int noTop);
 
     QString label() const;
+    QString simulationDirectoryName();
     void setLabel(QString label);
     std::shared_ptr<Mesh> initMesh();
 
@@ -185,6 +186,7 @@ private:
     bool createAerOptInFile(const QString &filePath);
     bool createAerOptNodeFile(const QString &filePath);
     bool saveCurrentProfile(const QString& path);
+    QString outputDataDirectory();
 
     ProfilePoints mProfilePoints;
 

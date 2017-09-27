@@ -47,6 +47,7 @@ void settings()
 
         //Determin flite path << lol
         aeroptExe = QDir::toNativeSeparators(appPath + "/AerOpt/FortranFiles/AeroOpt/AerOpt");
+        aeroptExe = QDir::toNativeSeparators(appPath + "/AerOpt/FortranFiles/AeroOpt/AerOpt_PhD/AerOpt");
         settings.setValue("AerOpt/executable", aeroptExe);
         qDebug() << "AerOpt Exe Path: " << aeroptExe;
 
@@ -78,41 +79,29 @@ void settings()
     QString AerOptWorkDir = appPath;
     AerOptWorkDir += "/AerOpt/FLITE/";
     AerOptWorkDir = QDir::toNativeSeparators(AerOptWorkDir);
-    settings.setValue("AerOpt/workdir", AerOptWorkDir);
+    settings.setValue("AerOpt/workingDirectory", AerOptWorkDir);
 
-    QString AerOptInFile = AerOptWorkDir;
-    AerOptInFile += "Input_Data/AerOpt_InputParameters.txt";
+    // Input folder is read by AeroOpt executable
+    QString inFolder = AerOptWorkDir + "/Input_Data";
+    inFolder = QDir::toNativeSeparators(inFolder);
+    settings.setValue("AerOpt/inFolder", inFolder);
+
+    QString AerOptInFile = inFolder + "/AerOpt_InputParameters.txt";
     AerOptInFile = QDir::toNativeSeparators(AerOptInFile);
     settings.setValue("AerOpt/inputFile", AerOptInFile);
 
-    QString AerOptNodeFile = AerOptWorkDir;
-    AerOptNodeFile += "Input_Data/Control_Nodes.txt";
+    QString AerOptNodeFile = inFolder + "/Control_Nodes.txt";
     AerOptNodeFile = QDir::toNativeSeparators(AerOptNodeFile);
     settings.setValue("AerOpt/nodeFile", AerOptNodeFile);
 
-    QString projectDir = appPath + "/AerOpt/Scratch";
-    projectDir = QDir::toNativeSeparators(projectDir);
-    QDir projectDirObj = QDir(projectDir);
-    if(!projectDirObj.exists()) {
-        projectDirObj.mkpath(".");
-    }
-    settings.setValue("mesher/scratchDir", projectDir);
+    // mesh is created in a scratch directory
+    QString scratchPath = QDir::toNativeSeparators(appPath + "/AerOpt/Scratch");
+    settings.setValue("mesher/scratchDir", scratchPath);
 
-    QString meshDatFile;
-    meshDatFile = QDir(projectDirObj.absolutePath() + "/scratch.dat").absolutePath();
-    meshDatFile = QDir::toNativeSeparators(meshDatFile);
-    settings.setValue("mesher/datFile", meshDatFile);
-
-    QString rootDir = QDir::toNativeSeparators(appPath + "/AerOpt/FLITE");
-    settings.setValue("AerOpt/rootDir", rootDir);
-
-    QString inFolder = QDir::toNativeSeparators(rootDir + "/Input_Data");
-    QDir().mkdir(inFolder);
-    settings.setValue("AerOpt/inFolder", inFolder);
-
-    QString outFolder = QDir::toNativeSeparators(rootDir + "/Output_Data");
-    QDir().mkdir(outFolder);
-    settings.setValue("AerOpt/outFolder", outFolder);
+    QString initialMeshFile;
+    initialMeshFile = QDir(scratchPath + "/Mesh.dat").absolutePath();
+    initialMeshFile = QDir::toNativeSeparators(initialMeshFile);
+    settings.setValue("mesher/initMeshFile", initialMeshFile);
 }
 
 //Programme entry point.

@@ -10,7 +10,7 @@ class ProcessManager : public QProcess
 public:
     ProcessManager();
     ~ProcessManager();
-    void run(QString process, QString workDir, QString outputDir);
+    void run(QString process, QString workDir, QString watchPath);
 
 signals:
     void directoryChanged(const QString&);

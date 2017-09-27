@@ -1,5 +1,6 @@
 #include "ProcessManager.h"
 #include <QDebug>
+#include <QDir>
 
 ProcessManager::ProcessManager()
 {
@@ -19,11 +20,18 @@ ProcessManager::~ProcessManager()
     cleanupProcess();
 }
 
-void ProcessManager::run(QString process, QString workDir, QString outputDir) {
+void ProcessManager::run(QString process, QString workDir, QString watchPath) {
     mDirWatcher.removePaths( mDirWatcher.directories() );
-    mDirWatcher.addPath(outputDir);
-    setWorkingDirectory( workDir );
-    start( process );
+
+    // make directory before watching
+    QDir outputDir(watchPath);
+    if (!outputDir.exists()) {
+        outputDir.mkpath(".");
+    }
+
+    mDirWatcher.addPath(watchPath);
+    setWorkingDirectory(workDir);
+    start(process);
 }
 
 void ProcessManager::processFinished(int exitStatus) {
