@@ -31,9 +31,8 @@ CONFIG(debug, debug|release) {
     win32:QMAKE_LFLAGS += -static-libgcc
 }
 
-#QMAKE_CC = /usr/local/Cellar/gcc@6/6.4.0/bin/gcc-6
-#QMAKE_CXX = /usr/local/Cellar/gcc@6/6.4.0/bin/g++-6
-#QMAKE_LINK = /usr/local/Cellar/gcc@6/6.4.0/bin/g++-6
+CONFIG+=static
+
 QMAKE_MAC_SDK = macosx10.12
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
