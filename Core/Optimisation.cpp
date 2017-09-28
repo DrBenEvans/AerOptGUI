@@ -208,10 +208,17 @@ int Optimisation::controlPointCount() {
     return mControlPoints.size();
 }
 
-QString Optimisation::outputDataDirectory() {
+QString Optimisation::simulationDirectoryPath() {
     QSettings settings;
-    QString outputData = settings.value("AerOpt/workingDirectory").toString();
-    outputData += "/" + simulationDirectoryName() + "/Output_Data";
+    QString dir = settings.value("AerOpt/workingDirectory").toString();
+    dir += "/" + simulationDirectoryName();
+    dir = QDir::toNativeSeparators(dir);
+    return dir;
+}
+
+QString Optimisation::outputDataDirectory() {
+    QString outputData = simulationDirectoryPath();
+    outputData += "/Output_Data";
     outputData = QDir::toNativeSeparators(outputData);
     return outputData;
 }

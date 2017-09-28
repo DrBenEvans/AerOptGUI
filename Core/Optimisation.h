@@ -167,6 +167,7 @@ public:
 
     QString label() const;
     QString simulationDirectoryName();
+    QString simulationDirectoryPath();
     void setLabel(QString label);
     std::shared_ptr<Mesh> initMesh();
 
