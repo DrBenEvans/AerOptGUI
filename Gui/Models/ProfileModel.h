@@ -3,6 +3,7 @@
 
 #include <QAbstractListModel>
 #include <QItemSelectionModel>
+#include <memory>
 #include "Profile.h"
 
 class ProfileModel : public QAbstractListModel

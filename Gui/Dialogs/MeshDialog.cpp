@@ -61,9 +61,9 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, QWidget* parent) :
     ui->growthFactor->setValue(mesh->growthFactor());
 
     // create control point view
-    ControlPointView* controlPointView = new ControlPointView(this);
+    ControlPointView* controlPointView = new ControlPointView(ui->graphicsViewContainer);
     controlPointView->setModel(mMeshDialogModel->boundaryPointModel());
-    controlPointView->move(30,110);
+    controlPointView->move(10, 10);
 
     mScene->addItem(mProfileView);
     mScene->addItem(mMeshView);

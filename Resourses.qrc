@@ -1,8 +1,24 @@
 <RCC>
     <qresource prefix="/images">
         <file alias="FlowVisApp.png">Images/FlowVisApp.png</file>
-        <file alias="AerOpt.png">Images/AerOpt.png</file>
-        <file alias="Scale.png">Images/Scale.png</file>
         <file alias="Map.png">Images/Map.png</file>
+        <file alias="Scale.png">Images/Scale.png</file>
+        <file alias="SULogoL.png">Images/SULogoL.png</file>
+        <file alias="AerOpt.png">Images/AerOpt.png</file>
+    </qresource>
+    <qresource prefix="/executables">
+        <file alias="Delaunay_2D.mac">Executables/Delaunay_2D</file>
+        <file alias="MeshGenerator.mac">Executables/MeshGenerator</file>
+        <file alias="MeshGenerator.exe">Executables/MeshGenerator.exe</file>
+        <file alias="PrePro_2D.mac">Executables/PrePro_2D</file>
+        <file alias="Solver_2D.mac">Executables/Solver_2D</file>
+        <file alias="AerOpt.exe">Executables/AerOpt.exe</file>
+        <file alias="Delaunay_2D.exe">Executables/Delaunay_2D.exe</file>
+        <file alias="PrePro_2D.exe">Executables/PrePro_2D.exe</file>
+        <file alias="Solver_2D.exe">Executables/Solver_2D.exe</file>
+    </qresource>
+    <qresource prefix="/profiles">
+        <file alias="NACA0024.prf">ExampleProfiles/NACA0024.prf</file>
+        <file alias="NACA21120.prf">ExampleProfiles/NACA21120.prf</file>
     </qresource>
 </RCC>

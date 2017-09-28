@@ -15,13 +15,13 @@ MeshDialogModel::~MeshDialogModel() {
 
 void MeshDialogModel::runMesher() {
     QSettings settings;
-    QDir scratchDir = QDir(settings.value("mesher/scratchDir").toString());
+    QString scratchDir = settings.value("mesher/scratchDir").toString();
     QString meshDatFile = settings.value("mesher/initMeshFile").toString();
     QString mesherPath = settings.value("mesher/exe").toString();
 
     bool r = true;
 
-    FileManipulation::emptyFolder(scratchDir.absolutePath());
+    FileManipulation::emptyFolder(scratchDir);
 
     mBoundaryPointModel->clearPoints();
     mMesh->clear();
@@ -30,22 +30,22 @@ void MeshDialogModel::runMesher() {
     QString meshBacFile;
     QString meshGeoFile;
 
-    meshInFile = QDir(scratchDir.absolutePath() + "/scratch.in").absolutePath();
+    meshInFile = QDir(scratchDir + "/scratch.in").absolutePath();
     meshInFile = QDir::toNativeSeparators(meshInFile);
 
-    meshBacFile = QDir(scratchDir.absolutePath() + "/scratch.bac").absolutePath();
+    meshBacFile = QDir(scratchDir + "/scratch.bac").absolutePath();
     meshBacFile = QDir::toNativeSeparators(meshBacFile);
 
-    meshGeoFile = QDir(scratchDir.absolutePath() + "/scratch.geo").absolutePath();
+    meshGeoFile = QDir(scratchDir + "/scratch.geo").absolutePath();
     meshGeoFile = QDir::toNativeSeparators(meshGeoFile);
 
     r &= mMesh->createFiles(meshInFile, meshBacFile, meshGeoFile, meshDatFile);
 
     if (r)
     {
-        mMeshProcess.setWorkingDirectory(scratchDir.absolutePath());
-        mMeshProcess.setStandardInputFile( meshInFile );
-        mMeshProcess.start( mesherPath );
+        mMeshProcess.setWorkingDirectory(scratchDir);
+        mMeshProcess.setStandardInputFile(meshInFile);
+        mMeshProcess.start(mesherPath);
         mMeshProcess.waitForFinished();
         meshingFinished(mMeshProcess.exitCode(), mMeshProcess.exitStatus(), meshDatFile);
     }

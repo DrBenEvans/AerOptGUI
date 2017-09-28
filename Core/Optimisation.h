@@ -5,6 +5,7 @@
 #include <list>
 #include <utility>
 #include <QRectF>
+#include <memory>
 
 #include "Enumerations.h"
 #include "Profile.h"
