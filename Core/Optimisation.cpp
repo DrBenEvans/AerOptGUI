@@ -494,32 +494,8 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
 
 void Optimisation::readDirectory(const QString& path)
 {
-    //Read initial fitness
-    if (mCurrentGen == 0)
-    {
-        bool b = true;
-        QString fit = path;
-        fit += "Fitness_";
-        fit += QString::number(mCurrentGen);
-        fit += ".txt";
-        QFileInfo checkFit(fit);
-        b &= checkFit.exists();
-        b &= checkFit.isFile();
-        if (b)
-        {
-            readFitness(fit);
-            mCurrentGen++;
-        }
-    }
-
     //When meshfiles exists, load it.
     bool c = true;
-
-    //Fitness file
-    QString fit = path;
-    fit += "Fitness_";
-    fit += QString::number(mCurrentGen);
-    fit += ".txt";
 
     //Mesh file
     QString meshpath = path;
@@ -534,12 +510,10 @@ void Optimisation::readDirectory(const QString& path)
     results += ".resp";
 
     //Load Mesh + Results
-    QFileInfo checkFit(fit);
     QFileInfo checkMesh(meshpath);
     QFileInfo checkResults(results);
 
-    c &= checkFit.exists();
-    c &= checkFit.isFile();
+    c &= readFitness();
     c &= checkMesh.exists();
     c &= checkMesh.isFile();
     c &= checkResults.exists();
@@ -555,18 +529,29 @@ void Optimisation::readDirectory(const QString& path)
         mesh->loadMesh(meshpath);
         mesh->loadResults(results);
 
-        readFitness(fit);
-
         mCurrentGen++;
     }
 }
 
-void Optimisation::readFitness(const QString& path)
+bool Optimisation::readFitness()
 {
     bool r = true;
+
     std::string line = "";
     QString output = "";
     QString plotData = "";
+
+    QString path = simulationDirectoryPath() + "/FitnessAll.txt";
+    path = QDir::toNativeSeparators(path);
+
+    QFileInfo checkFit(path);
+
+    r &= checkFit.exists();
+    r &= checkFit.isFile();
+
+    if(!r) {
+        return r;
+    }
 
     std::ifstream infile(path.toStdString(), std::ifstream::in);
     r &= infile.is_open();
@@ -587,13 +572,17 @@ void Optimisation::readFitness(const QString& path)
         QStringList list1 = plotData.split(" ", QString::SkipEmptyParts);
         std::vector<double> nests;
         uint genNo = 0;
-        bool ok;
+        bool testok;
+        bool isok = true;
         for (int i = 0; i < list1.size(); ++i)
         {
-            if (i == 0)
-                genNo = list1.at(i).toInt(&ok);
-            else
-                nests.push_back( list1.at(i).toDouble(&ok) );
+            if (i == 0) {
+                genNo = list1.at(i).toInt(&testok);
+                isok = isok && testok;
+            } else {
+                nests.push_back( list1.at(i).toDouble(&testok) );
+                isok = isok && testok;
+            }
 
             if (genNo == 0 && i == 1)
             {
@@ -606,7 +595,7 @@ void Optimisation::readFitness(const QString& path)
         }
 
         //read fitness
-        if (ok)
+        if (isok)
         {
             genNo += 1;
             if(mFitness.size() < genNo)

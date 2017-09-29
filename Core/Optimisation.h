@@ -161,7 +161,7 @@ public:
      * @brief readFitness
      * @param read the fitness for this optimisation
      */
-    void readFitness(const QString& path);
+    bool readFitness();
 
     int getNoTop() const;
     void setNoTop(int noTop);
