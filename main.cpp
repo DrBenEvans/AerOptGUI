@@ -32,7 +32,8 @@ void firstTimeSetup(QString AerOptWorkDir) {
     QString ext = ".exe";
 #ifdef Q_OS_MACOS
         ext = ".mac";
-#elseif Q_OS_UNIX
+#endif
+#ifdef Q_OS_UNIX
         ext = ".unix";
 #endif
 
