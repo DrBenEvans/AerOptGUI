@@ -539,10 +539,11 @@ void Optimisation::readDirectory(const QString& path)
 bool Optimisation::readFitness()
 {
     bool r = true;
+    bool isok = true;
 
     std::string line = "";
     QString output = "";
-    QString plotData = "";
+    QString fitnessString = "";
 
     QString path = simulationDirectoryPath() + "/FitnessAll.txt";
     path = QDir::toNativeSeparators(path);
@@ -561,54 +562,54 @@ bool Optimisation::readFitness()
 
     if (r)
     {
-        std::getline(infile, line);
-
-        output = QString::fromStdString(line);
-        output = output.trimmed();
-        plotData = output;
-        output.prepend( " >  " );
-        output.prepend( "Generation: " );
-        qDebug() << output;
-
-
-        //Extract from plotData gen no. and then nest values
-        QStringList list1 = plotData.split(" ", QString::SkipEmptyParts);
-        std::vector<double> nests;
         uint genNo = 0;
+        std::vector<double> nests;
         bool testok;
-        bool isok = true;
-        for (int i = 0; i < list1.size(); ++i)
-        {
-            if (i == 0) {
-                genNo = list1.at(i).toInt(&testok);
-                isok = isok && testok;
-            } else {
-                nests.push_back( list1.at(i).toDouble(&testok) );
-                isok = isok && testok;
+
+        mFitness.clear();
+
+        while(std::getline(infile, line)) {
+            output = QString::fromStdString(line);
+            output = output.trimmed();
+            fitnessString = output;
+            output.prepend( "Generation: > " );
+            qDebug() << output;
+
+            //Extract from fitnessString gen no. and then nest values
+            QStringList fitnessList = fitnessString.split(" ", QString::SkipEmptyParts);
+
+            //Read Generation Number from first row
+            genNo = fitnessList.at(0).toInt(&testok);
+            uint genIndex = genNo - 1;
+            isok = isok && testok;
+
+            //Extend fitness vector with new generation(s) if required
+            while(mFitness.size() <= genIndex) {
+                mFitness.emplace_back();
             }
 
-            if (genNo == 0 && i == 1)
-            {
-                int cols = noAgents() -1;
-                for (int j = 0; j < cols; ++j)
-                {
-                    nests.push_back( nests.at(0) );
+            //Read Nest Fitnesses from subsequent rows
+            uint agentIndex;
+            for (int index = 1; index < fitnessList.size(); ++index) {
+                // get agent fitness
+                double agentFitness = fitnessList.at(index).toDouble(&testok);
+                isok = isok && testok;
+
+                // set agent fitness
+                agentIndex = index - 1;
+                if(mFitness.at(genIndex).size() <= agentIndex) {
+                    mFitness.at(genIndex).emplace_back(agentFitness);
+                } else {
+                    mFitness.at(genIndex).at(agentIndex) = agentFitness;
                 }
             }
+
         }
 
-        //read fitness
-        if (isok)
-        {
-            genNo += 1;
-            if(mFitness.size() < genNo)
-                mFitness.emplace_back(nests);
-            else
-                mFitness.at(genNo) = nests;
-        }
-
+        infile.close();
     }
-    infile.close();
+
+    return isok & r;
 }
 
 std::vector<std::vector<double> > Optimisation::fitness() {
