@@ -1,4 +1,5 @@
 #include <QDebug>
+#include <QMessageBox>
 #include "ConfigSimulationDialog.h"
 #include "ui_ConfigSimulationDialog.h"
 #include "MeshDialog.h"
@@ -34,10 +35,26 @@ ConfigSimulationDialog::~ConfigSimulationDialog()
     delete ui;
 }
 
+void ConfigSimulationDialog::validationError(QString message) {
+    QMessageBox::warning(this, "Message Box", message, QMessageBox::Ok);
+}
+
 void ConfigSimulationDialog::accept()
 {
     // set label
-    mData->setLabel(ui->label->text());
+    QString label = ui->label->text();
+    if(label.size() == 0) {
+        validationError("An optimisation name must be specified");
+        return;
+    }
+    mData->setLabel(label);
+
+    QDir outputDataDirectory = QDir(mData->simulationDirectoryPath());
+
+    if(outputDataDirectory.exists()) {
+        validationError("Directory already exists:" + outputDataDirectory.absolutePath());
+        return;
+    }
 
     // set optimiser
     mData->setNoAgents(ui->nnests->value());

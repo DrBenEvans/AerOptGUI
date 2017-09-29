@@ -94,8 +94,6 @@ void MainWindow::newOptimisation() {
     auto optimisation = std::make_shared<Optimisation>();
     MeshDialog meshDialog(mProfileModel, this);
     if(meshDialog.exec() == QDialog::Accepted) {
-        optimisation->setLabel(QString("Optimisation %1").arg(mOptimisationModel->rowCount()+1));
-
         ConfigSimulationDialog diag(optimisation, this);
         if(diag.exec() == QDialog::Accepted) {
             optimisation->setControlPoints(meshDialog.controlPoints());

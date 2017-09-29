@@ -27,6 +27,7 @@ private slots:
     void on_optmethod_currentIndexChanged(int index);
 
 private:
+    void validationError(QString message);
     int objFuncEnumToIndex(Enum::ObjFunc enumeration);
     Enum::ObjFunc indexToObjFuncEnum(int index);
 

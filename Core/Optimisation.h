@@ -192,7 +192,7 @@ private:
 
     ProfilePoints mProfilePoints;
 
-    QString mLabel;
+    QString mLabel = "";
 
 	//Objective function attributes
     Enum::ObjFunc mObjFunc;
