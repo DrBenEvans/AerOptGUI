@@ -298,10 +298,18 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         Enum::OptMethod optMethod = getOptimisationMethod();
         uint optMethodIndex;
         switch(optMethod) {
-            case Enum::OptMethod::MCS: optMethodIndex = 1;
-            case Enum::OptMethod::DE: optMethodIndex = 2;
-            case Enum::OptMethod::PSO: optMethodIndex = 3;
-            default: 1;
+        case Enum::OptMethod::MCS:
+            optMethodIndex = 1;
+            break;
+        case Enum::OptMethod::DE:
+            optMethodIndex = 2;
+            break;
+        case Enum::OptMethod::PSO:
+            optMethodIndex = 3;
+            break;
+        default:
+            optMethodIndex = -1;
+            break;
         }
 
         outfile << "&inputVariables" << std::endl;
