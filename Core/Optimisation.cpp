@@ -439,11 +439,6 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
     QTimer::singleShot(1000, &loop, SLOT(quit()));
     loop.exec();
 
-    QDir lastPath(settings.value("AerOpt/workingDirectory").toString());
-    lastPath = QDir(lastPath.absolutePath() + QDir::separator() + "AerOpt/FLITE/Output_Data").absolutePath();
-    lastPath = QDir::toNativeSeparators(lastPath.path());
-    readDirectory(lastPath.path());
-
     QEventLoop loop2;
     QTimer::singleShot(2000, &loop2, SLOT(quit()));
     loop2.exec();
