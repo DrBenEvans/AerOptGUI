@@ -7,7 +7,7 @@ bool FileManipulation::emptyFolder(const QString& path)
 
     QDir dir(path);
     if(!dir.exists()) {
-        dir.mkpath(".");
+        QDir().mkpath(path);
         if(dir.exists())
             return true;
         else

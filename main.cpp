@@ -23,46 +23,54 @@ void firstTimeSetup(QString AerOptWorkDir) {
     settings.clear();
 
     settings.setValue("AerOpt/workingDirectory", AerOptWorkDir);
-    QDir(AerOptWorkDir).mkdir(".");
+    QDir().mkdir(AerOptWorkDir);
 
     // setup executables
     QString exeDir = QDir::toNativeSeparators(AerOptWorkDir + "Executables/");
-    QDir(exeDir).mkdir(".");
+    QDir().mkdir(exeDir);
 
     QString ext = ".exe";
-#ifdef Q_OS_MACOS
-        ext = ".mac";
-#endif
+    QString targetext = ".exe";
 #ifdef Q_OS_UNIX
         ext = ".unix";
+        targetext = "";
+#endif
+#ifdef Q_OS_MACOS
+        ext = ".mac";
+        targetext = "";
 #endif
 
     bool copySuccess;
 
-    QString mesherExe = QDir::toNativeSeparators(exeDir + "MeshGenerator" + ext);
+    QString mesherExe = QDir::toNativeSeparators(exeDir + "MeshGenerator" + targetext);
     copySuccess = QFile::copy(":/executables/MeshGenerator" + ext, mesherExe);
     if(copySuccess) {
+        QFile(mesherExe).setPermissions(QFileDevice::ExeUser);
         settings.setValue("mesher/exe", mesherExe);
     } else {
         qCritical() << "Mesher file copy failed";
     }
 
-    QString aeroptExe = QDir::toNativeSeparators(exeDir + "AerOpt" + ext);
+    QString aeroptExe = QDir::toNativeSeparators(exeDir + "AerOpt" + targetext);
     copySuccess = QFile::copy(":/executables/AerOpt" + ext, aeroptExe);
     if(copySuccess) {
+        QFile(aeroptExe).setPermissions(QFileDevice::ExeUser);
         settings.setValue("AerOpt/executable", aeroptExe);
     } else {
         qCritical() << "AerOpt executable file copy failed";
     }
 
-    QString exePath = QDir::toNativeSeparators(exeDir + "Delaunay_2D" + ext);
+    QString exePath = QDir::toNativeSeparators(exeDir + "Delaunay_2D" + targetext);
     QFile::copy(":/executables/Delaunay_2D" + ext, exePath);
+    QFile(exePath).setPermissions(QFileDevice::ExeUser);
 
-    exePath = QDir::toNativeSeparators(exeDir + "PrePro_2D" + ext);
+    exePath = QDir::toNativeSeparators(exeDir + "PrePro_2D" + targetext);
     QFile::copy(":/executables/PrePro_2D" + ext, exePath);
+    QFile(exePath).setPermissions(QFileDevice::ExeUser);
 
-    exePath = QDir::toNativeSeparators(exeDir + "Solver_2D" + ext);
+    exePath = QDir::toNativeSeparators(exeDir + "Solver_2D" + targetext);
     QFile::copy(":/executables/Solver_2D" + ext, exePath);
+    QFile(exePath).setPermissions(QFileDevice::ExeUser);
 
     qDebug() << "Working Directory:" << AerOptWorkDir;
     qDebug() << "Mesher Exe Path" << mesherExe;
@@ -83,7 +91,7 @@ void firstTimeSetup(QString AerOptWorkDir) {
 
     // setup default profiles
     QString profileDir = QDir::toNativeSeparators(AerOptWorkDir + "profiles/");
-    QDir(profileDir).mkdir(".");
+    QDir().mkdir(profileDir);
 
     settings.beginWriteArray("profiles");
     settings.setArrayIndex(0);
@@ -133,8 +141,13 @@ void checkSettings()
     // get working directory
     QString appPath = QDir::fromNativeSeparators(QCoreApplication::applicationFilePath());
     QFileInfo appPathInfo(appPath);
-    QString AerOptWorkDir = appPathInfo.dir().absolutePath() + "/AerOptFiles/";
-    AerOptWorkDir = QDir::fromNativeSeparators(AerOptWorkDir);
+
+    QString AerOptWorkDir = appPathInfo.dir().absolutePath();
+
+    // macOS: remove part of path inside application bundle
+    AerOptWorkDir = AerOptWorkDir.remove(QRegExp("/AerOptGui.app/Contents.*"));
+
+    AerOptWorkDir = QDir::fromNativeSeparators(AerOptWorkDir + "/AerOptFiles/");
 
     // if working directory exists, then no need for setup
     if(!QDir(AerOptWorkDir).exists()) {

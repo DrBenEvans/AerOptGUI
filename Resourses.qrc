@@ -16,6 +16,7 @@
         <file alias="Delaunay_2D.exe">Executables/Delaunay_2D.exe</file>
         <file alias="PrePro_2D.exe">Executables/PrePro_2D.exe</file>
         <file alias="Solver_2D.exe">Executables/Solver_2D.exe</file>
+        <file alias="AerOpt.mac">Executables/AerOpt</file>
     </qresource>
     <qresource prefix="/profiles">
         <file alias="NACA0024.prf">ExampleProfiles/NACA0024.prf</file>
