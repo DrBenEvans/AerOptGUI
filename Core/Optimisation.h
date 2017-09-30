@@ -162,6 +162,16 @@ public:
      * @param read the fitness for this optimisation
      */
     bool readFitness();
+    /**
+     * @brief readMeshes
+     * @param read the meshes for this optimisation
+     */
+    bool readMeshes();
+    /**
+     * @brief mesh
+     * @param getter method for meshes
+     */
+    Mesh* mesh(int gen, int agent);
 
     int getNoTop() const;
     void setNoTop(int noTop);
@@ -209,10 +219,9 @@ private:
 	int mNoAgents;
 	int mNoGens;
     int mNoTop;
-    uint mCurrentGen;
 
     std::shared_ptr<Mesh> mInitMesh;
-    std::vector<Mesh*> mMeshes;
+    std::vector<std::vector<Mesh*>> mMeshes;
     std::vector<BoundaryPoint*> mControlPoints;
     std::vector<std::vector<double>> mFitness;
 

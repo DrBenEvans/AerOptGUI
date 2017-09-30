@@ -98,10 +98,10 @@ void OptimisationModel::run(std::shared_ptr<Optimisation> optimisation) {
     optimisation->run();
 }
 
-void OptimisationModel::emitOptimisationDataChanged(Optimisation* optimisation) {
+void OptimisationModel::emitOptimisationFitnessChanged(Optimisation* optimisation) {
     for(int i=0; i<mOptimisations.size(); i++) {
         if(mOptimisations.at(i).get() == optimisation) {
-            emit optimisationDataChanged(i);
+            emit optimisationFitnessChanged(i);
             return;
         }
     }

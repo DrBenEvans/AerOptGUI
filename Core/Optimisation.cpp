@@ -35,7 +35,6 @@ Optimisation::Optimisation() :
     mNoGens = 3;
     mNoTop = 75;
 
-    mCurrentGen = 0;
     mProcess = new ProcessManager();
 
     auto finished = QOverload<int, QProcess::ExitStatus>::of(&ProcessManager::finished);
@@ -45,7 +44,7 @@ Optimisation::Optimisation() :
     auto dirReadLambda = [this](const QString& path) {
         readDirectory(path);
         if(mOptimisationModel != 0) {
-            mOptimisationModel->emitOptimisationDataChanged(this);
+            mOptimisationModel->emitOptimisationFitnessChanged(this);
         }
     };
 
@@ -499,41 +498,57 @@ void Optimisation::readDirectory(const QString& path)
 {
     //When meshfiles exists, load it.
     bool c = true;
-
-    //Mesh file
-    QString meshpath = path;
-    meshpath += "Geometry_";
-    meshpath += QString::number(mCurrentGen);
-    meshpath += ".dat";
-
-    //Results file
-    QString results = path;
-    results += "Geometry_";
-    results += QString::number(mCurrentGen);
-    results += ".resp";
-
-    //Load Mesh + Results
-    QFileInfo checkMesh(meshpath);
-    QFileInfo checkResults(results);
-
     c &= readFitness();
-    c &= checkMesh.exists();
-    c &= checkMesh.isFile();
-    c &= checkResults.exists();
-    c &= checkResults.isFile();
+    c &= readMeshes();
+}
 
-    if (c)
-    {
-        if(mMeshes.size() < mCurrentGen) {
-            mMeshes.emplace_back(new Mesh());
+bool Optimisation::readMeshes()
+{
+    bool success = true;
+
+    int genIndex = mMeshes.size();
+    Mesh* mesh = 0;
+
+    for(int agentIndex=0; agentIndex < noAgents(); ++agentIndex ) {
+        QString base_path = outputDataDirectory();
+        base_path += "/Geometry";
+        base_path += QString::number(genIndex + 1);
+        base_path += "_";
+        base_path += QString::number(agentIndex + 1);
+
+        //Mesh file
+        QString  meshpath = base_path + ".dat";
+        //Results file
+        QString results = base_path += ".unk";
+
+        //Load Mesh + Results
+        QFileInfo checkMesh(meshpath);
+        QFileInfo checkResults(results);
+
+        success &= checkMesh.exists();
+        success &= checkMesh.isFile();
+        success &= checkResults.exists();
+        success &= checkResults.isFile();
+
+        if (success)
+        {
+            mesh = new Mesh();
+            success &= mesh->loadMesh(meshpath);
+            success &= mesh->loadResults(results);
+
+            if(success) {
+                // add new generation vector
+                while(mMeshes.size() <= genIndex)
+                    mMeshes.emplace_back();
+
+                if(mMeshes.at(genIndex).size() <= agentIndex) {
+                    mMeshes.at(genIndex).push_back(mesh);
+                }
+            }
         }
-
-        Mesh* mesh = mMeshes.at(mCurrentGen-1);
-        mesh->loadMesh(meshpath);
-        mesh->loadResults(results);
-
-        mCurrentGen++;
     }
+
+    return success;
 }
 
 bool Optimisation::readFitness()
@@ -618,4 +633,8 @@ std::vector<std::vector<double> > Optimisation::fitness() {
 
 QString Optimisation::outputText() {
     return mOutputLog;
+}
+
+Mesh* Optimisation::mesh(int gen, int agent) {
+    return mMeshes.at(gen).at(agent);
 }

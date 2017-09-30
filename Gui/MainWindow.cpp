@@ -52,7 +52,7 @@ void MainWindow::setOptimisationModel(OptimisationModel* optimisationModel) {
     ui->optimisationComboBox->setModel(mOptimisationModel);
     ui->fitnessPlot->setOptimisationModel(mOptimisationModel);
     connect(ui->optimisationComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::setCurrentOptimisationIndex);
-    connect(mOptimisationModel, &OptimisationModel::optimisationDataChanged, this, &MainWindow::optimisationFitnessChanged);
+    connect(mOptimisationModel, &OptimisationModel::optimisationFitnessChanged, this, &MainWindow::optimisationFitnessChanged);
     connect(mOptimisationModel, &OptimisationModel::optimisationOutputChanged, this, &MainWindow::optimisationOutputChanged);
 }
 
@@ -87,8 +87,8 @@ void MainWindow::setCurrentOptimisationIndex(int index) {
 
 void MainWindow::setMeshViewSimulation(int iGen, int agent) {
     Optimisation* optimisation = mOptimisationModel->optimisation(mCurrentOptimisationIndex).get();
-    Mesh* mesh = optimisation->initMesh().get();
-    mCurrentMeshViewModel->setCurrentMesh(mesh);
+    Mesh* mesh = optimisation->mesh(iGen, agent);
+    if(mesh) mCurrentMeshViewModel->setCurrentMesh(mesh);
 }
 
 MainWindow::~MainWindow() {

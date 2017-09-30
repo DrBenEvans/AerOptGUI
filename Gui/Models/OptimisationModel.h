@@ -31,7 +31,7 @@ public:
 
     void run(std::shared_ptr<Optimisation> optimisation);
 
-    void emitOptimisationDataChanged(Optimisation *optimisation);
+    void emitOptimisationFitnessChanged(Optimisation *optimisation);
     void emitOptimisationOutputChanged(Optimisation *optimisation);
 
     std::shared_ptr<Optimisation> optimisation(uint index);
@@ -39,7 +39,7 @@ public:
     void revealFiles(int index);
 
 signals:
-    void optimisationDataChanged(int index);
+    void optimisationFitnessChanged(int index);
     void optimisationOutputChanged(int index);
 
 private:
