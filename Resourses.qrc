@@ -3,9 +3,8 @@
         <file alias="FlowVisApp.png">Images/FlowVisApp.png</file>
         <file alias="Map.png">Images/Map.png</file>
         <file alias="Scale.png">Images/Scale.png</file>
-        <file alias="SULogoL.png">Images/SULogoL.png</file>
-        <file alias="AerOpt.png">Images/AerOpt.png</file>
-        <file alias="logos.png">Images/logos.png</file>
+        <file alias="AerOptLogoTop.png">Images/aeropt_top.png</file>
+        <file alias="SULogoTop.png">Images/su_top.png</file>
     </qresource>
     <qresource prefix="/executables">
         <file alias="Delaunay_2D.mac">Executables/Delaunay_2D</file>
