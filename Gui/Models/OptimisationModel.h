@@ -34,7 +34,7 @@ public:
     void emitOptimisationFitnessChanged(Optimisation *optimisation);
     void emitOptimisationOutputChanged(Optimisation *optimisation);
 
-    std::shared_ptr<Optimisation> optimisation(uint index);
+    Optimisation *optimisation(uint index);
 
     void revealFiles(int index);
 

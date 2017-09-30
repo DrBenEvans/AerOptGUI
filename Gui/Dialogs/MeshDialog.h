@@ -22,7 +22,7 @@ class MeshDialog : public QDialog
 	Q_OBJECT
 
 public:
-    explicit MeshDialog(ProfileModel &profileModel, QWidget* parent = 0);
+    explicit MeshDialog(ProfileModel &profileModel, MeshDialogModel *model, QWidget* parent = 0);
     ~MeshDialog();
     void accept();
     std::vector<BoundaryPoint*> controlPoints();

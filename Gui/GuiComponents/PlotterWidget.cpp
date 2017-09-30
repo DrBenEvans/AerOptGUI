@@ -55,12 +55,19 @@ void PlotterWidget::setOptimisationModel(OptimisationModel* model) {
 
 void PlotterWidget::setCurrentOptimisationIndex(int index) {
     mCurrentOptimisationIndex = index;
+
+    Optimisation* optimisation = mOptimisationModel->optimisation(mCurrentOptimisationIndex);
+    if(optimisation) {
+        mXMax = optimisation->noAgents()+1;
+        xAxis->setRangeUpper(mXMax);
+    }
+
     updatePlot();
 }
 
 void PlotterWidget::updatePlot()
 {
-    std::shared_ptr<Optimisation> opt = mOptimisationModel->optimisation(mCurrentOptimisationIndex);
+    Optimisation *opt = mOptimisationModel->optimisation(mCurrentOptimisationIndex);
     bool r = true;
 
     //Get data for display

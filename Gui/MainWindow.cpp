@@ -58,13 +58,12 @@ void MainWindow::setOptimisationModel(OptimisationModel* optimisationModel) {
 
 void MainWindow::optimisationOutputChanged(int index) {
     if(mCurrentOptimisationIndex == index) {
-        setLogTextFromIndex(index);
+        setLogText();
     }
 }
 
-void MainWindow::setLogTextFromIndex(int index) {
-    auto opt = mOptimisationModel->optimisation(index);
-    ui->logText->setText(opt->outputText());
+void MainWindow::setLogText() {
+    ui->logText->setText(currentOptimisation()->outputText());
 
     // scroll textbox to bottom of text
     QScrollBar *sb = ui->logText->verticalScrollBar();
@@ -80,14 +79,26 @@ void MainWindow::optimisationFitnessChanged(int index) {
 void MainWindow::setCurrentOptimisationIndex(int index) {
     if(mCurrentOptimisationIndex != index) {
         mCurrentOptimisationIndex = index;
+
+        // update fitness plot
         ui->fitnessPlot->setCurrentOptimisationIndex(index);
-        setLogTextFromIndex(index);
+
+        // update log text
+        setLogText();
+
+        // set profile points
+        Mesh* initMesh = currentOptimisation()->initMesh();
+        ProfilePoints profilePoints = currentOptimisation()->initMesh()->profilePoints();
+        mProfileView->setProfilePoints(profilePoints);
     }
 }
 
+Optimisation* MainWindow::currentOptimisation() {
+    return mOptimisationModel->optimisation(mCurrentOptimisationIndex);
+}
+
 void MainWindow::setMeshViewSimulation(int iGen, int agent) {
-    Optimisation* optimisation = mOptimisationModel->optimisation(mCurrentOptimisationIndex).get();
-    Mesh* mesh = optimisation->mesh(iGen, agent);
+    Mesh* mesh = currentOptimisation()->mesh(iGen, agent);
     if(mesh) mCurrentMeshViewModel->setCurrentMesh(mesh);
 }
 
@@ -97,7 +108,9 @@ MainWindow::~MainWindow() {
 
 void MainWindow::newOptimisation() {
     auto optimisation = std::make_shared<Optimisation>();
-    MeshDialog meshDialog(mProfileModel, this);
+    MeshDialogModel* meshDialogModel = new MeshDialogModel(this);
+    meshDialogModel->setCurrentMesh(optimisation->initMesh());
+    MeshDialog meshDialog(mProfileModel, meshDialogModel, this);
     if(meshDialog.exec() == QDialog::Accepted) {
         ConfigSimulationDialog diag(optimisation, this);
         if(diag.exec() == QDialog::Accepted) {

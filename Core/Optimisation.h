@@ -180,7 +180,7 @@ public:
     QString simulationDirectoryName();
     QString simulationDirectoryPath();
     void setLabel(QString label);
-    std::shared_ptr<Mesh> initMesh();
+    Mesh *initMesh();
 
     // control points
     std::vector<BoundaryPoint*> controlPoints();
@@ -199,8 +199,6 @@ private:
     bool createAerOptNodeFile(const QString &filePath);
     bool saveCurrentProfile(const QString& path);
     QString outputDataDirectory();
-
-    ProfilePoints mProfilePoints;
 
     QString mLabel = "";
 

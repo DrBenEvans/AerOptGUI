@@ -91,9 +91,9 @@ void Optimisation::setNoTop(int noTop)
 }
 
 //Getters and Setters
-std::shared_ptr<Mesh> Optimisation::initMesh()
+Mesh* Optimisation::initMesh()
 {
-    return mInitMesh;
+    return mInitMesh.get();
 }
 
 void Optimisation::setOptimisationMethod(Enum::OptMethod method)

@@ -10,10 +10,10 @@
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
-MeshDialog::MeshDialog(ProfileModel &profileModel, QWidget* parent) :
+MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidget* parent) :
 	QDialog(parent),
 	ui(new Ui::MeshDialog),
-    mMeshDialogModel(new MeshDialogModel(this)),
+    mMeshDialogModel(model),
     mScene(new QGraphicsScene(this)),
     mScale(new ViewScaler()),
     mProfileModel(profileModel),
@@ -74,12 +74,14 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, QWidget* parent) :
 void MeshDialog::setProfile() {
 
     Mesh* mesh = mMeshDialogModel->currentMesh();
-    ProfilePoints profilePoints = ui->profile->currentData(Qt::UserRole).value<ProfilePoints>();
-    mesh->setProfilePoints(profilePoints);
-    setMeshActive(false);
-    mProfileView->setProfilePoints(mesh->profilePoints());
-    mMeshDialogModel->boundaryPointModel()->clearPoints();
-    mMeshView->update();
+    if(mesh) {
+        ProfilePoints profilePoints = ui->profile->currentData(Qt::UserRole).value<ProfilePoints>();
+        mesh->setProfilePoints(profilePoints);
+        setMeshActive(false);
+        mProfileView->setProfilePoints(mesh->profilePoints());
+        mMeshDialogModel->boundaryPointModel()->clearPoints();
+        mMeshView->update();
+    }
 }
 
 MeshDialog::~MeshDialog()

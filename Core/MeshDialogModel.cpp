@@ -6,7 +6,6 @@
 MeshDialogModel::MeshDialogModel(QObject *parent) : MeshModel(parent)
 {
     mMeshProcess.setParent(this);
-    mMesh = new Mesh(this);
 }
 
 MeshDialogModel::~MeshDialogModel() {

@@ -23,7 +23,7 @@ private:
     std::pair<int,int> getSelection();
     OptimisationModel* mOptimisationModel;
     QItemSelectionModel* mSelectionModel;
-    uint mCurrentOptimisationIndex;
+    uint mCurrentOptimisationIndex = -1;
     std::vector<QCPGraph*> mGraphs;
 };
 

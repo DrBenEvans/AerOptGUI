@@ -35,6 +35,7 @@ private slots:
 private:
     void setMeshViewSimulation(int iGen, int agent);
     void setLogTextFromIndex(int index);
+    Optimisation* currentOptimisation();
     Ui::MainWindow *ui;
     ProfileModel mProfileModel;
     OptimisationModel* mOptimisationModel;

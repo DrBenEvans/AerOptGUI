@@ -90,8 +90,12 @@ bool OptimisationModel::isIndexValid(const QModelIndex& index) const
 
 }
 
-std::shared_ptr<Optimisation> OptimisationModel::optimisation(uint index) {
-    return mOptimisations.at(index);
+Optimisation* OptimisationModel::optimisation(uint index) {
+    if(isIndexValid(index)) {
+        return mOptimisations.at(index).get();
+    } else {
+        return nullptr;
+    }
 }
 
 void OptimisationModel::run(std::shared_ptr<Optimisation> optimisation) {
