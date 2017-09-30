@@ -24,10 +24,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(ui->agentSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::setSelectedPointFromSpinBox);
 
-    MeshView* meshView = new MeshView(new ViewScaler());
+    ViewScaler* mScale = new ViewScaler();
+
+    MeshView* meshView = new MeshView(mScale);
     meshView->setMeshModel(mCurrentMeshViewModel);
+
+    mProfileView = new ProfileView(mScale);
+
     QGraphicsScene* scene = new QGraphicsScene(this);
     scene->addItem(meshView);
+    scene->addItem(mProfileView);
     ui->graphicsView->setScene(scene);
 }
 

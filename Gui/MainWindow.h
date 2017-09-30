@@ -6,6 +6,7 @@
 #include "ProfileModel.h"
 #include "MeshModel.h"
 #include "OptimisationModel.h"
+#include "ProfileView.h"
 
 namespace Ui {
 class MainWindow;
@@ -34,13 +35,14 @@ private slots:
 
 private:
     void setMeshViewSimulation(int iGen, int agent);
-    void setLogTextFromIndex(int index);
+    void setLogText();
     Optimisation* currentOptimisation();
     Ui::MainWindow *ui;
     ProfileModel mProfileModel;
     OptimisationModel* mOptimisationModel;
     int mCurrentOptimisationIndex = -1;
     MeshModel* mCurrentMeshViewModel;
+    ProfileView* mProfileView = 0;
 };
 
 #endif // MAINWINDOW_H
