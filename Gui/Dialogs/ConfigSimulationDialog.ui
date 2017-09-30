@@ -424,7 +424,7 @@
      </rect>
     </property>
     <property name="maximum">
-     <number>20000000</number>
+     <number>1000000000</number>
     </property>
    </widget>
    <widget class="QLabel" name="label_3">
