@@ -114,8 +114,8 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::newOptimisation() {
-    auto optimisation = std::make_shared<Optimisation>();
-    MeshDialogModel* meshDialogModel = new MeshDialogModel(this);
+    Optimisation *optimisation = new Optimisation();
+    MeshDialogModel *meshDialogModel = new MeshDialogModel(this);
     meshDialogModel->setCurrentMesh(optimisation->initMesh());
     MeshDialog meshDialog(mProfileModel, meshDialogModel, this);
     if(meshDialog.exec() == QDialog::Accepted) {

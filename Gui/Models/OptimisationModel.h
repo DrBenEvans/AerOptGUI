@@ -23,16 +23,16 @@ public:
 
     OptimisationModel(QObject* parent = 0);
 
-    QModelIndex addOptimisation(std::shared_ptr<Optimisation> optimisation);
+    QModelIndex addOptimisation(Optimisation *optimisation);
 
     int rowCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index, int role) const override;
     bool removeRows(int row, int count, const QModelIndex& parent) override;
 
-    void run(std::shared_ptr<Optimisation> optimisation);
+    void run(Optimisation* optimisation);
 
-    void emitOptimisationFitnessChanged(Optimisation *optimisation);
-    void emitOptimisationOutputChanged(Optimisation *optimisation);
+    void emitOptimisationFitnessChanged(Optimisation *optChanged);
+    void emitOptimisationOutputChanged(Optimisation *optChanged);
 
     Optimisation *optimisation(uint index);
 
@@ -45,7 +45,7 @@ signals:
 private:
     bool isIndexValid(const QModelIndex& index) const;
     bool isIndexValid(int row);
-    std::vector<std::shared_ptr<Optimisation>> mOptimisations;
+    std::vector<Optimisation*> mOptimisations;
 };
 
 #endif // SIMULATIONMODEL_H

@@ -16,7 +16,7 @@ class ConfigSimulationDialog : public QDialog
 
 
 public:
-    explicit ConfigSimulationDialog(std::shared_ptr<Optimisation> optimisation, QWidget *parent = 0);
+    explicit ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent = 0);
     ~ConfigSimulationDialog();
 
 public slots:
@@ -35,7 +35,7 @@ private:
     Enum::OptMethod indexToOptMethodEnum(int index);
 
     Ui::ConfigSimulationDialog *ui;
-    std::shared_ptr<Optimisation> mData;
+    Optimisation *mData;
 };
 
 #endif // ConfigSimulationDialog_H

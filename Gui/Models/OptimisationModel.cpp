@@ -10,14 +10,14 @@
 
 using namespace std;
 
-Q_DECLARE_METATYPE(std::shared_ptr<Optimisation>)
+Q_DECLARE_METATYPE(Optimisation*)
 
 OptimisationModel::OptimisationModel(QObject* parent) :
     QAbstractListModel(parent)
 {
 }
 
-QModelIndex OptimisationModel::addOptimisation(std::shared_ptr<Optimisation> optimisation)
+QModelIndex OptimisationModel::addOptimisation(Optimisation *optimisation)
 {
     int rows = rowCount();
     beginInsertRows(QModelIndex(), rows, rows);
@@ -92,28 +92,28 @@ bool OptimisationModel::isIndexValid(const QModelIndex& index) const
 
 Optimisation* OptimisationModel::optimisation(uint index) {
     if(isIndexValid(index)) {
-        return mOptimisations.at(index).get();
+        return mOptimisations.at(index);
     } else {
         return nullptr;
     }
 }
 
-void OptimisationModel::run(std::shared_ptr<Optimisation> optimisation) {
+void OptimisationModel::run(Optimisation *optimisation) {
     optimisation->run();
 }
 
-void OptimisationModel::emitOptimisationFitnessChanged(Optimisation* optimisation) {
-    for(int i=0; i<mOptimisations.size(); i++) {
-        if(mOptimisations.at(i).get() == optimisation) {
+void OptimisationModel::emitOptimisationFitnessChanged(Optimisation* optChanged) {
+    for(int i=0; i < mOptimisations.size(); i++) {
+        if(optimisation(i) == optChanged) {
             emit optimisationFitnessChanged(i);
             return;
         }
     }
 }
 
-void OptimisationModel::emitOptimisationOutputChanged(Optimisation* optimisation) {
-    for(int i=0; i<mOptimisations.size(); i++) {
-        if(mOptimisations.at(i).get() == optimisation) {
+void OptimisationModel::emitOptimisationOutputChanged(Optimisation* optChanged) {
+    for(int i=0; i < mOptimisations.size(); i++) {
+        if(optimisation(i) == optChanged) {
             emit optimisationOutputChanged(i);
             return;
         }

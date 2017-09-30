@@ -219,7 +219,7 @@ private:
 	int mNoGens;
     int mNoTop;
 
-    std::shared_ptr<Mesh> mInitMesh;
+    Mesh* mInitMesh;
     std::vector<std::vector<Mesh*>> mMeshes;
     std::vector<BoundaryPoint*> mControlPoints;
     std::vector<std::vector<double>> mFitness;

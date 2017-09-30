@@ -4,7 +4,7 @@
 #include "ui_ConfigSimulationDialog.h"
 #include "MeshDialog.h"
 
-ConfigSimulationDialog::ConfigSimulationDialog(std::shared_ptr<Optimisation> optimisation, QWidget *parent) :
+ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ConfigSimulationDialog),
     mData(optimisation)
@@ -27,7 +27,6 @@ ConfigSimulationDialog::ConfigSimulationDialog(std::shared_ptr<Optimisation> opt
     ui->angle->setValue(mData->freeAlpha());
     ui->reynolds->setValue(mData->reNo());
     ui->mach->setValue(mData->machNo());
-
 }
 
 ConfigSimulationDialog::~ConfigSimulationDialog()

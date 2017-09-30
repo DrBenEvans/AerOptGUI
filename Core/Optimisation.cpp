@@ -93,7 +93,7 @@ void Optimisation::setNoTop(int noTop)
 //Getters and Setters
 Mesh* Optimisation::initMesh()
 {
-    return mInitMesh.get();
+    return mInitMesh;
 }
 
 void Optimisation::setOptimisationMethod(Enum::OptMethod method)
