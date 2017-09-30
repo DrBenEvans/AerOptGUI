@@ -467,6 +467,19 @@
    </widget>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>label</tabstop>
+  <tabstop>temp</tabstop>
+  <tabstop>pressure</tabstop>
+  <tabstop>angle</tabstop>
+  <tabstop>reynolds</tabstop>
+  <tabstop>mach</tabstop>
+  <tabstop>objfunc</tabstop>
+  <tabstop>optmethod</tabstop>
+  <tabstop>nnests</tabstop>
+  <tabstop>ngens</tabstop>
+  <tabstop>ndiscard</tabstop>
+ </tabstops>
  <resources/>
  <connections>
   <connection>
