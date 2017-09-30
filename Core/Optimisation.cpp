@@ -620,8 +620,16 @@ bool Optimisation::readFitness()
     return isok & r;
 }
 
-std::vector<std::vector<double> > Optimisation::fitness() {
+std::vector<std::vector<double> > Optimisation::allfitness() {
     return mFitness;
+}
+
+double Optimisation::fitness(int generationIndex, int agentIndex) {
+    if(mFitness.size() > generationIndex && mFitness.at(generationIndex).size() > agentIndex) {
+        return mFitness.at(generationIndex).at(agentIndex);
+    } else {
+        return std::numeric_limits<double>::quiet_NaN();
+    }
 }
 
 std::pair<double,double> Optimisation::fitnessRange() {

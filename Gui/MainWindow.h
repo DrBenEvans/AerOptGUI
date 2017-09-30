@@ -30,7 +30,6 @@ public slots:
 
 private slots:
     void on_actionShowLog_triggered();
-    void setSelectedPointFromSpinBox();
     void revealFilesCurrentOptimisation();
 
 private:

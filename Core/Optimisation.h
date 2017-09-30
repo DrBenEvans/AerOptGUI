@@ -194,7 +194,8 @@ public:
 
     bool run();
     void setModel(OptimisationModel* model);
-    std::vector<std::vector<double>> fitness();
+    std::vector<std::vector<double>> allfitness();
+    double fitness(int generationIndex, int agentIndex);
     QString outputText();
     std::pair<double,double> fitnessRange();
 

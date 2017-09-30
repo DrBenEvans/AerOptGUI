@@ -22,8 +22,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->fitnessPlot, &PlotterWidget::selectedPointChanged, this, &MainWindow::onSelectedPointChange);
     connect(ui->actionShowCurrentOptimisationFiles, &QAction::triggered, this, &MainWindow::revealFilesCurrentOptimisation);
 
-    connect(ui->agentSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::setSelectedPointFromSpinBox);
-
     ViewScaler* mScale = new ViewScaler();
 
     MeshView* meshView = new MeshView(mScale);
@@ -43,15 +41,13 @@ void MainWindow::revealFilesCurrentOptimisation() {
 }
 
 void MainWindow::onSelectedPointChange(int iGen, int agent) {
-    ui->genSpinBox->setValue(iGen+1);
-    ui->agentSpinBox->setValue(agent+1);
-    setMeshViewSimulation(iGen, agent);
-}
+    QString text = QString("Gen=%1, Index=%2, Fitness=%3");
+    text = text.arg(iGen+1).arg(agent+1);
+    Optimisation* opt = currentOptimisation();
+    if(opt) text = text.arg(opt->fitness(iGen, agent));
+    ui->plotText->setText(text);
 
-void MainWindow::setSelectedPointFromSpinBox() {
-    int iGen = ui->genSpinBox->value()-1;
-    int agent = ui->agentSpinBox->value()-1;
-    ui->fitnessPlot->setCurrentlySelectedPoint(iGen, agent);
+    setMeshViewSimulation(iGen, agent);
 }
 
 void MainWindow::setOptimisationModel(OptimisationModel* optimisationModel) {

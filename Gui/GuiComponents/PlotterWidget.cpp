@@ -118,7 +118,7 @@ void PlotterWidget::updatePlot()
     bool r = true;
 
     //Get data for display
-    std::vector<std::vector<double>> fitness = opt->fitness();
+    std::vector<std::vector<double>> fitness = opt->allfitness();
     uint nGens = fitness.size();
     if(nGens == 0) {
         clearData();
