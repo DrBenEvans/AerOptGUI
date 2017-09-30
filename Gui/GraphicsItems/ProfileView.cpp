@@ -17,6 +17,10 @@ void ProfileView::setProfilePoints(ProfilePoints profilePoints) {
     QGraphicsItem::update();
 }
 
+void ProfileView::setDrawDots(bool drawDots) {
+    mDrawDots = drawDots;
+}
+
 QRectF ProfileView::boundingRect() const
 {
     float x, y;
@@ -65,13 +69,15 @@ void ProfileView::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     painter->drawPath(path);
 
     // Draw the dots
-    for (auto& p : mProfile)
-    {
-        path = QPainterPath();
-        QPoint center = QPoint(mScale->w(p.first), mScale->h(p.second));
-        qreal radius = 3.0;
-        path.addEllipse(center,radius,radius);
-        painter->fillPath(path, Qt::blue);
-        painter->drawPath(path);
+    if(mDrawDots) {
+        for (auto& p : mProfile)
+        {
+            path = QPainterPath();
+            QPoint center = QPoint(mScale->w(p.first), mScale->h(p.second));
+            qreal radius = 3.0;
+            path.addEllipse(center,radius,radius);
+            painter->fillPath(path, Qt::blue);
+            painter->drawPath(path);
+        }
     }
 }

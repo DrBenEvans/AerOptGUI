@@ -13,10 +13,12 @@ public:
     void setProfilePoints(ProfilePoints profilePoints);
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget *widget) override;
+    void setDrawDots(bool drawDots);
 
 private:
     ProfilePoints mProfile;
     ViewScaler* mScale;
+    int mDrawDots = true;
 };
 
 #endif // PROFILEGRAPHICSITEM_H

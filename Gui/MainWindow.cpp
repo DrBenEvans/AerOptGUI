@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
     meshView->setMeshModel(mCurrentMeshViewModel);
 
     mProfileView = new ProfileView(mScale);
+    mProfileView->setDrawDots(false);
 
     QGraphicsScene* scene = new QGraphicsScene(this);
     scene->addItem(meshView);
