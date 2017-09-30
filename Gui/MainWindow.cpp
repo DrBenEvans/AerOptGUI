@@ -20,6 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->newOptimisationButton, &QPushButton::clicked, this, &MainWindow::newOptimisation);
     connect(ui->actionNewOptimisation, &QAction::triggered, this, &MainWindow::newOptimisation);
     connect(ui->fitnessPlot, &PlotterWidget::selectedPointChanged, this, &MainWindow::onSelectedPointChange);
+    connect(ui->actionShowCurrentOptimisationFiles, &QAction::triggered, this, &MainWindow::revealFilesCurrentOptimisation);
 
     connect(ui->agentSpinBox, QOverload<int>::of(&QSpinBox::valueChanged), this, &MainWindow::setSelectedPointFromSpinBox);
 
@@ -28,6 +29,10 @@ MainWindow::MainWindow(QWidget *parent) :
     QGraphicsScene* scene = new QGraphicsScene(this);
     scene->addItem(meshView);
     ui->graphicsView->setScene(scene);
+}
+
+void MainWindow::revealFilesCurrentOptimisation() {
+    mOptimisationModel->revealFiles(mCurrentOptimisationIndex);
 }
 
 void MainWindow::onSelectedPointChange(int iGen, int agent) {

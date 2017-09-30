@@ -36,12 +36,15 @@ public:
 
     std::shared_ptr<Optimisation> optimisation(uint index);
 
+    void revealFiles(int index);
+
 signals:
     void optimisationDataChanged(int index);
     void optimisationOutputChanged(int index);
 
 private:
     bool isIndexValid(const QModelIndex& index) const;
+    bool isIndexValid(int row);
     std::vector<std::shared_ptr<Optimisation>> mOptimisations;
 };
 

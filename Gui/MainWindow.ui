@@ -180,17 +180,8 @@
     <property name="title">
      <string>Optimisations</string>
     </property>
-    <widget class="QMenu" name="menuSwitch_Optimisation">
-     <property name="enabled">
-      <bool>false</bool>
-     </property>
-     <property name="title">
-      <string>Switch Optimisation</string>
-     </property>
-     <addaction name="separator"/>
-    </widget>
     <addaction name="actionNewOptimisation"/>
-    <addaction name="menuSwitch_Optimisation"/>
+    <addaction name="actionShowCurrentOptimisationFiles"/>
    </widget>
    <widget class="QMenu" name="menuLog">
     <property name="title">
@@ -198,14 +189,7 @@
     </property>
     <addaction name="actionShowLog"/>
    </widget>
-   <widget class="QMenu" name="menuMesher">
-    <property name="title">
-     <string>Mesher</string>
-    </property>
-    <addaction name="actionRunMesher"/>
-   </widget>
    <addaction name="menuOptimisations"/>
-   <addaction name="menuMesher"/>
    <addaction name="menuLog"/>
   </widget>
   <action name="actionNewOptimisation">
@@ -230,15 +214,12 @@
     <string>Ctrl+L</string>
    </property>
   </action>
-  <action name="actionRunMesher">
+  <action name="actionShowCurrentOptimisationFiles">
    <property name="text">
-    <string>Run Mesher...</string>
-   </property>
-   <property name="toolTip">
-    <string>Run Mesher...</string>
+    <string>Show Current Optimisation Files...</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+M</string>
+    <string>Ctrl+F</string>
    </property>
   </action>
  </widget>

@@ -30,6 +30,7 @@ public slots:
 private slots:
     void on_actionShowLog_triggered();
     void setSelectedPointFromSpinBox();
+    void revealFilesCurrentOptimisation();
 
 private:
     void setMeshViewSimulation(int iGen, int agent);

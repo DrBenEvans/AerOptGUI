@@ -5,6 +5,8 @@
 #include <QDebug>
 #include <fstream>
 #include <QTimer>
+#include <QDesktopServices>
+#include <QUrl>
 
 using namespace std;
 
@@ -72,6 +74,11 @@ bool OptimisationModel::removeRows(int row, int count, const QModelIndex& parent
     return true;
 }
 
+bool OptimisationModel::isIndexValid(int row) {
+    QModelIndex modelIndex = createIndex(row, 0);
+    return isIndexValid(modelIndex);
+}
+
 bool OptimisationModel::isIndexValid(const QModelIndex& index) const
 {
     if (index.row() < 0
@@ -80,6 +87,7 @@ bool OptimisationModel::isIndexValid(const QModelIndex& index) const
         return false;
     }
     return true;
+
 }
 
 std::shared_ptr<Optimisation> OptimisationModel::optimisation(uint index) {
@@ -105,5 +113,12 @@ void OptimisationModel::emitOptimisationOutputChanged(Optimisation* optimisation
             emit optimisationOutputChanged(i);
             return;
         }
+    }
+}
+
+void OptimisationModel::revealFiles(int index) {
+    if(isIndexValid(index)) {
+        QString path = optimisation(index)->simulationDirectoryPath();
+        QDesktopServices::openUrl(QUrl::fromLocalFile(path));
     }
 }
