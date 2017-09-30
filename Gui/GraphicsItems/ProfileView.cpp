@@ -50,7 +50,8 @@ QRectF ProfileView::boundingRect() const
 
 void ProfileView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
-    QPen pen(Qt::blue, 1, Qt::SolidLine);
+    QColor color = Qt::red;
+    QPen pen(color, 1, Qt::SolidLine);
     painter->setBrush(Qt::NoBrush);
     painter->setPen(pen);
     QRect rect;
@@ -76,7 +77,7 @@ void ProfileView::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
             QPoint center = QPoint(mScale->w(p.first), mScale->h(p.second));
             qreal radius = 3.0;
             path.addEllipse(center,radius,radius);
-            painter->fillPath(path, Qt::blue);
+            painter->fillPath(path, color);
             painter->drawPath(path);
         }
     }
