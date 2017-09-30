@@ -110,7 +110,6 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     const auto& meshconnects = mesh->getMeshConnectivities();
     const auto& resultsdata = mesh->getMeshData();
 
-
     //This scope is for rendering the mesh when available
     painter->setPen( QPen(Qt::lightGray, getBrushSize(), Qt::SolidLine) );
     painter->setRenderHint(QPainter::Antialiasing, true);
@@ -118,7 +117,7 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
     {
         const uint r = 4;//pressure, 0 = rho, 1 = u, 2 = v, 3 = energy
 
-        //Determin scalar range
+        //Determine and set scalar range
         float min = std::numeric_limits<float>::infinity();
         float max = -std::numeric_limits<float>::infinity();
         for (const auto& s : resultsdata)
@@ -127,8 +126,12 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
             if (v < min) min = v;
             if (v > max) max = v;
         }
+        mColorMapper.setMin(min);
+        mColorMapper.setMax(max);
 
         //Render triangulation
+        QColor color;
+
         for (auto& tuple : meshconnects)
         {
             const uint& i = std::get<0>(tuple);
@@ -146,14 +149,14 @@ void MeshView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
                 const float& pressure3 = std::get<r>( resultsdata.at(k-1) );//Pressure
                 const float pressure = (pressure1 + pressure2 + pressure3) * 0.333;
 
-                QColor qcolour(255,0,0,0);
+                color = mColorMapper.color(pressure);
 
                 QPainterPath path;
                 path.moveTo( qreal(mScale->w( p1.first )), qreal(mScale->h( p1.second )) );
                 path.lineTo( qreal(mScale->w( p2.first )), qreal(mScale->h( p2.second )) );
                 path.lineTo( qreal(mScale->w( p3.first )), qreal(mScale->h( p3.second )) );
                 path.lineTo( qreal(mScale->w( p1.first )), qreal(mScale->h( p1.second )) );
-                painter->fillPath(path, QBrush(qcolour));
+                painter->fillPath(path, QBrush(color));
             }
 
             //Draw triangle boundary here

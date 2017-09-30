@@ -5,6 +5,7 @@
 #include "MeshModel.h"
 #include "BoundaryPointModel.h"
 #include "ViewScaler.h"
+#include "ColorMapper.h"
 
 class MeshView : public QGraphicsObject
 {
@@ -33,6 +34,7 @@ private:
     QColor color;
     MeshModel* mMeshModel;
     ViewScaler* mScale;
+    ColorMapper mColorMapper;
 
     float mXmax;
     float mYmax;

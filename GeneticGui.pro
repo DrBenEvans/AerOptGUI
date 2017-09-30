@@ -73,7 +73,8 @@ SOURCES += \
     Core/ProcessManager.cpp \
     Gui/GuiComponents/PlotterWidget.cpp \
     Core/MeshDialogModel.cpp \
-    Core/MeshModel.cpp
+    Core/MeshModel.cpp \
+    Gui/GraphicsItems/ColorMapper.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -103,7 +104,8 @@ HEADERS  += \
     Core/ProcessManager.h \
     Gui/GuiComponents/PlotterWidget.h \
     Core/MeshDialogModel.h \
-    Core/MeshModel.h
+    Core/MeshModel.h \
+    Gui/GraphicsItems/ColorMapper.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
