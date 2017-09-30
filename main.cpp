@@ -171,11 +171,14 @@ int main(int argc, char *argv[])
 
     // Setup optimisation model and selection model
     OptimisationModel* optimisationModel = new OptimisationModel();
+    optimisationModel->loadByLabel("sdfjslkgjsdflgkj");
+    QModelIndex index = optimisationModel->loadByLabel("sadfasdf");
 
     //Main window setup and show.
     MainWindow w;
     w.setWindowTitle("AerOpt");
     w.setOptimisationModel(optimisationModel);
+    w.setCurrentOptimisationIndex(index.row());
     w.show();
 
     return app.exec();

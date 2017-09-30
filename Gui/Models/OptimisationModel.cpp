@@ -126,3 +126,10 @@ void OptimisationModel::revealFiles(int index) {
         QDesktopServices::openUrl(QUrl::fromLocalFile(path));
     }
 }
+
+QModelIndex OptimisationModel::loadByLabel(QString label) {
+    Optimisation *optimisation = new Optimisation();
+    optimisation->setLabel(label);
+    optimisation->load();
+    return addOptimisation(optimisation);
+}

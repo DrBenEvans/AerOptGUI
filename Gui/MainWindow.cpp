@@ -95,8 +95,10 @@ void MainWindow::setCurrentOptimisationIndex(int index) {
 
         // set profile points
         Mesh* initMesh = currentOptimisation()->initMesh();
-        ProfilePoints profilePoints = currentOptimisation()->initMesh()->profilePoints();
-        mProfileView->setProfilePoints(profilePoints);
+        if(initMesh) {
+            ProfilePoints profilePoints = initMesh->profilePoints();
+            mProfileView->setProfilePoints(profilePoints);
+        }
     }
 }
 
@@ -105,8 +107,19 @@ Optimisation* MainWindow::currentOptimisation() {
 }
 
 void MainWindow::setMeshViewSimulation(int iGen, int agent) {
-    Mesh* mesh = currentOptimisation()->mesh(iGen, agent);
-    if(mesh) mCurrentMeshViewModel->setCurrentMesh(mesh);
+    Optimisation* optimisation = currentOptimisation();
+    Mesh* mesh = optimisation->mesh(iGen, agent);
+
+    if(!mesh) {
+        // try to read again, in case file has been written since last read
+        optimisation->readMeshes();
+        Mesh* mesh = optimisation->mesh(iGen, agent);
+        if(!mesh) {
+            QMessageBox::warning(this, "Warning", "Data could not be loaded for selected point", QMessageBox::Ok);
+        }
+        mCurrentMeshViewModel->setCurrentMesh(mesh);
+    }
+    mCurrentMeshViewModel->setCurrentMesh(mesh);
 }
 
 MainWindow::~MainWindow() {

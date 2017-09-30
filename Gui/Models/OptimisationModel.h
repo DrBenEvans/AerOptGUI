@@ -37,6 +37,7 @@ public:
     Optimisation *optimisation(uint index);
 
     void revealFiles(int index);
+    QModelIndex loadByLabel(QString label);
 
 signals:
     void optimisationFitnessChanged(int index);

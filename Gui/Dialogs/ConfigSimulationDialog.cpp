@@ -35,7 +35,7 @@ ConfigSimulationDialog::~ConfigSimulationDialog()
 }
 
 void ConfigSimulationDialog::validationError(QString message) {
-    QMessageBox::warning(this, "Message Box", message, QMessageBox::Ok);
+    QMessageBox::warning(this, "Warning", message, QMessageBox::Ok);
 }
 
 void ConfigSimulationDialog::accept()

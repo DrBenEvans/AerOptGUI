@@ -42,7 +42,8 @@ Optimisation::Optimisation() :
     mProcess->connect(mProcess, finished, finishedLambda);
 
     auto dirReadLambda = [this](const QString& path) {
-        readDirectory(path);
+        readFitness();
+        readMeshes();
         if(mOptimisationModel != 0) {
             mOptimisationModel->emitOptimisationFitnessChanged(this);
         }
@@ -494,14 +495,6 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
     //mCanvas.update();
 }
 
-void Optimisation::readDirectory(const QString& path)
-{
-    //When meshfiles exists, load it.
-    bool c = true;
-    c &= readFitness();
-    c &= readMeshes();
-}
-
 bool Optimisation::readMeshes()
 {
     bool success = true;
@@ -652,5 +645,20 @@ QString Optimisation::outputText() {
 }
 
 Mesh* Optimisation::mesh(int gen, int agent) {
-    return mMeshes.at(gen).at(agent);
+    if(mMeshes.size() > gen && mMeshes.at(gen).size() > agent) {
+        return mMeshes.at(gen).at(agent);
+    } else {
+        return nullptr;
+    }
+}
+
+void Optimisation::load() {
+    readFitness();
+    setNoGens(mFitness.size());
+    if(noGens() > 0) {
+        setNoAgents(mFitness.at(0).size());
+    } else {
+        setNoAgents(0);
+    }
+    readMeshes();
 }

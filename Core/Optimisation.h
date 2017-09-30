@@ -172,6 +172,11 @@ public:
      * @param getter method for meshes
      */
     Mesh* mesh(int gen, int agent);
+    /**
+     * @brief load
+     * @param load the optimisation from disk (based on label)
+     */
+    void load();
 
     int getNoTop() const;
     void setNoTop(int noTop);
@@ -195,7 +200,6 @@ public:
 
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
-    void readDirectory(const QString& path);
     bool createAerOptInFile(const QString &filePath);
     bool createAerOptNodeFile(const QString &filePath);
     bool saveCurrentProfile(const QString& path);
