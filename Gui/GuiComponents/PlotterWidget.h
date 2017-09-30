@@ -24,10 +24,11 @@ private slots:
 
 private:
     double mXMax = 10;
-    double mXMin = -0.1;
+    double mXMin = -0.3;
     double mYMax = 10000;
 
     void signalCurrentlySelectedPoint();
+    Optimisation* currentOptimisation();
     std::pair<int,int> getSelection();
     OptimisationModel* mOptimisationModel;
     QItemSelectionModel* mSelectionModel;

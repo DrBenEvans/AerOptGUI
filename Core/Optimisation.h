@@ -191,6 +191,7 @@ public:
     void setModel(OptimisationModel* model);
     std::vector<std::vector<double>> fitness();
     QString outputText();
+    std::pair<double,double> fitnessRange();
 
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);

@@ -96,10 +96,14 @@ void PlotterWidget::setOptimisationModel(OptimisationModel* model) {
     mOptimisationModel = model;
 }
 
+Optimisation* PlotterWidget::currentOptimisation() {
+    return mOptimisationModel->optimisation(mCurrentOptimisationIndex);
+}
+
 void PlotterWidget::setCurrentOptimisationIndex(int index) {
     mCurrentOptimisationIndex = index;
 
-    Optimisation* optimisation = mOptimisationModel->optimisation(mCurrentOptimisationIndex);
+    Optimisation* optimisation = currentOptimisation();
     if(optimisation) {
         mXMax = optimisation->noAgents()+1;
         xAxis->setRangeUpper(mXMax);
@@ -110,7 +114,7 @@ void PlotterWidget::setCurrentOptimisationIndex(int index) {
 
 void PlotterWidget::updatePlot()
 {
-    Optimisation *opt = mOptimisationModel->optimisation(mCurrentOptimisationIndex);
+    Optimisation *opt = currentOptimisation();
     bool r = true;
 
     //Get data for display
@@ -167,9 +171,10 @@ void PlotterWidget::updatePlot()
             xAxis->setRange(mXMin, nGens);
         }
 
-        double min, max;
-        max = yAxis->range().upper * 1.05;
-        min = yAxis->range().lower * 0.95;
+        std::pair<double, double> range = opt->fitnessRange();
+        double rangeNorm = range.second - range.first;
+        double max = range.second + rangeNorm*0.1;
+        double min = range.first - rangeNorm*0.1;
 
         yAxis->setRange(min, max);
     }

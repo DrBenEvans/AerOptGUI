@@ -631,6 +631,22 @@ std::vector<std::vector<double> > Optimisation::fitness() {
     return mFitness;
 }
 
+std::pair<double,double> Optimisation::fitnessRange() {
+    std::pair<double,double> minMax;
+    minMax.first = std::numeric_limits<double>::infinity();
+    minMax.second = -std::numeric_limits<double>::infinity();
+
+    for(auto& gen : mFitness)
+        for(auto& agentFitness : gen) {
+            if(agentFitness < minMax.first)
+                minMax.first = agentFitness;
+            if(agentFitness > minMax.second)
+                minMax.second = agentFitness;
+
+        }
+    return minMax;
+}
+
 QString Optimisation::outputText() {
     return mOutputLog;
 }
