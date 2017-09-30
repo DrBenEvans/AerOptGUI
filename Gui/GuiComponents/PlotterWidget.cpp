@@ -8,7 +8,50 @@ PlotterWidget::PlotterWidget(QWidget *parent) :
 
     clearData();
 
+    // set tick
+    QSharedPointer<QCPAxisTickerFixed> fixedTicker(new QCPAxisTickerFixed());
+    xAxis->setTicker(fixedTicker);
+
+    fixedTicker->setTickStep(1.0);
+    fixedTicker->setScaleStrategy(QCPAxisTickerFixed::ssMultiples);
+
+    //connect signals
     connect(this, &PlotterWidget::selectionChangedByUser, this, &PlotterWidget::signalCurrentlySelectedPoint);
+
+    auto signal = QOverload<const QCPRange&, const QCPRange&>::of(&QCPAxis::rangeChanged);
+    connect(xAxis, signal, this, &PlotterWidget::validateXRangeChanged);
+}
+
+void PlotterWidget::validateXRangeChanged(const QCPRange &range, const QCPRange &oldRange) {
+    fixAxisRange(xAxis, range, mXMin, mXMax, 3);
+}
+
+void PlotterWidget::fixAxisRange(QCPAxis *axis, QCPRange range, double lowerBound, double upperBound, double minRange)
+{
+    QCPRange fixedRange(range);
+    bool rangeChanged = false;
+
+    if (fixedRange.lower < lowerBound)
+    {
+        fixedRange.lower = lowerBound;
+        fixedRange.upper = lowerBound + range.size();
+        if (fixedRange.upper > upperBound || qFuzzyCompare(range.size(), upperBound-lowerBound))
+            fixedRange.upper = upperBound;
+    } else if (fixedRange.upper > upperBound)
+    {
+        fixedRange.upper = upperBound;
+        fixedRange.lower = upperBound - range.size();
+        if (fixedRange.lower < lowerBound || qFuzzyCompare(range.size(), upperBound-lowerBound))
+            fixedRange.lower = lowerBound;
+        if((fixedRange.upper - fixedRange.lower) < minRange)
+            fixedRange.lower = fixedRange.upper - minRange;
+    }
+
+    if((fixedRange.upper - fixedRange.lower) < minRange)
+        fixedRange.upper = fixedRange.lower + minRange;
+
+    if(range != fixedRange)
+        axis->setRange(fixedRange);
 }
 
 void PlotterWidget::setCurrentlySelectedPoint(int iGen, int agent) {
@@ -117,11 +160,11 @@ void PlotterWidget::updatePlot()
 
         if (nGens < 11)
         {
-            xAxis->setRange(0, 10);
+            xAxis->setRange(mXMin, 10);
         }
         else
         {
-            xAxis->setRange(0, nGens);
+            xAxis->setRange(mXMin, nGens);
         }
 
         double min, max;
@@ -141,7 +184,7 @@ void PlotterWidget::clearData()
     xAxis->setLabel("Generation No.");
     yAxis->setLabel("Fitness");
     // set axes ranges, so we see all data:
-    xAxis->setRange(0, 10);
+    xAxis->setRange(mXMin, 10);
     yAxis->setRange(0, 1);
 
     int num = graphCount();
