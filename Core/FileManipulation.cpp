@@ -1,5 +1,6 @@
 #include "FileManipulation.h"
 #include <QDir>
+#include <QDebug>
 
 bool FileManipulation::emptyFolder(const QString& path)
 {
@@ -8,12 +9,15 @@ bool FileManipulation::emptyFolder(const QString& path)
     QDir dir(path);
     if(!dir.exists()) {
         QDir().mkpath(path);
+        qInfo() << QString("Creating directory: %1").arg(path);
         if(dir.exists())
             return true;
         else
             return false;
+            qInfo() << QString("Failed to create directory: %1").arg(path);
     }
 
+    qInfo() << QString("Emptying directory: %1").arg(path);
     dir.setNameFilters(QStringList() << "*.*");
     dir.setFilter(QDir::Files);
     foreach(QString dirFile, dir.entryList())
@@ -34,6 +38,7 @@ bool FileManipulation::copyFolder(const QString& source, const QString& dest)
     //Set/create destination folders
     QDir destPath(dest);
     destPath.mkpath(dest);
+    qInfo() << QString("Make directory: %1").arg(dest);
 
     //Copy Input folders
     QStringList filesListSource = sourcePath.entryList(QDir::Files);
@@ -50,6 +55,7 @@ bool FileManipulation::copyFolder(const QString& source, const QString& dest)
         if (QFile::exists(destname))
         {
             QFile::remove(destname);
+            qInfo() << QString("Delete existing file: %1").arg(destname);
         }
     }
 
@@ -80,9 +86,15 @@ bool FileManipulation::copyFile(const QString& source, const QString& dest)
     if (QFile::exists(dest))
     {
         QFile::remove(dest);
+        qInfo() << QString("Remove existing file: %1").arg(dest);
     }
 
     r &= QFile::copy(source, dest);
+    if(r) {
+        qInfo() << QString("Copy file: %1 -> %2").arg(source).arg(dest);
+    } else {
+        qWarning() << QString("Copy file FAILED: %1 -> %2").arg(source).arg(dest);
+    }
 
     return r;
 }
@@ -112,5 +124,12 @@ bool FileManipulation::removeFolder(const QString& path)
         }
         r = dir.rmdir(path);
     }
+
+    if(r) {
+        qInfo() << QString("Removed folder: %1").arg(path);
+    } else {
+        qWarning() << QString("Folder remove failed: %1").arg(path);
+    }
+
     return r;
 }
