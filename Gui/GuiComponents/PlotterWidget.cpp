@@ -23,7 +23,7 @@ PlotterWidget::PlotterWidget(QWidget *parent) :
 }
 
 void PlotterWidget::validateXRangeChanged(const QCPRange &range, const QCPRange &oldRange) {
-    fixAxisRange(xAxis, range, mXMin, mXMax, 3);
+    fixAxisRange(xAxis, range, mXMin, mXMax, mMinRange);
 }
 
 void PlotterWidget::fixAxisRange(QCPAxis *axis, QCPRange range, double lowerBound, double upperBound, double minRange)
@@ -37,6 +37,9 @@ void PlotterWidget::fixAxisRange(QCPAxis *axis, QCPRange range, double lowerBoun
         fixedRange.upper = lowerBound + range.size();
         if (fixedRange.upper > upperBound || qFuzzyCompare(range.size(), upperBound-lowerBound))
             fixedRange.upper = upperBound;
+        if((fixedRange.upper - fixedRange.lower) < minRange)
+            fixedRange.upper = fixedRange.lower + minRange;
+        rangeChanged = true;
     } else if (fixedRange.upper > upperBound)
     {
         fixedRange.upper = upperBound;
@@ -45,12 +48,12 @@ void PlotterWidget::fixAxisRange(QCPAxis *axis, QCPRange range, double lowerBoun
             fixedRange.lower = lowerBound;
         if((fixedRange.upper - fixedRange.lower) < minRange)
             fixedRange.lower = fixedRange.upper - minRange;
+        if((fixedRange.upper - fixedRange.lower) < minRange)
+            fixedRange.lower = fixedRange.upper - minRange;
+        rangeChanged = true;
     }
 
-    if((fixedRange.upper - fixedRange.lower) < minRange)
-        fixedRange.upper = fixedRange.lower + minRange;
-
-    if(range != fixedRange)
+    if(rangeChanged)
         axis->setRange(fixedRange);
 }
 
@@ -103,21 +106,15 @@ Optimisation* PlotterWidget::currentOptimisation() {
 void PlotterWidget::setCurrentOptimisationIndex(int index) {
     mCurrentOptimisationIndex = index;
 
-    Optimisation* optimisation = currentOptimisation();
-    if(optimisation) {
-        mXMax = optimisation->noAgents()+1;
-        xAxis->setRangeUpper(mXMax);
-    }
-
     updatePlot();
 }
 
 void PlotterWidget::updatePlot()
 {
-    Optimisation *opt = currentOptimisation();
     bool r = true;
 
     //Get data for display
+    Optimisation *opt = currentOptimisation();
     std::vector<std::vector<double>> fitness = opt->allfitness();
     uint nGens = fitness.size();
     if(nGens == 0) {
@@ -133,7 +130,8 @@ void PlotterWidget::updatePlot()
         QVector<double> x(nGens);
         for (int i = 0; i < nGens; ++i)
         {
-            x[i] = i;
+            // generations are 1-indexed in GUI
+            x[i] = i + 1;
         }
 
 
@@ -162,21 +160,24 @@ void PlotterWidget::updatePlot()
         // set axes ranges, so we see all data:
         rescaleAxes(true);
 
-        if (nGens < 11)
-        {
-            xAxis->setRange(mXMin, 10);
-        }
-        else
-        {
-            xAxis->setRange(mXMin, nGens);
-        }
-
         std::pair<double, double> range = opt->fitnessRange();
         double rangeNorm = range.second - range.first;
         double max = range.second + rangeNorm*0.1;
         double min = range.first - rangeNorm*0.1;
 
         yAxis->setRange(min, max);
+    }
+
+    if(opt) {
+        int genRange = opt->noGens() + 1;
+        if (genRange <= mMinRange-mXMin)
+        {
+            xAxis->setRange(mXMin, mMinRange-mXMin);
+        }
+        else
+        {
+            xAxis->setRange(mXMin, genRange-mXMin);
+        }
     }
 
     //Plot graph

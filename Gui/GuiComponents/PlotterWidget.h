@@ -24,8 +24,9 @@ private slots:
 
 private:
     double mXMax = 10;
-    double mXMin = -0.3;
+    double mXMin = 0.7;
     double mYMax = 10000;
+    double mMinRange = 3;
 
     void signalCurrentlySelectedPoint();
     Optimisation* currentOptimisation();
