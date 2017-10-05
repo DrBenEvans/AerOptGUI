@@ -17,6 +17,8 @@ BoundaryPointModel* MeshModel::boundaryPointModel() {
 }
 
 void MeshModel::setCurrentMesh(Mesh* mesh) {
+    if(mMesh)
+        delete mMesh;
     mMesh = mesh;
     emit meshChanged();
 }

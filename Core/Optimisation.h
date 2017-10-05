@@ -163,15 +163,10 @@ public:
      */
     bool readFitness();
     /**
-     * @brief readMeshes
-     * @param read the meshes for this optimisation
-     */
-    bool readMeshes();
-    /**
      * @brief mesh
      * @param getter method for meshes
      */
-    Mesh* mesh(int gen, int agent);
+    Mesh *mesh(int genIndex, int agentIndex);
     /**
      * @brief load
      * @param load the optimisation from disk (based on label)
@@ -236,7 +231,6 @@ private:
     int mNoTop;
 
     Mesh* mInitMesh;
-    std::vector<std::vector<Mesh*>> mMeshes;
     std::vector<BoundaryPoint*> mControlPoints;
     std::vector<std::vector<double>> mFitness;
 

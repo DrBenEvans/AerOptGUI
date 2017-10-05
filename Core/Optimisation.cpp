@@ -43,7 +43,6 @@ Optimisation::Optimisation() :
 
     auto dirReadLambda = [this](const QString& path) {
         readFitness();
-        readMeshes();
         if(mOptimisationModel != 0) {
             mOptimisationModel->emitOptimisationFitnessChanged(this);
         }
@@ -282,6 +281,7 @@ bool Optimisation::run() {
     QString AerOptWorkDir = settings.value("AerOpt/workingDirectory").toString();
     QString inFolder = settings.value("AerOpt/inFolder").toString();
 
+    setInitProfilePoints(initMesh()->profilePoints());
     bool r = true;
 
     //Empty the input directory
@@ -547,53 +547,46 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
     //mCanvas.update();
 }
 
-bool Optimisation::readMeshes()
+Mesh* Optimisation::mesh(int genIndex, int agentIndex)
 {
     bool success = true;
 
-    int genIndex = mMeshes.size();
     Mesh* mesh = 0;
 
-    for(int agentIndex=0; agentIndex < noAgents(); ++agentIndex ) {
-        QString base_path = outputDataDirectory();
-        base_path += "/Geometry";
-        base_path += QString::number(genIndex + 1);
-        base_path += "_";
-        base_path += QString::number(agentIndex + 1);
+    QString base_path = outputDataDirectory();
+    base_path += "/Geometry";
+    base_path += QString::number(genIndex + 1);
+    base_path += "_";
+    base_path += QString::number(agentIndex + 1);
 
-        //Mesh file
-        QString  meshpath = base_path + ".dat";
-        //Results file
-        QString results = base_path += ".unk";
+    //Mesh file
+    QString  meshpath = base_path + ".dat";
+    //Results file
+    QString results = base_path += ".unk";
 
-        //Load Mesh + Results
-        QFileInfo checkMesh(meshpath);
-        QFileInfo checkResults(results);
+    //Load Mesh + Results
+    QFileInfo checkMesh(meshpath);
+    QFileInfo checkResults(results);
 
-        success &= checkMesh.exists();
-        success &= checkMesh.isFile();
-        success &= checkResults.exists();
-        success &= checkResults.isFile();
+    success &= checkMesh.exists();
+    success &= checkMesh.isFile();
+    success &= checkResults.exists();
+    success &= checkResults.isFile();
 
-        if (success)
-        {
-            mesh = new Mesh();
-            success &= mesh->loadMesh(meshpath);
-            success &= mesh->loadResults(results);
+    if (success)
+    {
+        mesh = new Mesh();
+        success &= mesh->loadMesh(meshpath);
+        success &= mesh->loadResults(results);
 
-            if(success) {
-                // add new generation vector
-                while(mMeshes.size() <= genIndex)
-                    mMeshes.emplace_back();
-
-                if(mMeshes.at(genIndex).size() <= agentIndex) {
-                    mMeshes.at(genIndex).push_back(mesh);
-                }
-            }
+        if(success) {
+            return mesh;
+        } else{
+            delete mesh;
         }
     }
 
-    return success;
+    return nullptr;
 }
 
 bool Optimisation::readFitness()
@@ -702,14 +695,6 @@ std::pair<double,double> Optimisation::fitnessRange() {
 
 QString Optimisation::outputText() {
     return mOutputLog;
-}
-
-Mesh* Optimisation::mesh(int gen, int agent) {
-    if(mMeshes.size() > gen && mMeshes.at(gen).size() > agent) {
-        return mMeshes.at(gen).at(agent);
-    } else {
-        return nullptr;
-    }
 }
 
 bool Optimisation::readAerOptSettings(QString filePath) {
@@ -824,7 +809,6 @@ bool Optimisation::load(QString aerOptInputFilePath) {
     bool success = true;
     success &= readAerOptSettings(aerOptInputFilePath);
     success &= readFitness();
-    success &= readMeshes();
     success &= readProfilePointsFromSimulationDir();
 
     return success;

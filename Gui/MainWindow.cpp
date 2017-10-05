@@ -108,12 +108,10 @@ void MainWindow::setMeshViewSimulation(int iGen, int agent) {
 
     if(!mesh) {
         // try to read again, in case file has been written since last read
-        optimisation->readMeshes();
         Mesh* mesh = optimisation->mesh(iGen, agent);
         if(!mesh) {
-            QMessageBox::warning(this, "Warning", "Data could not be loaded for selected point", QMessageBox::Ok);
+            QMessageBox::warning(this, "Warning", "Data could not be loaded for selected point. Check that file exists and is formatted correctly.", QMessageBox::Ok);
         }
-        mCurrentMeshViewModel->setCurrentMesh(mesh);
     }
     mCurrentMeshViewModel->setCurrentMesh(mesh);
 }
