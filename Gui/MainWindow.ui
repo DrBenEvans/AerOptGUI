@@ -31,6 +31,16 @@
         <number>0</number>
        </property>
        <item>
+        <widget class="QLabel" name="SULogo">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="pixmap">
+          <pixmap resource="../Resourses.qrc">:/images/SULogoTop.png</pixmap>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QLabel" name="aerOptLog">
          <property name="text">
           <string/>
@@ -43,7 +53,7 @@
        <item>
         <widget class="QLabel" name="label">
          <property name="text">
-          <string>Optimisation:</string>
+          <string>Current Optimisation:</string>
          </property>
         </widget>
        </item>
@@ -58,6 +68,13 @@
         </widget>
        </item>
        <item>
+        <widget class="QPushButton" name="loadOptimisationButton">
+         <property name="text">
+          <string>Load...</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <widget class="QPushButton" name="newOptimisationButton">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -66,17 +83,10 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>New Optimisation....</string>
+          <string>New...</string>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="SULogo">
-         <property name="text">
-          <string/>
-         </property>
-         <property name="pixmap">
-          <pixmap resource="../Resourses.qrc">:/images/SULogoTop.png</pixmap>
+         <property name="default">
+          <bool>true</bool>
          </property>
         </widget>
        </item>

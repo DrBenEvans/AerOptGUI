@@ -73,7 +73,7 @@ bool FileManipulation::copyFolder(const QString& source, const QString& dest)
         QDir source = QDir(sourcePath.absolutePath() + QDir::separator() + sourcename).absolutePath();
         sourcename = QDir::toNativeSeparators(source.path());
 
-        r &= QFile::copy( sourcename, destname );
+        r &= copyFile( sourcename, destname );
     }
 
     return r;

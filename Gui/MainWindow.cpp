@@ -90,9 +90,9 @@ void MainWindow::setCurrentOptimisationIndex(int index) {
         setLogText();
 
         // set profile points
-        Mesh* initMesh = currentOptimisation()->initMesh();
-        if(initMesh) {
-            ProfilePoints profilePoints = initMesh->profilePoints();
+        Optimisation* opt = currentOptimisation();
+        if(opt) {
+            ProfilePoints profilePoints = opt->initProfilePoints();
             mProfileView->setProfilePoints(profilePoints);
         }
     }
@@ -123,16 +123,23 @@ MainWindow::~MainWindow() {
 }
 
 void MainWindow::newOptimisation() {
-    Optimisation *optimisation = new Optimisation();
+    Optimisation *opt = new Optimisation();
     MeshDialogModel *meshDialogModel = new MeshDialogModel(this);
-    meshDialogModel->setCurrentMesh(optimisation->initMesh());
+    meshDialogModel->setCurrentMesh(opt->initMesh());
     MeshDialog meshDialog(mProfileModel, meshDialogModel, this);
     if(meshDialog.exec() == QDialog::Accepted) {
-        ConfigSimulationDialog diag(optimisation, this);
+        ConfigSimulationDialog diag(opt, this);
         if(diag.exec() == QDialog::Accepted) {
-            optimisation->setControlPoints(meshDialog.controlPoints());
-            mOptimisationModel->addOptimisation(optimisation);
-            mOptimisationModel->run(optimisation);
+            opt->setControlPoints(meshDialog.controlPoints());
+            bool success = mOptimisationModel->run(opt);
+
+            if(!success) {
+                QString message("Optimisation %1 run failed! Check log for details.");
+                message = message.arg(opt->label());
+                QMessageBox::warning(this, "Warning", message, QMessageBox::Ok);
+            } else {
+                mOptimisationModel->addOptimisation(opt);
+            }
 
             int index = mOptimisationModel->rowCount() - 1;
             ui->optimisationComboBox->setCurrentIndex(index);
@@ -143,4 +150,40 @@ void MainWindow::newOptimisation() {
 void MainWindow::on_actionShowLog_triggered() {
     DebugOutput& debugOutput = DebugOutput::Instance();
     debugOutput.show();
+}
+
+void MainWindow::on_loadOptimisationButton_clicked()
+{
+    QString fileName;
+    QStringList fileNames;
+
+    QSettings settings;
+    QString startLoadPath = settings.value("AerOpt/startLoadPath").toString();
+
+    fileNames.append(QFileDialog::getOpenFileName(this, "Select AerOpt Input File",
+                                                  startLoadPath, "AerOpt Input Files (AerOpt_InputParameters.txt)"));
+    if (fileNames.size() > 0 && fileNames[0].size() > 0)
+    {
+        for (const QString &f: fileNames)
+        {
+            fileName = f;
+        }
+
+        qDebug() << "Loading Optimisation: " << fileName;
+
+        QDir fileDir(fileName);
+        fileDir.cdUp();
+        settings.value("AerOpt/startLoadPath", fileDir.absolutePath());
+
+        QModelIndex index = mOptimisationModel->loadByInputFilePath(fileName);
+        if(!mOptimisationModel->isIndexValid(index)) {
+            QMessageBox::warning(this, "Warning", "Optimisation load failed.", QMessageBox::Ok);
+        } else {
+            setCurrentOptimisationIndex(index.row());
+        }
+    }
+    else
+    {
+        qWarning() << "Not optimisation selected for load!";
+    }
 }

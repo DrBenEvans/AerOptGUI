@@ -223,6 +223,55 @@ QString Optimisation::outputDataDirectory() {
     return outputData;
 }
 
+ProfilePoints Optimisation::initProfilePoints() {
+    return mProfilePoints;
+}
+
+void Optimisation::setInitProfilePoints(ProfilePoints profilePoints) {
+    mProfilePoints = profilePoints;
+}
+
+void Optimisation::writeProfilePointsToSimulationDir() {
+    QString filePath = simulationDirectoryPath() + "/profilePoints.txt";
+    QDir::toNativeSeparators(filePath);
+
+    Mesh* mesh = initMesh();
+    if(mesh) {
+        std::ofstream outfile(filePath.toStdString(), std::ofstream::out);
+        if(outfile.is_open()) {
+            float x, y;
+            for(auto& profilePoint : initProfilePoints()) {
+                x = profilePoint.first;
+                y = profilePoint.second;
+
+                outfile << x << " " << y << std::endl;
+            }
+        }
+
+        outfile.close();
+    }
+}
+
+bool Optimisation::readProfilePointsFromSimulationDir() {
+    QString filePath = simulationDirectoryPath() + "/profilePoints.txt";
+    QDir::toNativeSeparators(filePath);
+
+    Profile profile;
+    bool success = profile.setFile(filePath);
+    mProfilePoints = profile.getProfile();
+    return success;
+}
+
+void Optimisation::copyFileToSimulationDir(QString source) {
+    QDir pathdir(source);
+    QString dirName = pathdir.dirName();
+
+    QString dest = simulationDirectoryPath() + "/" + dirName;
+    QDir::toNativeSeparators(dest);
+
+    FileManipulation::copyFile(source, dest);
+}
+
 bool Optimisation::run() {
     // load settings
     QSettings settings;
@@ -231,7 +280,6 @@ bool Optimisation::run() {
     QString meshDatFile = settings.value("mesher/initMeshFile").toString();
     QString AerOpt = settings.value("AerOpt/executable").toString();
     QString AerOptWorkDir = settings.value("AerOpt/workingDirectory").toString();
-    QDir scratchDir = QDir(settings.value("mesher/scratchDir").toString());
     QString inFolder = settings.value("AerOpt/inFolder").toString();
 
     bool r = true;
@@ -251,6 +299,10 @@ bool Optimisation::run() {
     if (r)
     {
         mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
+        qInfo() << "Copying input files to optimisation output directory";
+        copyFileToSimulationDir(AerOptInFile);
+        copyFileToSimulationDir(AerOptNodeFile);
+        writeProfilePointsToSimulationDir();
     }
     else
     {
@@ -660,13 +712,120 @@ Mesh* Optimisation::mesh(int gen, int agent) {
     }
 }
 
-void Optimisation::load() {
-    readFitness();
-    setNoGens(mFitness.size());
-    if(noGens() > 0) {
-        setNoAgents(mFitness.at(0).size());
-    } else {
-        setNoAgents(0);
+bool Optimisation::readAerOptSettings(QString filePath) {
+    bool success = true;
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
+    success &= infile.is_open();
+
+    QString qline, value;
+    QStringList strList;
+    std::string variable;
+
+    if (success)
+    {
+        std::cout << filePath.toStdString() << std::endl;
+        std::string line("");
+
+        while (std::getline(infile, line))
+        {
+            qline = QString::fromStdString(line);
+            strList = qline.split(QRegExp("\\s*=\\s*"));
+            value;
+            if(strList.length()==2) {
+                variable = strList.at(0).toStdString();
+                value = strList.at(1);
+
+                if(variable == "IV%Ma") {
+                    setMachNo(value.toFloat());
+                }
+                else if(variable == "IV%Tamb") {
+                    setFreeTemp(value.toFloat());
+                }
+                else if(variable == "IV%Pamb") {
+                    setFreePress(value.toFloat());
+                }
+                else if(variable == "IV%Re") {
+                    setReNo(value.toFloat());
+                }
+                else if(variable == "IV%AlphaInflowDirection") {
+                    setFreeAlpha(value.toFloat());
+                }
+                else if(variable == "IV%Low2Top") {
+                    setNoTop(int(value.toFloat()*100));
+                }
+                else if(variable == "IV%NoSnap") {
+                    setNoAgents(value.toInt());
+                }
+                else if(variable == "IV%NoNests") {
+                    setNoAgents(value.toInt());
+                }
+                else if(variable == "IV%NoG") {
+                    setNoGens(value.toInt());
+                }
+                else if(variable == "IV%ObjectiveFunction") {
+                    int ivalue = value.toInt();
+                    if(ivalue == 1)
+                        setObjFunc(Enum::ObjFunc::LIFTDRAG);
+                    else if(ivalue == 2)
+                        setObjFunc(Enum::ObjFunc::DISTORTION);
+                    else if(ivalue == 3)
+                        setObjFunc(Enum::ObjFunc::MAXLIFT);
+                    else if(ivalue == 4)
+                        setObjFunc(Enum::ObjFunc::MINDRAG);
+                    else if(ivalue == 5)
+                        setObjFunc(Enum::ObjFunc::MAXDOWNFORCE);
+                    else if(ivalue == 6)
+                        setObjFunc(Enum::ObjFunc::MINLIFT);
+                    else
+                        setObjFunc(Enum::ObjFunc::FUNCNOTSET);
+                }
+                else if(variable == "IV%Optimiser") {
+                    int ivalue = value.toInt();
+                    if(ivalue == 1)
+                        setOptimisationMethod(Enum::OptMethod::MCS);
+                    else if(ivalue == 2)
+                        setOptimisationMethod(Enum::OptMethod::DE);
+                    else if(ivalue == 3)
+                        setOptimisationMethod(Enum::OptMethod::PSO);
+                    else
+                        setOptimisationMethod(Enum::OptMethod::METHODNOTSET);
+                }
+                else if(variable == "IV%SimulationName") {
+                    if(strList.size() > 0) {
+                        strList = strList.at(1).split("run_");
+                        QString label =  strList.at(1);
+                        // remove trailing quotation mark
+                        label.chop(1);
+
+                        setLabel(label);
+                    }
+                }
+                else if("IV%xrange") {
+                    QStringList xrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                    // set control points not implements
+                }
+                else if("IV%yrange") {
+                    QStringList yrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                    // set control points not implements
+                }
+                else if("IV%smoothfactor") {
+                    QStringList smoothfactor = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+                    // set control points not implements
+                }
+            }
+        }
+
     }
-    readMeshes();
+
+    return success;
+}
+
+bool Optimisation::load(QString aerOptInputFilePath) {
+    bool success = true;
+    success &= readAerOptSettings(aerOptInputFilePath);
+    success &= readFitness();
+    success &= readMeshes();
+    success &= readProfilePointsFromSimulationDir();
+
+    return success;
 }

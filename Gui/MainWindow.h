@@ -32,6 +32,8 @@ private slots:
     void on_actionShowLog_triggered();
     void revealFilesCurrentOptimisation();
 
+    void on_loadOptimisationButton_clicked();
+
 private:
     void setMeshViewSimulation(int iGen, int agent);
     void setLogText();

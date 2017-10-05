@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QDebug>
 #include <QMessageBox>
+#include <QSettings>
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
@@ -125,42 +126,6 @@ void MeshDialog::accept()
 }
 
 
-void MeshDialog::on_pushButton_clicked()
-{
-    QString fileName;
-    QStringList fileNames;
-
-#ifdef Q_OS_UNIX
-    // unix load file
-    fileNames.append(
-                QFileDialog::getOpenFileName(this, "Select Profile File", QDir::homePath()+"/Documents/Projects/AerOptProject/", "Profile Files (*.prf)")
-                );
-#endif
-#ifdef Q_OS_WIN32
-    // do windows stuff here
-    fileNames.append(
-                QFileDialog::getOpenFileName(this, "Select Profile File", QDir::homePath(), "Profile Files (*.prf)")
-                );
-#endif
-
-    if (fileNames.size() > 0)
-    {
-        for (const QString &f: fileNames)
-        {
-            fileName = f;
-        }
-
-        qDebug() << "File selected: " << fileName;
-
-        mProfileModel.addProfileFromFilePath(fileName);
-    }
-    else
-    {
-        //Set text Not OK here!
-        qWarning() << "Profile data not imported!";
-    }
-}
-
 void MeshDialog::on_profile_currentIndexChanged(int index)
 {
    setProfile();
@@ -187,4 +152,38 @@ void MeshDialog::on_thickness_valueChanged(double arg1)
 void MeshDialog::on_growthFactor_valueChanged(double arg1)
 {
     setMeshActive(false,false);
+}
+
+void MeshDialog::on_loadProfileButton_clicked()
+{
+    QSettings settings;
+    QString fileName;
+    QStringList fileNames;
+    QString profilePath = settings.value("AerOpt/profilesDefaultPath").toString();
+
+    fileNames.append(QFileDialog::getOpenFileName(this, "Select Profile File",
+                                                  profilePath, "Profile Files (*.prf)"));
+
+    if (fileNames.size() > 0)
+    {
+        for (const QString &f: fileNames)
+        {
+            fileName = f;
+        }
+
+        qDebug() << "File selected: " << fileName;
+
+        bool success = mProfileModel.addProfileFromFilePath(fileName);
+        if(success) {
+            QDir dir(fileName);
+            dir.cdUp();
+            settings.setValue("AerOpt/profilesDefaultPath", dir.absolutePath());
+        }
+
+    }
+    else
+    {
+        //Set text Not OK here!
+        qWarning() << "Profile data not imported!";
+    }
 }

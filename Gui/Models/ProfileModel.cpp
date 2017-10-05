@@ -22,7 +22,7 @@ ProfileModel::ProfileModel(QObject *parent) : QAbstractListModel(parent)
     settings.endArray();
 }
 
-void ProfileModel::addProfileFromFilePath(QString filePath) {
+bool ProfileModel::addProfileFromFilePath(QString filePath) {
     int first = mProfileList.size();
     int last = mProfileList.size();
     std::unique_ptr<Profile> profile(new Profile());
@@ -32,6 +32,8 @@ void ProfileModel::addProfileFromFilePath(QString filePath) {
         mProfileList.push_back(std::move(profile));
         endInsertRows();
     }
+
+    return success;
 }
 
 int ProfileModel::rowCount(const QModelIndex &parent) const {

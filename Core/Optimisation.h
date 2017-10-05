@@ -176,7 +176,7 @@ public:
      * @brief load
      * @param load the optimisation from disk (based on label)
      */
-    void load();
+    bool load(QString aerOptInputFilePath);
 
     int getNoTop() const;
     void setNoTop(int noTop);
@@ -199,12 +199,23 @@ public:
     QString outputText();
     std::pair<double,double> fitnessRange();
 
+    ProfilePoints initProfilePoints();
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
     bool createAerOptInFile(const QString &filePath);
     bool createAerOptNodeFile(const QString &filePath);
     bool saveCurrentProfile(const QString& path);
     QString outputDataDirectory();
+    bool readAerOptSettings(QString filePath);
+
+    void writeProfilePointsToSimulationDir();
+    bool readProfilePointsFromSimulationDir();
+    void setInitProfilePoints(ProfilePoints profilePoints);
+
+    // copy files
+    void copyFileToSimulationDir(QString source);
+    QString aerOptNodeFileCopyPath();
+    QString aerOptInputFileCopyPath();
 
     QString mLabel = "";
 
@@ -235,6 +246,7 @@ private:
 
     QString mOutputLog = "";
 
+    ProfilePoints mProfilePoints;
 };
 
 #endif // OptimisationRun_H

@@ -14,7 +14,7 @@ public:
     ProfileModel(QObject *parent = 0);
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
     QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const override;
-    void addProfileFromFilePath(QString filePath);
+    bool addProfileFromFilePath(QString filePath);
     ProfilePoints getProfileAtIndex(const QModelIndex index) const;
     QString getDisplayStringAtIndex(const QModelIndex index) const;
 

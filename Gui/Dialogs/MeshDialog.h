@@ -42,6 +42,8 @@ private slots:
 
     void on_growthFactor_valueChanged(double arg1);
 
+    void on_loadProfileButton_clicked();
+
 private:
     void on_pushButton_clicked();
     void setMeshActive(bool meshIsActive, bool doToggleProfile = true);

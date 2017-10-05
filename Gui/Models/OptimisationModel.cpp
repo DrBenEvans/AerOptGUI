@@ -98,8 +98,8 @@ Optimisation* OptimisationModel::optimisation(uint index) {
     }
 }
 
-void OptimisationModel::run(Optimisation *optimisation) {
-    optimisation->run();
+bool OptimisationModel::run(Optimisation *optimisation) {
+    return optimisation->run();
 }
 
 void OptimisationModel::emitOptimisationFitnessChanged(Optimisation* optChanged) {
@@ -127,9 +127,12 @@ void OptimisationModel::revealFiles(int index) {
     }
 }
 
-QModelIndex OptimisationModel::loadByLabel(QString label) {
+QModelIndex OptimisationModel::loadByInputFilePath(QString path) {
     Optimisation *optimisation = new Optimisation();
-    optimisation->setLabel(label);
-    optimisation->load();
-    return addOptimisation(optimisation);
+    bool success = optimisation->load(path);
+    if(success) {
+        return addOptimisation(optimisation);
+    } else {
+        return QModelIndex();
+    }
 }

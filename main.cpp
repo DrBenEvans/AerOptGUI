@@ -25,6 +25,8 @@ void firstTimeSetup(QString AerOptWorkDir) {
     settings.setValue("AerOpt/workingDirectory", AerOptWorkDir);
     QDir().mkdir(AerOptWorkDir);
 
+    settings.setValue("AerOpt/startLoadPath", AerOptWorkDir);
+
     // setup executables
     QString exeDir = QDir::toNativeSeparators(AerOptWorkDir + "Executables/");
     QDir().mkdir(exeDir);
@@ -92,6 +94,7 @@ void firstTimeSetup(QString AerOptWorkDir) {
     // setup default profiles
     QString profileDir = QDir::toNativeSeparators(AerOptWorkDir + "profiles/");
     QDir().mkdir(profileDir);
+    settings.setValue("AerOpt/profilesDefaultPath", profileDir);
 
     settings.beginWriteArray("profiles");
     settings.setArrayIndex(0);
@@ -113,9 +116,11 @@ void firstTimeSetup(QString AerOptWorkDir) {
     inFolder = QDir::toNativeSeparators(inFolder);
     settings.setValue("AerOpt/inFolder", inFolder);
 
-    QString AerOptInFile = inFolder + "AerOpt_InputParameters.txt";
+    QString AerOptInFileName = "AerOpt_InputParameters.txt";
+    QString AerOptInFile = inFolder + AerOptInFileName;
     AerOptInFile = QDir::toNativeSeparators(AerOptInFile);
     settings.setValue("AerOpt/inputFile", AerOptInFile);
+    settings.setValue("AerOpt/inputFileName", AerOptInFileName);
 
     QString AerOptNodeFile = inFolder + "Control_Nodes.txt";
     AerOptNodeFile = QDir::toNativeSeparators(AerOptNodeFile);
@@ -171,14 +176,11 @@ int main(int argc, char *argv[])
 
     // Setup optimisation model and selection model
     OptimisationModel* optimisationModel = new OptimisationModel();
-    optimisationModel->loadByLabel("sdfjslkgjsdflgkj");
-    QModelIndex index = optimisationModel->loadByLabel("sadfasdf");
 
     //Main window setup and show.
     MainWindow w;
     w.setWindowTitle("AerOpt");
     w.setOptimisationModel(optimisationModel);
-    w.setCurrentOptimisationIndex(index.row());
     w.show();
 
     return app.exec();

@@ -29,7 +29,7 @@ public:
     QVariant data(const QModelIndex& index, int role) const override;
     bool removeRows(int row, int count, const QModelIndex& parent) override;
 
-    void run(Optimisation* optimisation);
+    bool run(Optimisation* optimisation);
 
     void emitOptimisationFitnessChanged(Optimisation *optChanged);
     void emitOptimisationOutputChanged(Optimisation *optChanged);
@@ -37,14 +37,15 @@ public:
     Optimisation *optimisation(uint index);
 
     void revealFiles(int index);
-    QModelIndex loadByLabel(QString label);
+    QModelIndex loadByInputFilePath(QString path);
+
+    bool isIndexValid(const QModelIndex& index) const;
 
 signals:
     void optimisationFitnessChanged(int index);
     void optimisationOutputChanged(int index);
 
 private:
-    bool isIndexValid(const QModelIndex& index) const;
     bool isIndexValid(int row);
     std::vector<Optimisation*> mOptimisations;
 };
