@@ -202,6 +202,7 @@ private:
     bool saveCurrentProfile(const QString& path);
     QString outputDataDirectory();
     bool readAerOptSettings(QString filePath);
+    void addToOutputLog(const QString line);
 
     void writeProfilePointsToSimulationDir();
     bool readProfilePointsFromSimulationDir();

@@ -49,14 +49,14 @@ Optimisation::Optimisation() :
     };
 
     auto stdOutLambda = [this](const QString line) {
-        mOutputLog += line;
+        addToOutputLog(line);
         if(mOptimisationModel != 0) {
             mOptimisationModel->emitOptimisationOutputChanged(this);
         }
     };
 
     auto stdErrLambda = [this](const QString line) {
-        mOutputLog += "ERROR: "+line;
+        addToOutputLog("Standard Error: "+line);
         if(mOptimisationModel != 0) {
             mOptimisationModel->emitOptimisationOutputChanged(this);
         }
@@ -811,4 +811,22 @@ bool Optimisation::load(QString aerOptInputFilePath) {
     success &= readProfilePointsFromSimulationDir();
 
     return success;
+}
+
+void Optimisation::addToOutputLog(const QString line) {
+    mOutputLog += line;
+
+    QString fileName = outputDataDirectory();
+    fileName += "/output.log";
+    fileName = QDir::toNativeSeparators(fileName);
+
+    // write output to output file
+    QFile scriptFile(fileName);
+    if(scriptFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream outputStream(&scriptFile);
+        outputStream << line;
+        scriptFile.close();
+    } else {
+        qWarning() << "Write output to log file " << fileName << " failed.";
+    }
 }
