@@ -33,6 +33,7 @@ private slots:
     void revealFilesCurrentOptimisation();
     void clearCurrentSelection();
     void setPointSelected(bool pointSelected);
+    void setupGraphicsView();
 
     void on_loadOptimisationButton_clicked();
 

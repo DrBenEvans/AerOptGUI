@@ -2,11 +2,12 @@
 #define VIEWSCALER_H
 
 #include <QRectF>
+#include <QObject>
 
-class ViewScaler
+class ViewScaler : public QObject
 {
 public:
-    ViewScaler(int scale = 1000);
+    ViewScaler(QObject* parent, int scale = 1000);
     qreal w(qreal width);
     qreal h(qreal width);
     QRectF rect(int a1, int a2, int a3, int a4);

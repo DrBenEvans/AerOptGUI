@@ -1,6 +1,6 @@
 #include "ViewScaler.h"
 
-ViewScaler::ViewScaler(int scale) :
+ViewScaler::ViewScaler(QObject* parent, int scale) : QObject(parent),
     mScale(scale)
 {
 

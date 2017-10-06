@@ -1,3 +1,4 @@
+#include <QImage>
 #include "MainWindow.h"
 #include "ui_MainWindow.h"
 #include "ConfigSimulationDialog.h"
@@ -6,7 +7,6 @@
 #include "MeshDialog.h"
 #include "MeshView.h"
 #include "Mesh.h"
-//#include "MeshGraphicsItem.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -22,17 +22,26 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->fitnessPlot, &PlotterWidget::selectedPointChanged, this, &MainWindow::onSelectedPointChange);
     connect(ui->actionShowCurrentOptimisationFiles, &QAction::triggered, this, &MainWindow::revealFilesCurrentOptimisation);
 
-    ViewScaler* mScale = new ViewScaler();
+    setupGraphicsView();
+}
 
-    MeshView* meshView = new MeshView(mScale);
-    meshView->setMeshModel(mCurrentMeshViewModel);
+void MainWindow::setupGraphicsView() {
+    ViewScaler* mScale = new ViewScaler(this);
 
+    // create profile view
     mProfileView = new ProfileView(mScale);
     mProfileView->setDrawDots(false);
 
+    // crate mesh view
+    MeshView* meshView = new MeshView(mScale);
+    meshView->setMeshModel(mCurrentMeshViewModel);
+
+    // setup scene
     QGraphicsScene* scene = new QGraphicsScene(this);
+
     scene->addItem(meshView);
     scene->addItem(mProfileView);
+
     ui->graphicsView->setScene(scene);
 }
 
@@ -41,7 +50,10 @@ void MainWindow::revealFilesCurrentOptimisation() {
 }
 
 void MainWindow::setPointSelected(bool pointSelected) {
-    mProfileView->setVisible(pointSelected);
+    if(pointSelected)
+        ui->stackedWidget->setCurrentIndex(0);
+    else
+        ui->stackedWidget->setCurrentIndex(1);
 }
 
 void MainWindow::onSelectedPointChange(int iGen, int agent) {

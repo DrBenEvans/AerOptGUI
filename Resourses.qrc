@@ -5,6 +5,7 @@
         <file alias="Scale.png">Images/Scale.png</file>
         <file alias="AerOptLogoTop.png">Images/aeropt_top.png</file>
         <file alias="SULogoTop.png">Images/su_top.png</file>
+        <file alias="canvas_logo.png">Images/canvas_logo.png</file>
     </qresource>
     <qresource prefix="/executables">
         <file alias="Delaunay_2D.mac">Executables/Delaunay_2D</file>
