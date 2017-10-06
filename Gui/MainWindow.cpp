@@ -177,7 +177,8 @@ void MainWindow::on_loadOptimisationButton_clicked()
         if(!mOptimisationModel->isIndexValid(index)) {
             QMessageBox::warning(this, "Warning", "Optimisation load failed.", QMessageBox::Ok);
         } else {
-            setCurrentOptimisationIndex(index.row());
+            // setting though ui->optimisationComboBox allows the current index to be maintained
+            ui->optimisationComboBox->setCurrentIndex(index.row());
         }
     }
     else
