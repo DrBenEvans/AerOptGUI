@@ -40,6 +40,10 @@ void MainWindow::revealFilesCurrentOptimisation() {
     mOptimisationModel->revealFiles(mCurrentOptimisationIndex);
 }
 
+void MainWindow::setPointSelected(bool pointSelected) {
+    mProfileView->setVisible(pointSelected);
+}
+
 void MainWindow::onSelectedPointChange(int iGen, int agent) {
     if(iGen == -1 && agent == -1 ) {
         clearCurrentSelection();
@@ -49,6 +53,7 @@ void MainWindow::onSelectedPointChange(int iGen, int agent) {
         Optimisation* opt = currentOptimisation();
         if(opt) text = text.arg(opt->fitness(iGen, agent));
         ui->plotText->setText(text);
+        setPointSelected(true);
 
         setMeshViewSimulation(iGen, agent);
     }
@@ -109,6 +114,7 @@ void MainWindow::clearCurrentSelection() {
     ui->fitnessPlot->clearCurrentSelection();
     mCurrentMeshViewModel->setCurrentMesh(nullptr);
     ui->plotText->setText("");
+    setPointSelected(false);
 }
 
 Optimisation* MainWindow::currentOptimisation() {

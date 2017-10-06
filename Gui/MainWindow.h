@@ -32,6 +32,7 @@ private slots:
     void on_actionShowLog_triggered();
     void revealFilesCurrentOptimisation();
     void clearCurrentSelection();
+    void setPointSelected(bool pointSelected);
 
     void on_loadOptimisationButton_clicked();
 
