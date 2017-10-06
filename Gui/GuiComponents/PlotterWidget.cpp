@@ -99,9 +99,7 @@ std::pair<int, int> PlotterWidget::getSelection() {
 void PlotterWidget::signalCurrentlySelectedPoint() {
     std::pair<int, int> agent_gen = getSelection();
 
-    if(agent_gen.first >= 0 && agent_gen.second >= 0) {
-        emit selectedPointChanged(agent_gen.second, agent_gen.first);
-    }
+    emit selectedPointChanged(agent_gen.second, agent_gen.first);
 }
 
 void PlotterWidget::setOptimisationModel(OptimisationModel* model) {

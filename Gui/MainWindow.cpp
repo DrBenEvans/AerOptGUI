@@ -41,13 +41,17 @@ void MainWindow::revealFilesCurrentOptimisation() {
 }
 
 void MainWindow::onSelectedPointChange(int iGen, int agent) {
-    QString text = QString("Gen=%1, Index=%2, Fitness=%3");
-    text = text.arg(iGen+1).arg(agent+1);
-    Optimisation* opt = currentOptimisation();
-    if(opt) text = text.arg(opt->fitness(iGen, agent));
-    ui->plotText->setText(text);
+    if(iGen == -1 && agent == -1 ) {
+        clearCurrentSelection();
+    } else {
+        QString text = QString("Gen=%1, Index=%2, Fitness=%3");
+        text = text.arg(iGen+1).arg(agent+1);
+        Optimisation* opt = currentOptimisation();
+        if(opt) text = text.arg(opt->fitness(iGen, agent));
+        ui->plotText->setText(text);
 
-    setMeshViewSimulation(iGen, agent);
+        setMeshViewSimulation(iGen, agent);
+    }
 }
 
 void MainWindow::setOptimisationModel(OptimisationModel* optimisationModel) {
