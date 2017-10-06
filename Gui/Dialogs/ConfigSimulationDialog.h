@@ -16,7 +16,7 @@ class ConfigSimulationDialog : public QDialog
 
 
 public:
-    explicit ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent = 0);
+    explicit ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent = 0, bool enabled = true);
     ~ConfigSimulationDialog();
 
 public slots:
@@ -36,6 +36,7 @@ private:
 
     Ui::ConfigSimulationDialog *ui;
     Optimisation *mData;
+    bool mEnabled;
 };
 
 #endif // ConfigSimulationDialog_H

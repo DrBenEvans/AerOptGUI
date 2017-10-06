@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Configure Simulation</string>
   </property>
-  <widget class="QGroupBox" name="groupBox">
+  <widget class="QGroupBox" name="optimisationParameterBox">
    <property name="geometry">
     <rect>
      <x>310</x>
@@ -241,7 +241,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QGroupBox" name="projOptGroup">
+  <widget class="QGroupBox" name="projectOptionBox">
    <property name="geometry">
     <rect>
      <x>12</x>
@@ -299,7 +299,7 @@
     <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
    </property>
   </widget>
-  <widget class="QGroupBox" name="runCondGroup">
+  <widget class="QGroupBox" name="runCondBox">
    <property name="geometry">
     <rect>
      <x>13</x>

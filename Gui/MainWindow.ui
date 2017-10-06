@@ -263,10 +263,17 @@
    </property>
    <widget class="QMenu" name="menuOptimisations">
     <property name="title">
-     <string>Optimisations</string>
+     <string>Optimisation</string>
     </property>
+    <widget class="QMenu" name="menuCurrent_Optimisation">
+     <property name="title">
+      <string>Current Optimisation</string>
+     </property>
+     <addaction name="actionCurrent_Optimisation_Settings"/>
+     <addaction name="actionShowCurrentOptimisationFiles"/>
+    </widget>
     <addaction name="actionNewOptimisation"/>
-    <addaction name="actionShowCurrentOptimisationFiles"/>
+    <addaction name="menuCurrent_Optimisation"/>
    </widget>
    <widget class="QMenu" name="menuLog">
     <property name="title">
@@ -301,10 +308,18 @@
   </action>
   <action name="actionShowCurrentOptimisationFiles">
    <property name="text">
-    <string>Show Current Optimisation Files...</string>
+    <string>Files...</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+F</string>
+   </property>
+  </action>
+  <action name="actionCurrent_Optimisation_Settings">
+   <property name="text">
+    <string>Configuration...</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
    </property>
   </action>
  </widget>

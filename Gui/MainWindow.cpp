@@ -217,3 +217,12 @@ void MainWindow::on_loadOptimisationButton_clicked()
         qWarning() << "Not optimisation selected for load!";
     }
 }
+
+void MainWindow::on_actionCurrent_Optimisation_Settings_triggered()
+{
+    Optimisation* opt = currentOptimisation();
+    if(opt) {
+        ConfigSimulationDialog diag(opt, this, false);
+        diag.exec();
+    }
+}

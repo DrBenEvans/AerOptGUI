@@ -4,11 +4,13 @@
 #include "ui_ConfigSimulationDialog.h"
 #include "MeshDialog.h"
 
-ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent) :
+ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent, bool enabled) :
     QDialog(parent),
     ui(new Ui::ConfigSimulationDialog),
-    mData(optimisation)
+    mData(optimisation),
+    mEnabled(enabled)
 {
+
     ui->setupUi(this);
 
     // label setup
@@ -27,6 +29,10 @@ ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidg
     ui->angle->setValue(mData->freeAlpha());
     ui->reynolds->setValue(mData->reNo());
     ui->mach->setValue(mData->machNo());
+
+    ui->optimisationParameterBox->setEnabled(mEnabled);
+    ui->runCondBox->setEnabled(mEnabled);
+    ui->projectOptionBox->setEnabled(mEnabled);
 }
 
 ConfigSimulationDialog::~ConfigSimulationDialog()
@@ -40,34 +46,38 @@ void ConfigSimulationDialog::validationError(QString message) {
 
 void ConfigSimulationDialog::accept()
 {
-    // set label
-    QString label = ui->label->text();
-    if(label.size() == 0) {
-        validationError("An optimisation name must be specified");
-        return;
+    if(mEnabled) {
+
+        // set label
+        QString label = ui->label->text();
+        if(label.size() == 0) {
+            validationError("An optimisation name must be specified");
+            return;
+        }
+        mData->setLabel(label);
+
+        QDir outputDataDirectory = QDir(mData->simulationDirectoryPath());
+
+        if(outputDataDirectory.exists()) {
+            validationError("Directory already exists:" + outputDataDirectory.absolutePath());
+            return;
+        }
+
+        // set optimiser
+        mData->setNoAgents(ui->nnests->value());
+        mData->setNoGens(ui->ngens->value());
+        mData->setNoTop(ui->ndiscard->value());
+        mData->setOptimisationMethod(this->indexToOptMethodEnum(ui->optmethod->currentIndex()));
+        mData->setObjFunc(this->indexToObjFuncEnum(ui->objfunc->currentIndex()));
+
+        // set flow
+        mData->setMachNo(ui->mach->value());
+        mData->setReNo(ui->reynolds->value());
+        mData->setFreeAlpha(ui->angle->value());
+        mData->setFreePress(ui->pressure->value());
+        mData->setFreeTemp(ui->temp->value());
+
     }
-    mData->setLabel(label);
-
-    QDir outputDataDirectory = QDir(mData->simulationDirectoryPath());
-
-    if(outputDataDirectory.exists()) {
-        validationError("Directory already exists:" + outputDataDirectory.absolutePath());
-        return;
-    }
-
-    // set optimiser
-    mData->setNoAgents(ui->nnests->value());
-    mData->setNoGens(ui->ngens->value());
-    mData->setNoTop(ui->ndiscard->value());
-    mData->setOptimisationMethod(this->indexToOptMethodEnum(ui->optmethod->currentIndex()));
-    mData->setObjFunc(this->indexToObjFuncEnum(ui->objfunc->currentIndex()));
-
-    // set flow
-    mData->setMachNo(ui->mach->value());
-    mData->setReNo(ui->reynolds->value());
-    mData->setFreeAlpha(ui->angle->value());
-    mData->setFreePress(ui->pressure->value());
-    mData->setFreeTemp(ui->temp->value());
 
     QDialog::accept();
 }
