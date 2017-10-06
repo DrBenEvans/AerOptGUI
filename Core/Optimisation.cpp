@@ -543,8 +543,7 @@ void Optimisation::optimiserFinished(int exitCode, QProcess::ExitStatus exitStat
 
     if (!r) qWarning() << "Something went wrong with file cleanup!";
 
-    //TODO
-    //mCanvas.update();
+    readFitness();
 }
 
 Mesh* Optimisation::mesh(int genIndex, int agentIndex)
