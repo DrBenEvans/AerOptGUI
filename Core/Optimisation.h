@@ -208,6 +208,9 @@ private:
     bool readProfilePointsFromSimulationDir();
     void setInitProfilePoints(ProfilePoints profilePoints);
 
+    bool readLogFromFile();
+    QString logCacheFileName();
+
     // copy files
     void copyFileToSimulationDir(QString source);
     QString aerOptNodeFileCopyPath();

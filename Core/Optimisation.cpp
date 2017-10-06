@@ -809,24 +809,48 @@ bool Optimisation::load(QString aerOptInputFilePath) {
     success &= readAerOptSettings(aerOptInputFilePath);
     success &= readFitness();
     success &= readProfilePointsFromSimulationDir();
+    success &= readLogFromFile();
 
     return success;
+}
+
+QString Optimisation::logCacheFileName() {
+    QString fileName = outputDataDirectory();
+    fileName += "/output.log";
+    fileName = QDir::toNativeSeparators(fileName);
+    return fileName;
 }
 
 void Optimisation::addToOutputLog(const QString line) {
     mOutputLog += line;
 
-    QString fileName = outputDataDirectory();
-    fileName += "/output.log";
-    fileName = QDir::toNativeSeparators(fileName);
+    QString fileName = logCacheFileName();
 
     // write output to output file
-    QFile scriptFile(fileName);
-    if(scriptFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
-        QTextStream outputStream(&scriptFile);
+    QFile logFile(fileName);
+    if(logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+        QTextStream outputStream(&logFile);
         outputStream << line;
-        scriptFile.close();
+        logFile.close();
     } else {
         qWarning() << "Write output to log file " << fileName << " failed.";
     }
+}
+
+bool Optimisation::readLogFromFile() {
+    QString fileName = logCacheFileName();
+    QFile logFile(fileName);
+    QString str;
+
+    // read output from output file
+    if(logFile.open(QIODevice::ReadOnly)) {
+        QTextStream inputStream(&logFile);
+        mOutputLog = inputStream.readAll();
+        logFile.close();
+    } else {
+        qWarning() << "Read output from log file " << fileName << " failed.";
+        return false;
+    }
+
+    return true;
 }
