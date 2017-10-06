@@ -31,6 +31,7 @@ public slots:
 private slots:
     void on_actionShowLog_triggered();
     void revealFilesCurrentOptimisation();
+    void clearCurrentSelection();
 
     void on_loadOptimisationButton_clicked();
 

@@ -14,6 +14,7 @@ public:
     void setOptimisationModel(OptimisationModel* model);
     void setCurrentOptimisationIndex(int index);
     void setCurrentlySelectedPoint(int iGen, int agent);
+    void clearCurrentSelection();
 
 signals:
     void selectedPointChanged(int iGen, int agent);

@@ -67,6 +67,15 @@ void PlotterWidget::setCurrentlySelectedPoint(int iGen, int agent) {
     }
 }
 
+void PlotterWidget::clearCurrentSelection() {
+    QCPDataSelection dataSelection;
+    for(int i=0; i<graphCount(); i++) {
+        graph(i)->setSelection(dataSelection);
+    }
+
+    replot();
+}
+
 std::pair<int, int> PlotterWidget::getSelection() {
     std::pair<int, int> agent_gen;
     agent_gen.first = -1;

@@ -95,7 +95,16 @@ void MainWindow::setCurrentOptimisationIndex(int index) {
             ProfilePoints profilePoints = opt->initProfilePoints();
             mProfileView->setProfilePoints(profilePoints);
         }
+
+        clearCurrentSelection();
     }
+}
+
+void MainWindow::clearCurrentSelection() {
+    // clear current selection
+    ui->fitnessPlot->clearCurrentSelection();
+    mCurrentMeshViewModel->setCurrentMesh(nullptr);
+    ui->plotText->setText("");
 }
 
 Optimisation* MainWindow::currentOptimisation() {
