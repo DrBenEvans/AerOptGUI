@@ -13,11 +13,11 @@ public:
     explicit MeshDialogModel(QObject *parent = nullptr);
     ~MeshDialogModel();
 
-    void runMesher();
+    bool runMesher();
     void stopMesher();
 
 private slots:
-    void meshingFinished(int exitCode, QProcess::ExitStatus exitStatus, QString meshDatFile);
+    bool meshingFinished(int exitCode, QProcess::ExitStatus exitStatus, QString meshDatFile);
 
 private:
     void writeStdOutToLog();

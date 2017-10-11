@@ -189,6 +189,8 @@ bool Mesh::loadMeshType1(const QString& filePath)
             {
                 addMeshConnectivity(tuple);
             }
+        } else {
+            r = false;
         }
     }
     infile.close();
@@ -223,6 +225,8 @@ bool Mesh::loadMeshType1(const QString& filePath)
             {
                 addMeshPoint(pair);
             }
+        } else {
+            r = false;
         }
     }
     infile.close();
@@ -265,6 +269,8 @@ bool Mesh::loadMeshType2(const QString &filePath)
             {
                 addMeshConnectivity(tuple);
             }
+        } else {
+            r = false;
         }
     }
     infile.close();
@@ -299,6 +305,8 @@ bool Mesh::loadMeshType2(const QString &filePath)
             {
                 addMeshPoint(pair);
             }
+        } else {
+            r = false;
         }
     }
     infile.close();

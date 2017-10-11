@@ -108,9 +108,13 @@ void MeshDialog::runMesher() {
     mesh->setGrowthFactor(ui->growthFactor->value());
 
     // set profile
-    mMeshDialogModel->runMesher();
+    bool success = mMeshDialogModel->runMesher();
 
-    setMeshActive(true);
+    if(success)
+        setMeshActive(true);
+    else {
+        QMessageBox::warning(this, "Warning", "Error generating mesh", QMessageBox::Ok);
+    }
 }
 
 void MeshDialog::setMeshActive(bool meshIsActive, bool doToggleProfile) {

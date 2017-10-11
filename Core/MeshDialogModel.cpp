@@ -12,7 +12,7 @@ MeshDialogModel::~MeshDialogModel() {
     mMeshProcess.kill();
 }
 
-void MeshDialogModel::runMesher() {
+bool MeshDialogModel::runMesher() {
     QSettings settings;
     QString scratchDir = settings.value("mesher/scratchDir").toString();
     QString meshDatFile = settings.value("mesher/initMeshFile").toString();
@@ -46,16 +46,18 @@ void MeshDialogModel::runMesher() {
         mMeshProcess.setStandardInputFile(meshInFile);
         mMeshProcess.start(mesherPath);
         mMeshProcess.waitForFinished();
-        meshingFinished(mMeshProcess.exitCode(), mMeshProcess.exitStatus(), meshDatFile);
+        r &= meshingFinished(mMeshProcess.exitCode(), mMeshProcess.exitStatus(), meshDatFile);
     }
+
+    return r;
 }
 
-void MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus, QString meshDatFile)
+bool MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitStatus, QString meshDatFile)
 {
+    bool r = true;
+
     if (exitStatus == QProcess::NormalExit && exitCode == 0)
     {
-        bool r = true;
-
         qInfo() << "Process finished normally";
 
         //Set and/or check existance of output data file
@@ -75,7 +77,7 @@ void MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitSta
         }
         else
         {
-            qWarning() << "Mesh not created!";
+            qWarning() << "Mesh not created! Check mesh file " << meshDatFile;
         }
 
         mBoundaryPointModel->setPoints(mMesh->boundaryPoints());
@@ -88,7 +90,10 @@ void MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitSta
         writeStdOutToLog();
         qCritical() << "Standard Error";
         writeStdErrToLog();
+        r = false;
     }
+
+    return r;
 }
 
 void MeshDialogModel::stopMesher()
