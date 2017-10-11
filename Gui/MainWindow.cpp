@@ -191,6 +191,7 @@ void MainWindow::on_loadOptimisationButton_clicked()
 
     fileNames.append(QFileDialog::getOpenFileName(this, "Select AerOpt Input File",
                                                   startLoadPath, "AerOpt Input Files (AerOpt_InputParameters.txt)"));
+
     if (fileNames.size() > 0 && fileNames[0].size() > 0)
     {
         for (const QString &f: fileNames)

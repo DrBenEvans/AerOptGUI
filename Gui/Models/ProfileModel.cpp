@@ -31,6 +31,8 @@ bool ProfileModel::addProfileFromFilePath(QString filePath) {
         beginInsertRows(QModelIndex(),first,last);
         mProfileList.push_back(std::move(profile));
         endInsertRows();
+
+        emit newProfileAdded(0);
     }
 
     return success;

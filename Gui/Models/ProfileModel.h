@@ -18,6 +18,9 @@ public:
     ProfilePoints getProfileAtIndex(const QModelIndex index) const;
     QString getDisplayStringAtIndex(const QModelIndex index) const;
 
+signals:
+    void newProfileAdded(int index);
+
 private:
     std::vector<std::unique_ptr<Profile>> mProfileList;
 };

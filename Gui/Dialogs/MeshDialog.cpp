@@ -36,6 +36,12 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidg
         mProfileView->setVisible(checked);
     });
 
+    connect(&mProfileModel, &ProfileModel::newProfileAdded, [this](int index) {
+        ui->profile->setCurrentIndex(index);
+        ui->profile->update();
+        setProfile();
+    });
+
     // profiles QComboBox setup
     ui->profile->setModel(&mProfileModel);
 
