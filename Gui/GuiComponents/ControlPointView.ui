@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>403</width>
-    <height>122</height>
+    <height>126</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -102,7 +102,7 @@
        <number>0</number>
       </property>
       <property name="verticalSpacing">
-       <number>-1</number>
+       <number>6</number>
       </property>
       <item row="0" column="1">
        <widget class="QDoubleSpinBox" name="xBoundMin">
@@ -118,6 +118,9 @@
         <property name="maximum">
          <double>0.000000000000000</double>
         </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
+        </property>
        </widget>
       </item>
       <item row="0" column="3">
@@ -130,6 +133,9 @@
         </property>
         <property name="maximum">
          <double>9999.989999999999782</double>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
         </property>
        </widget>
       </item>
@@ -153,6 +159,9 @@
         </property>
         <property name="maximum">
          <double>9999.989999999999782</double>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
         </property>
        </widget>
       </item>
@@ -206,6 +215,9 @@
         </property>
         <property name="maximum">
          <double>0.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.010000000000000</double>
         </property>
        </widget>
       </item>
