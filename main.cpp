@@ -29,6 +29,7 @@ void firstTimeSetup(QString AerOptWorkDir) {
         exit(-1);
     }
 
+    AerOptWorkDir = QDir::toNativeSeparators(AerOptWorkDir);
     settings.setValue("AerOpt/workingDirectory", AerOptWorkDir);
     QDir().mkdir(AerOptWorkDir);
 
