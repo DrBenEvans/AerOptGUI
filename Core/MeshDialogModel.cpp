@@ -1,6 +1,7 @@
 #include "MeshDialogModel.h"
 #include <QDebug>
 #include <QSettings>
+#include <QString>
 #include "FileManipulation.h"
 
 MeshDialogModel::MeshDialogModel(QObject *parent) : MeshModel(parent)

@@ -1,4 +1,5 @@
 #include "ColorMapper.h"
+#include <tuple>
 
 ColorMapper::ColorMapper()
 {
