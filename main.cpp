@@ -13,14 +13,21 @@
 #include <QDebug>
 #include <QSettings>
 #include <QSplashScreen>
+#include <QMessageBox>
 
 #include "DebugOutput.h"
 #include "MainWindow.h"
 #include "OptimisationModel.h"
+#include "windowsizing.h"
 
 void firstTimeSetup(QString AerOptWorkDir) {
     QSettings settings;
     settings.clear();
+
+    if(AerOptWorkDir.indexOf(' ') >= 0) {
+        QMessageBox::critical(0, "Error", "Invalid Path: AerOpt executable path must not contains spaces.", QMessageBox::Ok);
+        exit(-1);
+    }
 
     settings.setValue("AerOpt/workingDirectory", AerOptWorkDir);
     QDir().mkdir(AerOptWorkDir);
