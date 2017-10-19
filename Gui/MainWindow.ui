@@ -323,8 +323,11 @@
            <property name="pixmap">
             <pixmap resource="../Resourses.qrc">:/images/canvas_logo.png</pixmap>
            </property>
+           <property name="scaledContents">
+            <bool>false</bool>
+           </property>
            <property name="alignment">
-            <set>Qt::AlignCenter</set>
+            <set>Qt::AlignBottom|Qt::AlignRight|Qt::AlignTrailing</set>
            </property>
           </widget>
          </item>
