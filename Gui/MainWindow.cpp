@@ -7,6 +7,7 @@
 #include "MeshDialog.h"
 #include "MeshView.h"
 #include "Mesh.h"
+#include "windowsizing.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -179,6 +180,7 @@ void MainWindow::newOptimisation() {
 void MainWindow::on_actionShowLog_triggered() {
     DebugOutput& debugOutput = DebugOutput::Instance();
     debugOutput.show();
+    centerAndResizeWindow(&debugOutput, 0.5, 0.8);
 }
 
 void MainWindow::on_loadOptimisationButton_clicked()

@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QMessageBox>
 #include <QSettings>
+#include "windowsizing.h"
 
 Q_DECLARE_METATYPE(Enum::Mesh)
 
@@ -76,6 +77,8 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidg
     mScene->addItem(mMeshView);
 
     setProfile();
+
+    centerAndResizeWindow(this, 0.8, 0.8);
 }
 
 void MeshDialog::setProfile() {

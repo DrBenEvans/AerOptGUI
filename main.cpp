@@ -187,8 +187,10 @@ int main(int argc, char *argv[])
     //Main window setup and show.
     MainWindow w;
     w.setWindowTitle("AerOpt");
+    centerAndResizeWindow(&w);
     w.setOptimisationModel(optimisationModel);
     w.show();
+    w.setSplitterSizes();
 
     return app.exec();
 }
