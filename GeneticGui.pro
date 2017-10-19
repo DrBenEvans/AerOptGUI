@@ -37,7 +37,7 @@ QMAKE_MAC_SDK = macosx10.12
 
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE += -O3
-QMAKE_CXXFLAGS += -std=c++11
+QMAKE_CXXFLAGS += -std=c++14
 QMAKE_CXXFLAGS += -Wno-unused-parameter
 QMAKE_CXXFLAGS += -Wno-deprecated
 QMAKE_CXXFLAGS += -Wno-unused-function
@@ -74,7 +74,8 @@ SOURCES += \
     Gui/GuiComponents/PlotterWidget.cpp \
     Core/MeshDialogModel.cpp \
     Core/MeshModel.cpp \
-    Gui/GraphicsItems/ColorMapper.cpp
+    Gui/GraphicsItems/ColorMapper.cpp \
+    Gui/Dialogs/windowsizing.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -105,7 +106,8 @@ HEADERS  += \
     Gui/GuiComponents/PlotterWidget.h \
     Core/MeshDialogModel.h \
     Core/MeshModel.h \
-    Gui/GraphicsItems/ColorMapper.h
+    Gui/GraphicsItems/ColorMapper.h \
+    Gui/Dialogs/windowsizing.h
 
 FORMS    += \
     Gui/DebugOutput.ui \

@@ -20,6 +20,7 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
     void setOptimisationModel(OptimisationModel* optimisationModel);
+    void setSplitterSizes();
 
 public slots:
     void newOptimisation();

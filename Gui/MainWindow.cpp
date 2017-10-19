@@ -26,6 +26,30 @@ MainWindow::MainWindow(QWidget *parent) :
     setupGraphicsView();
 }
 
+void MainWindow::setSplitterSizes() {
+
+    QList<int> sizes;
+
+    // set sidebar splitter sizes
+    sizes.clear();
+    int height = ui->splitter_sidebar->height();
+    int height_plot = 0.33*height;
+    height = height - height_plot;
+    sizes.append(height_plot);
+    sizes.append(height);
+    ui->splitter_sidebar->setSizes(sizes);
+
+    // set splitter sizes
+    sizes.clear();
+    int width = ui->splitter_main->width();
+    int width_plot = 0.33*width;
+    width = width - width_plot;
+    sizes.append(width_plot);
+    sizes.append(width);
+
+    ui->splitter_main->setSizes(sizes);
+}
+
 void MainWindow::setupGraphicsView() {
     ViewScaler* mScale = new ViewScaler(this);
 
