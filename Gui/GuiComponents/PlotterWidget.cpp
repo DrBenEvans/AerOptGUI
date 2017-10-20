@@ -208,7 +208,7 @@ void PlotterWidget::clearData()
         graph(i)->setData(x, y);
         graph(i)->setPen(QPen(QColor(255, 100, 0)));
         graph(i)->setLineStyle(QCPGraph::lsLine);
-        graph(i)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 5));
+        graph(i)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 15));
         graph(i)->setVisible(false);
         graph(i)->setSelectable(QCP::stSingleData);
     }
