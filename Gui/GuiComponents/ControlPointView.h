@@ -34,6 +34,7 @@ private:
     Ui::ControlPointView *ui;
     BoundaryPointModel* mBoundaryPointModel;
     int mBoundaryPointIndex = -1;
+    QString mInitialControlPointText;
 };
 
 #endif // CONTROLPOINTVIEW_H

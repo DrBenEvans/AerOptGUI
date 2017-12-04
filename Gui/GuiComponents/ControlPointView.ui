@@ -61,14 +61,14 @@
         </size>
        </property>
        <property name="text">
-        <string>No Control points selected.</string>
+        <string> No Control Nodes selected</string>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QCheckBox" name="controlPointCheckBox">
        <property name="text">
-        <string>Control Point</string>
+        <string>Control Node</string>
        </property>
       </widget>
      </item>

@@ -100,14 +100,14 @@ private:
     void clearMeshConnectivities();
     /**
      * @brief selectControlPoint
-     * @param index Index of the control point to be selected.
-     * Sets the control point of interest as selected.
+     * @param index Index of the control node to be selected.
+     * Sets the control node of interest as selected.
      */
     void selectControlPoint(const unsigned int& index);
     /**
      * @brief checkControlPointIntegrity
-     * @return True if the control point is OK.
-     * Checks the integrity of the control points.
+     * @return True if the control node is OK.
+     * Checks the integrity of the control nodes.
      */
     bool checkControlPointIntegrity();
     //mesh points

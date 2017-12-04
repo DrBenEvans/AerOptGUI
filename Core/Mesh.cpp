@@ -387,7 +387,7 @@ const BConnectivities& Mesh::getBConnects() const
 
 void Mesh::selectControlPoint(const unsigned int& index)
 {
-    //if control point exists then delete, else add.
+    //if control node exists then delete, else add.
     auto it = std::find (mControlPoints.begin(), mControlPoints.end(), index);
     if (it != mControlPoints.end()) mControlPoints.erase(it);
     else mControlPoints.emplace_back(index);
@@ -404,7 +404,7 @@ bool Mesh::checkBoundaryIntegrity()
     return r;
 }
 
-//control points
+//control nodes
 bool Mesh::checkControlPointIntegrity()
 {
     bool r = true;

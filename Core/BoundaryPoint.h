@@ -28,7 +28,7 @@ public:
     qreal y() const;
     QPointF pos();
 
-    // control points bounds
+    // control node bounds
     void setControlPoint(bool isCtl);
     bool isControlPoint();
     QRectF controlPointRect();

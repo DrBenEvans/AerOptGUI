@@ -182,7 +182,7 @@ public:
     void setLabel(QString label);
     Mesh *initMesh();
 
-    // control points
+    // control nodes
     std::vector<BoundaryPoint*> controlPoints();
     void setControlPoints(std::vector<BoundaryPoint*> controlPoints);
     int controlPointCount();

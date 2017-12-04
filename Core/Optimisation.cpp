@@ -448,7 +448,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
     }
     else
     {
-        qWarning() << "Number of control points is zero or AerOpt Input File could not be created.";
+        qWarning() << "Number of control nodes is zero or AerOpt Input File could not be created.";
     }
     outfile.close();
 
@@ -786,15 +786,12 @@ bool Optimisation::readAerOptSettings(QString filePath) {
                 }
                 else if("IV%xrange") {
                     QStringList xrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
-                    // set control points not implements
                 }
                 else if("IV%yrange") {
                     QStringList yrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
-                    // set control points not implements
                 }
                 else if("IV%smoothfactor") {
                     QStringList smoothfactor = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
-                    // set control points not implements
                 }
             }
         }

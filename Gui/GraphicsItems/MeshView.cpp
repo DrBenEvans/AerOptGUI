@@ -70,7 +70,7 @@ void MeshView::boundaryPointsReset()
         delete item;
     }
 
-    // Draw control point objects, if mesh is set
+    // Draw control node objects, if mesh is set
     if(mBoundaryPointModel) {
         for (int index=0; index < mBoundaryPointModel->count(); index++)
         {

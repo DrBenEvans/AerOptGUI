@@ -17,12 +17,14 @@ ControlPointView::ControlPointView(QWidget *parent) :
     connect(ui->yBoundMax, dblSpinBoxSignal, this, &ControlPointView::controlBoundaryChanged);
     connect(ui->controlPointCheckBox, &QCheckBox::toggled, this, &ControlPointView::updateModelControlPointState);
 
+    mInitialControlPointText = ui->coord->text();
+
     resetView();
 }
 
 void ControlPointView::resetView() {
     ui->controlPointCheckBox->setVisible(false);
-    ui->coord->setText("No control points selected.");
+    ui->coord->setText(mInitialControlPointText);
 
     controlPointParamsVisible(false);
 }

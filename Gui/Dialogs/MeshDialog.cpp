@@ -68,7 +68,7 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidg
     ui->thickness->setValue(mesh->boundaryLayerThickness());
     ui->growthFactor->setValue(mesh->growthFactor());
 
-    // create control point view
+    // create control noded view
     ControlPointView* controlPointView = new ControlPointView(ui->graphicsViewContainer);
     controlPointView->setModel(mMeshDialogModel->boundaryPointModel());
     controlPointView->move(10, 10);
@@ -131,7 +131,7 @@ void MeshDialog::accept()
 {
     if(mMeshDialogModel->boundaryPointModel()->controlPointCount() == 0) {
         QMessageBox::warning(this, "Message Box",
-                                      "No control points set. Please select some control points before proceeding",
+                                      "No control nodes set. Please select some control nodes before proceeding",
                                       QMessageBox::Ok);
         return;
     }
