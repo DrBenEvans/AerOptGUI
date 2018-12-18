@@ -39,7 +39,7 @@ namespace Enum
 
 	enum Mesh
 	{
-		COURSE,
+        COARSE,
 		MEDIUM,
 		FINE
 	};
