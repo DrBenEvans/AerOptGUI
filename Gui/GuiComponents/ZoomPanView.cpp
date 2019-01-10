@@ -12,6 +12,11 @@ ZoomPanView::ZoomPanView(QWidget* parent) :
     setTransformationAnchor(QGraphicsView::AnchorViewCenter);
 }
 
+/**
+  Zoom in or out depending on direction of mouse scroll
+ * @brief ZoomPanView::wheelEvent
+ * @param event
+ */
 void ZoomPanView::wheelEvent(QWheelEvent* event) {
     //Scale the view ie. do the zoom
     qInfo() << event->delta();
@@ -22,16 +27,12 @@ void ZoomPanView::wheelEvent(QWheelEvent* event) {
     }
 }
 
-double ZoomPanView::zoomScaleFactor() {
-    return 1.15;
-}
-
 void ZoomPanView::zoomIn() {
-    double scaleFactor = zoomScaleFactor();
+    double scaleFactor = ZOOM_SCALE_FACTOR;
     scale(scaleFactor, scaleFactor);
 }
 
 void ZoomPanView::zoomOut() {
-    double scaleFactor = zoomScaleFactor();
+    double scaleFactor = ZOOM_SCALE_FACTOR;
     scale(1.0 / scaleFactor, 1.0 / scaleFactor);
 }

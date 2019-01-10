@@ -5,15 +5,16 @@
 
 class ZoomPanView : public QGraphicsView
 {
-public:
-    ZoomPanView(QWidget* parent = 0);
+    public:
+        ZoomPanView(QWidget* parent = 0);
 
-    void wheelEvent(QWheelEvent* event);
+        void wheelEvent(QWheelEvent* event);
 
-private:
-    double zoomScaleFactor();
-    void zoomIn();
-    void zoomOut();
+        const double ZOOM_SCALE_FACTOR = 1.15;
+
+    private:
+        void zoomIn();
+        void zoomOut();
 };
 
 #endif // ZOOMPANVIEW_H
