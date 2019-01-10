@@ -13,6 +13,7 @@ ZoomPanView::ZoomPanView(QWidget* parent) :
 }
 
 void ZoomPanView::wheelEvent(QWheelEvent* event) {
+
     //Scale the view ie. do the zoom
     qInfo() << event->delta();
     if(event->delta() > 0) {
@@ -22,16 +23,10 @@ void ZoomPanView::wheelEvent(QWheelEvent* event) {
     }
 }
 
-double ZoomPanView::zoomScaleFactor() {
-    return 1.15;
-}
-
 void ZoomPanView::zoomIn() {
-    double scaleFactor = zoomScaleFactor();
-    scale(scaleFactor, scaleFactor);
+    scale(ZOOM_SCALE_FACTOR, ZOOM_SCALE_FACTOR);
 }
 
 void ZoomPanView::zoomOut() {
-    double scaleFactor = zoomScaleFactor();
-    scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+    scale(1.0 / ZOOM_SCALE_FACTOR, 1.0 / ZOOM_SCALE_FACTOR);
 }
