@@ -9,6 +9,9 @@
 #ifndef ENUMERATIONS
 #define ENUMERATIONS
 
+/**
+ * All enums used in the AerOpt Project
+ */
 namespace Enum
 {
 
@@ -18,6 +21,11 @@ namespace Enum
 	//4 - min Drag
 	//5 - max Downforce
 	//6 - min Lift
+
+    /**
+     * @brief The ObjFunc enum
+     * Optimisation criteria
+     */
 	enum ObjFunc
 	{
 		LIFTDRAG = 1,
@@ -29,14 +37,22 @@ namespace Enum
         FUNCNOTSET
 	};
 
+    /**
+     * @brief The OptMethod enum
+     * Optimisation Algorithms
+     */
     enum OptMethod
     {
-        MCS = 0,
-        DE,
-        PSO,
+        MCS,        //Modified Cuckoo search
+        DE,         //Differential Evolution
+        PSO,        //Particle Swarm Optimisation
         METHODNOTSET
     };
 
+    /**
+     * @brief The Mesh enum
+     * Mesh density settings
+     */
 	enum Mesh
 	{
         COARSE,
