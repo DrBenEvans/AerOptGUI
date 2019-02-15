@@ -13,13 +13,15 @@ MeshDialogModel::~MeshDialogModel() {
     mMeshProcess.kill();
 }
 
+/**
+ * @brief MeshDialogModel::runMesher Sets up the necessary files to beginning generating a mesh, then makes a method call to generate the mesh.
+ * @return true iff mesh generated successfully, false if data files not created, or meshing process did not complete
+ */
 bool MeshDialogModel::runMesher() {
     QSettings settings;
     QString scratchDir = settings.value("mesher/scratchDir").toString();
     QString meshDatFile = settings.value("mesher/initMeshFile").toString();
     QString mesherPath = settings.value("mesher/exe").toString();
-
-    bool r = true;
 
     FileManipulation::emptyFolder(scratchDir);
 
@@ -39,12 +41,16 @@ bool MeshDialogModel::runMesher() {
     meshGeoFile = QDir(scratchDir + "/scratch.geo").absolutePath();
     meshGeoFile = QDir::toNativeSeparators(meshGeoFile);
 
-    r &= mMesh->createFiles(meshInFile, meshBacFile, meshGeoFile, meshDatFile);
+    //Try to create data files
+    bool r = mMesh->createFiles(meshInFile, meshBacFile, meshGeoFile, meshDatFile);
 
+    //If files were created successfully, then generate the mesh / start the mesher
     if (r)
     {
         mMeshProcess.setWorkingDirectory(scratchDir);
         mMeshProcess.setStandardInputFile(meshInFile);
+
+        //Generate Mesh
         mMeshProcess.start(mesherPath);
         mMeshProcess.waitForFinished();
         r &= meshingFinished(mMeshProcess.exitCode(), mMeshProcess.exitStatus(), meshDatFile);
@@ -84,6 +90,8 @@ bool MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitSta
         mBoundaryPointModel->setPoints(mMesh->boundaryPoints());
         emit meshChanged();
     }
+
+    // If process did not complete normally then output error log
     else
     {
         qCritical() << "Process finished abnormally with exit code: " << exitCode;
