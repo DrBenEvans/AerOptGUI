@@ -105,6 +105,10 @@ bool MeshDialogModel::meshingFinished(int exitCode, QProcess::ExitStatus exitSta
     return r;
 }
 
+/**
+ * @brief MeshDialogModel::stopMesher
+ * Stop meshing process immediately
+ */
 void MeshDialogModel::stopMesher()
 {
     mMeshProcess.kill();
