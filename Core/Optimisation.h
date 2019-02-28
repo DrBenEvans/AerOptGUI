@@ -56,7 +56,7 @@ public:
 	 * @brief runTime
 	 * @return True if runtime is set.
 	 */
-	bool runTime() const;
+    bool runTime() const;
 	/**
 	 * @brief setRunTime
 	 * @param runTime
@@ -173,29 +173,103 @@ public:
      */
     bool load(QString aerOptInputFilePath);
 
+    /**
+     * @brief getNoTop Return the percentage of lower-fitness agents that should be discarded during an iteration of the optimisation algorithm
+     * @return percentage of lower-fitness agents that should be discarded
+     */
     int getNoTop() const;
+
+    /**
+     * @brief setNoTop Set the percentage of lower-fitness agents that should be discarded during an iteration of the optimisation algorithm
+     * @param noTop The percentage of lower-fitness agents that should be discarded
+     */
     void setNoTop(int noTop);
 
+    /**
+     * @brief label Returns the name / label for the optimisation
+     * @return Optimisation name
+     */
     QString label() const;
-    QString simulationDirectoryName();
-    QString simulationDirectoryPath();
+
+    /**
+     * @brief setLabel Set the label / name for the optimisation
+     * @param label The label
+     */
     void setLabel(QString label);
+
+
+    /**
+     * @brief simulationDirectoryName Returns a modified version of the label, suitable for directory naming.
+     * Any non-alphanumeric character in label is replaced with '_'
+     * @return Modified label
+     */
+    QString simulationDirectoryName();
+
+    /**
+     * @brief simulationDirectoryPath Returns the OS-specific directory path for the optimisation
+     * @return the directory path for the optimisation
+     */
+    QString simulationDirectoryPath();
+
+    /**
+     * @brief initMesh Return the initial mesh.
+     * @return the initial mesh
+     */
     Mesh *initMesh();
+
 
     // control nodes
     std::vector<BoundaryPoint*> controlPoints();
     void setControlPoints(std::vector<BoundaryPoint*> controlPoints);
     int controlPointCount();
 
+    /**
+     * @brief Optimisation::run Run AerOpt on these optimisation parameters
+     * @return true iff optimisation completed successfully, false if there was a file-handling error.
+     */
     bool run();
+
+
+    /**
+     * @brief setModel Set the optimisation Model Handler for interacting with the UI.
+     * @param model
+     */
     void setModel(OptimisationModel* model);
+
+    /**
+     * @brief allfitness
+     * @return a vector containing the fitness of each agent
+     */
     std::vector<std::vector<double>> allfitness();
+
+    /**
+     * @brief fitness Returns the fitness for a given generation and agent
+     * @param generationIndex Generation Index
+     * @param agentIndex Agent Index
+     * @return If agent and generation indices are valid, return the specified fitness value, otherwise return quiet_NaN
+     */
     double fitness(int generationIndex, int agentIndex);
+
+    /**
+     * @brief outputText Return the output log
+     * @return output log
+     */
     QString outputText();
+
+    /**
+     * @brief fitnessRange Return the minimum and maximum fitness values present in an optimisation (for all generations)
+     * @return First element of pair is the minimum fitness, second is the maximum
+     */
     std::pair<double,double> fitnessRange();
 
+    /**
+     * @brief initProfilePoints Returns the list of points for the initial profile
+     * @return The list of points for the initial profile
+     */
     ProfilePoints initProfilePoints();
+
 private:
+
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
     bool createAerOptInFile(const QString &filePath);
     bool createAerOptNodeFile(const QString &filePath);
@@ -219,31 +293,77 @@ private:
     QString mLabel = "";
 
 	//Objective function attributes
+    /**
+     * @brief mObjFunc The function to be optimised.
+     */
     Enum::ObjFunc mObjFunc;
 
+
 	//Boundary condition attributes
+    /**
+     * @brief mMachNo Mach Number
+     */
 	float mMachNo;
+    /**
+     * @brief mReNo Reynolds Number
+     */
 	float mReNo;
+    /**
+     * @brief mFreeAlpha Angle of Attack
+     */
 	float mFreeAlpha;
+    /**
+     * @brief mFreePress Pressure Absolute
+     */
 	float mFreePress;
+    /**
+     * @brief mFreeTemp Temperature Absolute
+     */
 	float mFreeTemp;
 
+
 	//Optimiser parameters
+    /**
+     * @brief mOptimisationMethod The optimisation algorithm
+     */
     Enum::OptMethod mOptimisationMethod;
+    /**
+     * @brief mNoAgents The number of agents (solutions) per generation
+     */
 	int mNoAgents;
+    /**
+     * @brief mNoGens The number of generations for which the optimisation algorithm should iterate
+     */
 	int mNoGens;
+
+    /**
+     * @brief mNoTop The percentage of low-fitness agents that should be discarded
+     */
     int mNoTop;
 
     Mesh* mInitMesh;
     std::vector<BoundaryPoint*> mControlPoints;
+
+    /**
+     * @brief mFitness Vector containing the fitness of each agent
+     */
     std::vector<std::vector<double>> mFitness;
 
     ProcessManager* mProcess = nullptr;
 
+    /**
+     * @brief mOptimisationModel Optimisation Model Handler for interacting with the UI.
+     */
     OptimisationModel* mOptimisationModel;
 
+    /**
+     * @brief mOutputLog Complete output log for optimisation process.
+     */
     QString mOutputLog = "";
 
+    /**
+     * @brief mProfilePoints A list of the points of the initial profile.
+     */
     ProfilePoints mProfilePoints;
 };
 
