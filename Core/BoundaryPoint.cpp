@@ -14,6 +14,7 @@
 
 BoundaryPoint::BoundaryPoint(qreal xcoord, qreal ycoord) :
     mCoord(xcoord,ycoord),
+    //  initial bounding box
     mControlPointRect(-0.01,-0.01,0.02,0.02)
 {
 }
