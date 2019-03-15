@@ -3,6 +3,7 @@
 #include <QSettings>
 #include <QFileInfo>
 
+//Container for profile class
 ProfileModel::ProfileModel(QObject *parent) : QAbstractListModel(parent)
 {
     QSettings settings;
@@ -32,6 +33,7 @@ bool ProfileModel::addProfileFromFilePath(QString filePath) {
         mProfileList.push_back(std::move(profile));
         endInsertRows();
 
+        //Emit a signal that a new profile has been added for other processes to see
         emit newProfileAdded(0);
     }
 
@@ -63,9 +65,11 @@ QVariant ProfileModel::data(const QModelIndex &index, int role) const {
         QString displayString = getDisplayStringAtIndex(index);
         qDebug() << displayString;
         return displayString;
+
     } else if (role == Qt::UserRole) {
         return QVariant::fromValue(getProfileAtIndex(index));
-    }
 
-    return QVariant();
+    } else {
+        return QVariant();
+    }
 }
