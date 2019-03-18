@@ -14,6 +14,13 @@
 #include "BoundaryPoint.h"
 #include <QString>
 
+#define SSH_NO_CPP_EXCEPTIONS
+#define LIBSSH_STATIC 1
+#include <libssh/libsshpp.hpp>
+#include <libssh/sftp.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 class OptimisationModel;
 
 /**
@@ -216,6 +223,12 @@ private:
     QString aerOptNodeFileCopyPath();
     QString aerOptInputFileCopyPath();
 
+    // SSH operations
+    ssh_session createSSHSession();
+    ssh_channel createSSHChannel(ssh_session session);
+    void sshExecute(char* command);
+    int fileToCluster();
+
     QString mLabel = "";
 
 	//Objective function attributes
@@ -245,6 +258,7 @@ private:
     QString mOutputLog = "";
 
     ProfilePoints mProfilePoints;
+
 };
 
 #endif // OptimisationRun_H

@@ -13,6 +13,7 @@
 #include <QProcess>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "BoundaryPoint.h"
 #include "Optimisation.h"
 #include "OptimisationModel.h"
@@ -271,6 +272,150 @@ void Optimisation::copyFileToSimulationDir(QString source) {
     FileManipulation::copyFile(source, dest);
 }
 
+
+
+
+ssh_session Optimisation::createSSHSession(){
+    ssh_session session = ssh_new();
+    int rc;
+    if (session == NULL)
+        exit(-1);
+
+    ssh_options_set(session, SSH_OPTIONS_HOST, "sunbird.swansea.ac.uk");
+    char password[20];
+    std::cout << "Cluster password: ";
+    std::cin >> password;
+    ssh_options_set(session, SSH_OPTIONS_USER, "s.j.m.o.rantaharju");
+
+    rc = ssh_connect(session);
+    rc &= ssh_userauth_password(session, NULL, password);
+    if (rc != SSH_OK)
+    {
+      fprintf(stderr, "Error connecting to localhost: %s\n",
+              ssh_get_error(session));
+      exit(-1);
+    }
+
+    return session;
+}
+
+ssh_channel Optimisation::createSSHChannel(ssh_session session){
+    ssh_channel channel;
+    int rc;
+
+    channel = ssh_channel_new(session);
+    if (channel == NULL){
+        std::cout << "Error creating an ssh channel";
+        exit(-1);
+    }
+    rc = ssh_channel_open_session(channel);
+    if (rc != SSH_OK)
+    {
+      fprintf(stderr, "Error opening ssh channel %s\n",
+              ssh_get_error(session));
+      ssh_channel_close(channel);
+      ssh_channel_free(channel);
+      exit(-1);
+    }
+
+    return channel;
+}
+
+void Optimisation::sshExecute(char* command){
+    int rc;
+    ssh_channel channel;
+    ssh_session session = createSSHSession();
+    channel = createSSHChannel(session);
+    rc = ssh_channel_request_exec(channel, command);
+    if (rc != SSH_OK)
+    {
+      fprintf(stderr, "Failed to execute command over ssh\n");
+      ssh_channel_close(channel);
+      ssh_channel_free(channel);
+      exit(-1);
+    }
+    ssh_channel_send_eof(channel);
+    ssh_disconnect(session);
+    ssh_free(session);
+}
+
+
+
+
+int Optimisation::fileToCluster(){
+    int rc;
+    sshExecute("ps > aeropt_test");
+
+    sftp_session sftp;
+    sftp_file file;
+    char buffer[16384];
+    int nbytes, nwritten;
+    int fd;
+
+
+    ssh_session session = createSSHSession();
+    sftp = sftp_new(session);
+    if (sftp == NULL)
+    {
+      fprintf(stderr, "Error allocating SFTP session: %s\n",
+              ssh_get_error(session));
+      return SSH_ERROR;
+    }
+
+    rc = sftp_init(sftp);
+    if (rc != SSH_OK)
+    {
+      fprintf(stderr, "Error initializing SFTP session: %s.\n",
+              sftp_get_error(sftp));
+      sftp_free(sftp);
+      return rc;
+    }
+
+    file = sftp_open(sftp, "aeropt_test", O_RDONLY, 0);
+    if (file == NULL) {
+        fprintf(stderr, "Can't open file for reading: %s\n",
+                ssh_get_error(session));
+        return SSH_ERROR;
+    }
+    fd = open("aeropt_test", O_CREAT);
+    if (fd < 0) {
+        fprintf(stderr, "Can't open file for writing: %s\n",
+                strerror(errno));
+        return SSH_ERROR;
+    }
+
+    for (;;) {
+          nbytes = sftp_read(file, buffer, sizeof(buffer));
+          if (nbytes == 0) {
+              break; // EOF
+          } else if (nbytes < 0) {
+              fprintf(stderr, "Error while reading file: %s\n",
+                      ssh_get_error(session));
+              sftp_close(file);
+              return SSH_ERROR;
+          }
+          nwritten = write(fd, buffer, nbytes);
+          if (nwritten != nbytes) {
+              fprintf(stderr, "Error writing: %s\n",
+                      strerror(errno));
+              sftp_close(file);
+              return SSH_ERROR;
+          }
+          std::cout << 'reading';
+    }
+
+    rc = sftp_close(file);
+    if (rc != SSH_OK) {
+        fprintf(stderr, "Can't close the read file: %s\n",
+                ssh_get_error(session));
+        return rc;
+    }
+
+    ssh_disconnect(session);
+    ssh_free(session);
+}
+
+
 bool Optimisation::run() {
     // load settings
     QSettings settings;
@@ -298,6 +443,7 @@ bool Optimisation::run() {
     //then run aeropt
     if (r)
     {
+        fileToCluster();
         mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
         qInfo() << "Copying input files to optimisation output directory";
         copyFileToSimulationDir(AerOptInFile);
