@@ -6,6 +6,8 @@
 **
 **********************************************/
 
+#define SUBMIT_TO_CLUSTER
+
 #include <QDebug>
 #include <QPointF>
 #include <QSettings>
@@ -282,13 +284,18 @@ ssh_session Optimisation::createSSHSession(){
         exit(-1);
 
     ssh_options_set(session, SSH_OPTIONS_HOST, "sunbird.swansea.ac.uk");
-    char password[20];
-    std::cout << "Cluster password: ";
-    std::cin >> password;
-    ssh_options_set(session, SSH_OPTIONS_USER, "s.j.m.o.rantaharju");
+    std::string username;
+    std::string password;
+    std::ifstream infile("clusterlogin", std::ifstream::in);
+    std::getline(infile, username);
+    std::getline(infile, password);
+
+    infile.close();
+
+    ssh_options_set(session, SSH_OPTIONS_USER, username.c_str());
 
     rc = ssh_connect(session);
-    rc &= ssh_userauth_password(session, NULL, password);
+    rc &= ssh_userauth_password(session, NULL, password.c_str());
     if (rc != SSH_OK)
     {
       fprintf(stderr, "Error connecting to localhost: %s\n",
@@ -321,15 +328,17 @@ ssh_channel Optimisation::createSSHChannel(ssh_session session){
     return channel;
 }
 
-void Optimisation::sshExecute(char* command){
+void Optimisation::sshExecute(std::string command){
     int rc;
     ssh_channel channel;
     ssh_session session = createSSHSession();
     channel = createSSHChannel(session);
-    rc = ssh_channel_request_exec(channel, command);
+    rc = ssh_channel_request_exec(channel, command.c_str());
     if (rc != SSH_OK)
     {
-      fprintf(stderr, "Failed to execute command over ssh\n");
+      fprintf(stderr, "Failed to execute command 1\n");
+      fprintf(stderr, "Error opening ssh channel %s\n",
+              ssh_get_error(session));
       ssh_channel_close(channel);
       ssh_channel_free(channel);
       exit(-1);
@@ -340,26 +349,16 @@ void Optimisation::sshExecute(char* command){
 }
 
 
-
-
-int Optimisation::fileToCluster(){
-    int rc;
-    sshExecute("ps > aeropt_test");
-
+sftp_session Optimisation::createSFTPSession(ssh_session session){
     sftp_session sftp;
-    sftp_file file;
-    char buffer[16384];
-    int nbytes, nwritten;
-    int fd;
+    int rc;
 
-
-    ssh_session session = createSSHSession();
     sftp = sftp_new(session);
     if (sftp == NULL)
     {
       fprintf(stderr, "Error allocating SFTP session: %s\n",
               ssh_get_error(session));
-      return SSH_ERROR;
+      exit(-1);
     }
 
     rc = sftp_init(sftp);
@@ -368,35 +367,51 @@ int Optimisation::fileToCluster(){
       fprintf(stderr, "Error initializing SFTP session: %s.\n",
               sftp_get_error(sftp));
       sftp_free(sftp);
-      return rc;
+      exit(-1);
     }
 
-    file = sftp_open(sftp, "aeropt_test", O_RDONLY, 0);
+    return sftp;
+}
+
+
+int Optimisation::FileToCluster(std::string source, std::string destination){
+    int rc;
+    sftp_session sftp;
+    sftp_file file;
+    char buffer[16384];
+    int nbytes, nwritten;
+    int fd;
+
+    ssh_session session = createSSHSession();
+    sftp = createSFTPSession(session);
+
+    file = sftp_open(sftp, destination.c_str(), O_WRONLY | O_CREAT, S_IRUSR|S_IWUSR);
     if (file == NULL) {
-        fprintf(stderr, "Can't open file for reading: %s\n",
+        fprintf(stderr, "FileToCluster: Can't open file for reading: %s\n",
                 ssh_get_error(session));
         return SSH_ERROR;
     }
-    fd = open("aeropt_test", O_CREAT);
+
+    fd = open(source.c_str(), O_RDONLY);
     if (fd < 0) {
-        fprintf(stderr, "Can't open file for writing: %s\n",
+        fprintf(stderr, "FileToCluster: Can't open file for writing: %s\n",
                 strerror(errno));
         return SSH_ERROR;
     }
 
     for (;;) {
-          nbytes = sftp_read(file, buffer, sizeof(buffer));
+          nbytes = read(fd, buffer, sizeof(buffer));
           if (nbytes == 0) {
               break; // EOF
           } else if (nbytes < 0) {
-              fprintf(stderr, "Error while reading file: %s\n",
+              fprintf(stderr, "FileToCluster: Error while reading file: %s\n",
                       ssh_get_error(session));
               sftp_close(file);
               return SSH_ERROR;
           }
-          nwritten = write(fd, buffer, nbytes);
+          nwritten = sftp_write(file, buffer, nbytes);
           if (nwritten != nbytes) {
-              fprintf(stderr, "Error writing: %s\n",
+              fprintf(stderr, "FileToCluster: Error writing: %s\n",
                       strerror(errno));
               sftp_close(file);
               return SSH_ERROR;
@@ -406,7 +421,64 @@ int Optimisation::fileToCluster(){
 
     rc = sftp_close(file);
     if (rc != SSH_OK) {
-        fprintf(stderr, "Can't close the read file: %s\n",
+        fprintf(stderr, "FileToCluster: Can't close the read file: %s\n",
+                ssh_get_error(session));
+        return rc;
+    }
+
+    ssh_disconnect(session);
+    ssh_free(session);
+}
+
+
+int Optimisation::fileFromCluster(std::string source, std::string destination){
+    int rc;
+    sftp_session sftp;
+    sftp_file file;
+    char buffer[16384];
+    int nbytes, nwritten;
+    int fd;
+
+    ssh_session session = createSSHSession();
+    sftp = createSFTPSession(session);
+
+    file = sftp_open(sftp, source.c_str(), O_RDONLY, 0);
+    if (file == NULL) {
+        fprintf(stderr, "fileFromCluster: Can't open file for reading: %s\n",
+                ssh_get_error(session));
+        return SSH_ERROR;
+    }
+
+    fd = open(destination.c_str(), O_WRONLY | O_CREAT, S_IRUSR|S_IWUSR);
+    if (fd < 0) {
+        fprintf(stderr, "fileFromCluster: Can't open file for writing: %s\n",
+                strerror(errno));
+        return SSH_ERROR;
+    }
+
+    for (;;) {
+          nbytes = sftp_read(file, buffer, sizeof(buffer));
+          if (nbytes == 0) {
+              break; // EOF
+          } else if (nbytes < 0) {
+              fprintf(stderr, "fileFromCluster: Error while reading file: %s\n",
+                      ssh_get_error(session));
+              sftp_close(file);
+              return SSH_ERROR;
+          }
+          nwritten = write(fd, buffer, nbytes);
+          if (nwritten != nbytes) {
+              fprintf(stderr, "fileFromCluster: Error writing: %s\n",
+                      strerror(errno));
+              sftp_close(file);
+              return SSH_ERROR;
+          }
+          std::cout << 'reading';
+    }
+
+    rc = sftp_close(file);
+    if (rc != SSH_OK) {
+        fprintf(stderr, "fileFromCluster: Can't close the read file: %s\n",
                 ssh_get_error(session));
         return rc;
     }
@@ -443,9 +515,19 @@ bool Optimisation::run() {
     //then run aeropt
     if (r)
     {
-        fileToCluster();
+#ifdef SUBMIT_TO_CLUSTER
+        FileToCluster(AerOptInFile.toUtf8().constData(),"AerOpt/Input_Data/AerOpt_InputParameters.txt");
+        std::string directory = simulationDirectoryName().toStdString()+"/Output_Data";
+        std::string filename = directory+"/output.log";
+        sshExecute("cd AerOpt/; mkdir -p "+directory);
+        sshExecute("cd AerOpt/; echo module load mkl > run.sh");
+        sshExecute("cd AerOpt/; echo './AerOpt 2>&1 > "+filename+"' >> run.sh");
+        sshExecute("cd AerOpt/; chmod +x run.sh");
+        sshExecute("cd AerOpt/; screen -d -m ./run.sh ");
+#else
         mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
         qInfo() << "Copying input files to optimisation output directory";
+#endif
         copyFileToSimulationDir(AerOptInFile);
         copyFileToSimulationDir(AerOptNodeFile);
         writeProfilePointsToSimulationDir();
@@ -569,6 +651,20 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         outfile << "IV%meanP = .true." << std::endl;
 
         outfile << "! Strings" << std::endl;
+#ifdef SUBMIT_TO_CLUSTER
+        std::ifstream infile("clusterlogin", std::ifstream::in);
+        std::string username;
+        std::getline(infile, username);
+        infile.close();
+        outfile << "IV%filepath = '/home/" << username << "/AerOpt/'" << std::endl;
+        outfile << "IV%clusterpath = '/home/" << username << "/AerOpt/'" << std::endl;
+        outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
+        outfile << "IV%filename = 'Geometry'" << std::endl;
+        outfile << "IV%Account = 'scw1000'" << std::endl;
+        outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
+        outfile << "IV%runOnCluster = 'Y'" << std::endl;
+        outfile << "IV%SystemType = 'B'" << std::endl;
+#else
         outfile << "IV%filepath = '" << workingDirectory.toStdString() << "'" << std::endl;
         outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
         outfile << "IV%filename = 'Geometry'" << std::endl;
@@ -582,6 +678,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
 #ifdef Q_OS_WIN32
         // do windows stuff here
         outfile << "IV%SystemType = 'W'" << std::endl;
+#endif
 #endif
         outfile << "IV%NoProcessors = 1" << std::endl;
         outfile << "IV%shapeenclosed = .true." << std::endl;

@@ -43,6 +43,8 @@ QMAKE_CXXFLAGS += -Wno-deprecated
 QMAKE_CXXFLAGS += -Wno-unused-function
 QMAKE_CXXFLAGS += -fmessage-length=0
 
+QMAKE_LFLAGS += -Bstatic
+
 TARGET = AerOptGui
 TEMPLATE = app
 
@@ -127,3 +129,19 @@ INCLUDEPATH += \
 
 RESOURCES += \
     Resourses.qrc
+
+LIBS += -L$$PWD/../vcpkg/packages/libssh_x64-windows/lib/ -lssh
+INCLUDEPATH += $$PWD/../vcpkg/packages/libssh_x64-windows/include
+DEPENDPATH += $$PWD/../vcpkg/packages/libssh_x64-windows/include
+
+LIBS += -L$$PWD/../vcpkg/packages/librsync_x64-windows/lib/ -lrsync
+INCLUDEPATH += $$PWD/../vcpkg/packages/librsync_x64-windows/include
+DEPENDPATH += $$PWD/../vcpkg/packages/librsync_x64-windows/include
+
+LIBS += -L$$PWD/../vcpkg/packages/openssl-windows_x64-windows/lib/ -llibeay32 -lssleay32
+INCLUDEPATH += $$PWD/../vcpkg/packages/openssl-windows_x64-windows/include
+DEPENDPATH += $$PWD/../vcpkg/packages/openssl-windows_x64-windows/include
+
+LIBS += -L$$PWD/../vcpkg/packages/zlib_x64-windows/lib/ -lzlib
+INCLUDEPATH += $$PWD/../vcpkg/packages/zlib_x64-windows/include
+DEPENDPATH += $$PWD/../vcpkg/packages/zlib_x64-windows/include

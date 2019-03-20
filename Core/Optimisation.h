@@ -226,8 +226,12 @@ private:
     // SSH operations
     ssh_session createSSHSession();
     ssh_channel createSSHChannel(ssh_session session);
-    void sshExecute(char* command);
-    int fileToCluster();
+    void sshExecute(std::string command);
+
+    // FTP operations
+    sftp_session createSFTPSession(ssh_session session);
+    int FileToCluster(std::string source, std::string destination);
+    int fileFromCluster(std::string source, std::string destination);
 
     QString mLabel = "";
 
