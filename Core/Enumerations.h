@@ -28,13 +28,14 @@ namespace Enum
      */
 	enum ObjFunc
 	{
-		LIFTDRAG = 1,
-		DISTORTION,
-		MAXLIFT,
-		MINDRAG,
-		MAXDOWNFORCE,
-        MINLIFT,
-        FUNCNOTSET
+        FUNCNOTSET,         // No setting selected
+        LIFTDRAG,           // Lift-Drag Ratio
+        DISTORTION,         //
+        MAXLIFT,            // Maximise Lift
+        MINDRAG,            // Minimise Drag
+        MAXDOWNFORCE,       // Maximise Downforce
+        MINLIFT,            // Minimise Lift
+
 	};
 
     /**
@@ -43,10 +44,10 @@ namespace Enum
      */
     enum OptMethod
     {
-        MCS,        //Modified Cuckoo search
-        DE,         //Differential Evolution
-        PSO,        //Particle Swarm Optimisation
-        METHODNOTSET
+        METHODNOTSET = 0,
+        MCS,            // Modified Cuckoo search
+        DE,             // Differential Evolution
+        PSO             // Particle Swarm Optimisation
     };
 
     /**
@@ -59,6 +60,7 @@ namespace Enum
 		MEDIUM,
 		FINE
 	};
+
 }
 
 #endif // ENUMERATIONS

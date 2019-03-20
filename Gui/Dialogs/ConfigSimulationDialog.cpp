@@ -3,6 +3,7 @@
 #include "ConfigSimulationDialog.h"
 #include "ui_ConfigSimulationDialog.h"
 #include "MeshDialog.h"
+#include "Enumerations.h"
 
 ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent, bool enabled) :
     QDialog(parent),
@@ -17,8 +18,8 @@ ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidg
     ui->label->setText(mData->label());
 
     // optimiser setup
-    ui->objfunc->setCurrentIndex(this->objFuncEnumToIndex(mData->objFunc()));
-    ui->optmethod->setCurrentIndex(this->optMethodEnumToIndex(mData->getOptimisationMethod()));
+    ui->objfunc->setCurrentIndex(mData->objFunc());
+    ui->optmethod->setCurrentIndex(mData->getOptimisationMethod());
     ui->nnests->setValue(mData->noAgents());
     ui->ngens->setValue(mData->noGens());
     ui->ndiscard->setValue(mData->getNoTop());
@@ -63,12 +64,14 @@ void ConfigSimulationDialog::accept()
             return;
         }
 
+
         // set optimiser
         mData->setNoAgents(ui->nnests->value());
         mData->setNoGens(ui->ngens->value());
         mData->setNoTop(ui->ndiscard->value());
-        mData->setOptimisationMethod(this->indexToOptMethodEnum(ui->optmethod->currentIndex()));
-        mData->setObjFunc(this->indexToObjFuncEnum(ui->objfunc->currentIndex()));
+        mData->setOptimisationMethod(static_cast<Enum::OptMethod>(ui->optmethod->currentIndex()));
+        mData->setObjFunc(static_cast<Enum::ObjFunc>(ui->objfunc->currentIndex()));
+
 
         // set flow
         mData->setMachNo(ui->mach->value());
@@ -82,81 +85,11 @@ void ConfigSimulationDialog::accept()
     QDialog::accept();
 }
 
-int ConfigSimulationDialog::objFuncEnumToIndex(Enum::ObjFunc enumeration) {
-    switch(enumeration) {
-    case Enum::ObjFunc::LIFTDRAG:
-        return 0;
-    case Enum::ObjFunc::MAXLIFT:
-        return 1;
-    case Enum::ObjFunc::MINDRAG:
-        return 2;
-    case Enum::ObjFunc::MAXDOWNFORCE:
-        return 3;
-    case Enum::ObjFunc::MINLIFT:
-        return 4;
-    case Enum::ObjFunc::FUNCNOTSET:
-        qCritical() << "Error: unknown lift function";
-        return 998;
-    default:
-        qCritical() << "Error: unknown lift enumeration";
-    }
-
-    return -1;
-}
-
-Enum::ObjFunc ConfigSimulationDialog::indexToObjFuncEnum(int index) {
-    switch(index) {
-    case 0:
-        return Enum::ObjFunc::LIFTDRAG;
-    case 1:
-        return Enum::ObjFunc::MAXLIFT;
-    case 2:
-        return Enum::ObjFunc::MINDRAG;
-    case 3:
-        return Enum::ObjFunc::MAXDOWNFORCE;
-    case 4:
-        return Enum::ObjFunc::MINLIFT;
-    default:
-        qCritical() << "Error: unknown lift function";
-    }
-
-    return Enum::ObjFunc::FUNCNOTSET;
-
-}
-
-int ConfigSimulationDialog::optMethodEnumToIndex(Enum::OptMethod enumeration) {
-    switch(enumeration) {
-    case Enum::OptMethod::MCS:
-        return 0;
-    case Enum::OptMethod::DE:
-        return 1;
-    case Enum::OptMethod::PSO:
-        return 2;
-    default:
-        qCritical() << "Error: unknown optimisation method";
-        return 999;
-    }
-
-}
-
-Enum::OptMethod ConfigSimulationDialog::indexToOptMethodEnum(int index) {
-    switch(index) {
-    case 0:
-        return Enum::OptMethod::MCS;
-    case 1:
-        return Enum::OptMethod::DE;
-    case 2:
-        return Enum::OptMethod::PSO;
-    default:
-        qCritical() << "Error: unknown optimisation method";
-        return Enum::OptMethod::METHODNOTSET;
-    }
-}
 
 
 void ConfigSimulationDialog::on_optmethod_currentIndexChanged(int index)
 {
-    bool isMCS = this->indexToOptMethodEnum(index) == Enum::OptMethod::MCS;
+    bool isMCS = (static_cast<Enum::OptMethod>(index) == Enum::OptMethod::MCS);
 
     if(isMCS) {
         ui->ndiscard->setEnabled(true);
@@ -165,7 +98,6 @@ void ConfigSimulationDialog::on_optmethod_currentIndexChanged(int index)
         ui->ndiscard->setEnabled(false);
         ui->ndiscard_label->setEnabled(false);
     }
-
 
 }
 

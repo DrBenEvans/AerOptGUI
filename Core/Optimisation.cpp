@@ -347,6 +347,8 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
             smoothing += " " + std::to_string(smoothFactor);
         }
 
+        // These values are inconsistent with the enum,
+        // However, changing them would cause older input files to work incorrectly
         Enum::OptMethod optMethod = getOptimisationMethod();
         uint optMethodIndex;
         switch(optMethod) {
@@ -747,6 +749,9 @@ bool Optimisation::readAerOptSettings(QString filePath) {
                     setNoGens(value.toInt());
                 }
                 else if(variable == "IV%ObjectiveFunction") {
+
+                    // These values are inconsistent with the enum,
+                    // However, changing them would cause older input files to work incorrectly
                     int ivalue = value.toInt();
                     if(ivalue == 1)
                         setObjFunc(Enum::ObjFunc::LIFTDRAG);
@@ -764,6 +769,9 @@ bool Optimisation::readAerOptSettings(QString filePath) {
                         setObjFunc(Enum::ObjFunc::FUNCNOTSET);
                 }
                 else if(variable == "IV%Optimiser") {
+
+                    // These values are inconsistent with the enum,
+                    // However, changing them would cause older input files to work incorrectly
                     int ivalue = value.toInt();
                     if(ivalue == 1)
                         setOptimisationMethod(Enum::OptMethod::MCS);
