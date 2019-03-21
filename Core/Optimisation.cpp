@@ -65,13 +65,22 @@ Optimisation::Optimisation() :
         }
     };
 
+#ifdef SUBMIT_TO_CLUSTER
+    clusterChecker = new ClusterFolderChecker();
+    clusterChecker->connect(clusterChecker, &ClusterFolderChecker::directoryChanged, dirReadLambda);
+    clusterChecker->connect(clusterChecker, &ClusterFolderChecker::stdOut, stdOutLambda);
+    clusterChecker->connect(clusterChecker, &ClusterFolderChecker::stdErr, stdErrLambda);
+#else
     mProcess->connect(mProcess, &ProcessManager::directoryChanged, dirReadLambda);
     mProcess->connect(mProcess, &ProcessManager::stdOut, stdOutLambda);
     mProcess->connect(mProcess, &ProcessManager::stdErr, stdErrLambda);
+#endif
 }
 
 Optimisation::~Optimisation() {
+#ifndef SUBMIT_TO_CLUSTER
     mProcess->cleanupProcess();
+#endif
 }
 
 void Optimisation::setModel(OptimisationModel* model) {
@@ -275,219 +284,6 @@ void Optimisation::copyFileToSimulationDir(QString source) {
 }
 
 
-
-
-ssh_session Optimisation::createSSHSession(){
-    ssh_session session = ssh_new();
-    int rc;
-    if (session == NULL)
-        exit(-1);
-
-    ssh_options_set(session, SSH_OPTIONS_HOST, "sunbird.swansea.ac.uk");
-    std::string username;
-    std::string password;
-    std::ifstream infile("clusterlogin", std::ifstream::in);
-    std::getline(infile, username);
-    std::getline(infile, password);
-
-    infile.close();
-
-    ssh_options_set(session, SSH_OPTIONS_USER, username.c_str());
-
-    rc = ssh_connect(session);
-    rc &= ssh_userauth_password(session, NULL, password.c_str());
-    if (rc != SSH_OK)
-    {
-      fprintf(stderr, "Error connecting to localhost: %s\n",
-              ssh_get_error(session));
-      exit(-1);
-    }
-
-    return session;
-}
-
-ssh_channel Optimisation::createSSHChannel(ssh_session session){
-    ssh_channel channel;
-    int rc;
-
-    channel = ssh_channel_new(session);
-    if (channel == NULL){
-        std::cout << "Error creating an ssh channel";
-        exit(-1);
-    }
-    rc = ssh_channel_open_session(channel);
-    if (rc != SSH_OK)
-    {
-      fprintf(stderr, "Error opening ssh channel %s\n",
-              ssh_get_error(session));
-      ssh_channel_close(channel);
-      ssh_channel_free(channel);
-      exit(-1);
-    }
-
-    return channel;
-}
-
-void Optimisation::sshExecute(std::string command){
-    int rc;
-    ssh_channel channel;
-    ssh_session session = createSSHSession();
-    channel = createSSHChannel(session);
-    rc = ssh_channel_request_exec(channel, command.c_str());
-    if (rc != SSH_OK)
-    {
-      fprintf(stderr, "Failed to execute command 1\n");
-      fprintf(stderr, "Error opening ssh channel %s\n",
-              ssh_get_error(session));
-      ssh_channel_close(channel);
-      ssh_channel_free(channel);
-      exit(-1);
-    }
-    ssh_channel_send_eof(channel);
-    ssh_disconnect(session);
-    ssh_free(session);
-}
-
-
-sftp_session Optimisation::createSFTPSession(ssh_session session){
-    sftp_session sftp;
-    int rc;
-
-    sftp = sftp_new(session);
-    if (sftp == NULL)
-    {
-      fprintf(stderr, "Error allocating SFTP session: %s\n",
-              ssh_get_error(session));
-      exit(-1);
-    }
-
-    rc = sftp_init(sftp);
-    if (rc != SSH_OK)
-    {
-      fprintf(stderr, "Error initializing SFTP session: %s.\n",
-              sftp_get_error(sftp));
-      sftp_free(sftp);
-      exit(-1);
-    }
-
-    return sftp;
-}
-
-
-int Optimisation::FileToCluster(std::string source, std::string destination){
-    int rc;
-    sftp_session sftp;
-    sftp_file file;
-    char buffer[16384];
-    int nbytes, nwritten;
-    int fd;
-
-    ssh_session session = createSSHSession();
-    sftp = createSFTPSession(session);
-
-    file = sftp_open(sftp, destination.c_str(), O_WRONLY | O_CREAT, S_IRUSR|S_IWUSR);
-    if (file == NULL) {
-        fprintf(stderr, "FileToCluster: Can't open file for reading: %s\n",
-                ssh_get_error(session));
-        return SSH_ERROR;
-    }
-
-    fd = open(source.c_str(), O_RDONLY);
-    if (fd < 0) {
-        fprintf(stderr, "FileToCluster: Can't open file for writing: %s\n",
-                strerror(errno));
-        return SSH_ERROR;
-    }
-
-    for (;;) {
-          nbytes = read(fd, buffer, sizeof(buffer));
-          if (nbytes == 0) {
-              break; // EOF
-          } else if (nbytes < 0) {
-              fprintf(stderr, "FileToCluster: Error while reading file: %s\n",
-                      ssh_get_error(session));
-              sftp_close(file);
-              return SSH_ERROR;
-          }
-          nwritten = sftp_write(file, buffer, nbytes);
-          if (nwritten != nbytes) {
-              fprintf(stderr, "FileToCluster: Error writing: %s\n",
-                      strerror(errno));
-              sftp_close(file);
-              return SSH_ERROR;
-          }
-          std::cout << 'reading';
-    }
-
-    rc = sftp_close(file);
-    if (rc != SSH_OK) {
-        fprintf(stderr, "FileToCluster: Can't close the read file: %s\n",
-                ssh_get_error(session));
-        return rc;
-    }
-
-    ssh_disconnect(session);
-    ssh_free(session);
-}
-
-
-int Optimisation::fileFromCluster(std::string source, std::string destination){
-    int rc;
-    sftp_session sftp;
-    sftp_file file;
-    char buffer[16384];
-    int nbytes, nwritten;
-    int fd;
-
-    ssh_session session = createSSHSession();
-    sftp = createSFTPSession(session);
-
-    file = sftp_open(sftp, source.c_str(), O_RDONLY, 0);
-    if (file == NULL) {
-        fprintf(stderr, "fileFromCluster: Can't open file for reading: %s\n",
-                ssh_get_error(session));
-        return SSH_ERROR;
-    }
-
-    fd = open(destination.c_str(), O_WRONLY | O_CREAT, S_IRUSR|S_IWUSR);
-    if (fd < 0) {
-        fprintf(stderr, "fileFromCluster: Can't open file for writing: %s\n",
-                strerror(errno));
-        return SSH_ERROR;
-    }
-
-    for (;;) {
-          nbytes = sftp_read(file, buffer, sizeof(buffer));
-          if (nbytes == 0) {
-              break; // EOF
-          } else if (nbytes < 0) {
-              fprintf(stderr, "fileFromCluster: Error while reading file: %s\n",
-                      ssh_get_error(session));
-              sftp_close(file);
-              return SSH_ERROR;
-          }
-          nwritten = write(fd, buffer, nbytes);
-          if (nwritten != nbytes) {
-              fprintf(stderr, "fileFromCluster: Error writing: %s\n",
-                      strerror(errno));
-              sftp_close(file);
-              return SSH_ERROR;
-          }
-          std::cout << 'reading';
-    }
-
-    rc = sftp_close(file);
-    if (rc != SSH_OK) {
-        fprintf(stderr, "fileFromCluster: Can't close the read file: %s\n",
-                ssh_get_error(session));
-        return rc;
-    }
-
-    ssh_disconnect(session);
-    ssh_free(session);
-}
-
-
 bool Optimisation::run() {
     // load settings
     QSettings settings;
@@ -524,6 +320,9 @@ bool Optimisation::run() {
         sshExecute("cd AerOpt/; echo './AerOpt 2>&1 > "+filename+"' >> run.sh");
         sshExecute("cd AerOpt/; chmod +x run.sh");
         sshExecute("cd AerOpt/; screen -d -m ./run.sh ");
+
+        clusterChecker->setWorkingDirectory(simulationDirectoryName());
+        clusterChecker->start();
 #else
         mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
         qInfo() << "Copying input files to optimisation output directory";
