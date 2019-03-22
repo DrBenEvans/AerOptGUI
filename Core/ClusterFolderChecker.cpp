@@ -63,7 +63,7 @@ void ClusterFolderChecker::run(){
 
         outputfile.close();
 
-        sleep(10);
+        sleep(1);
     }
 }
 
@@ -223,16 +223,12 @@ int FileToCluster(std::string source, std::string destination){
 
 
 
-int fileFromCluster(std::string source, std::string destination){
+int getClusterFile(std::string source, std::string destination, ssh_session session, sftp_session sftp){
     int rc;
-    sftp_session sftp;
     sftp_file file;
     char buffer[16384];
     int nbytes, nwritten;
     int fd;
-
-    ssh_session session = createSSHSession();
-    sftp = createSFTPSession(session);
 
     file = sftp_open(sftp, source.c_str(), O_RDONLY, 0);
     if (file == NULL) {
@@ -282,23 +278,14 @@ int fileFromCluster(std::string source, std::string destination){
         return rc;
     }
 
-    ssh_disconnect(session);
-    ssh_free(session);
-
     return 0;
 }
 
 
-int folderFromCluster(std::string source, std::string destination){
-    int rc;
-    sftp_session sftp;
+int getClusterFolder(std::string source, std::string destination, ssh_session session, sftp_session sftp){
     sftp_dir directory;
 
-    ssh_session session = createSSHSession();
-    sftp = createSFTPSession(session);
-
     directory = sftp_opendir (sftp, source.c_str());
-
     while( ! sftp_dir_eof(directory) ){
         sftp_attributes file_attr = sftp_readdir(sftp, directory);
         if(file_attr != NULL){
@@ -306,18 +293,37 @@ int folderFromCluster(std::string source, std::string destination){
             printf("%d %d\n",file_attr->type,SSH_FILEXFER_TYPE_DIRECTORY);
             std::string subsource = source + "/" + file_attr->name;
             std::string subdestination = destination + "/" + file_attr->name;
+
             if( file_attr->type == SSH_FILEXFER_TYPE_DIRECTORY){
+
                 if( strcmp(file_attr->name, ".") && strcmp(file_attr->name, "..") ){
-                    folderFromCluster(subsource, subdestination);
+                    getClusterFolder(subsource, subdestination, session, sftp);
                 }
+
             } else {
+
                 QString filePath = QDir::toNativeSeparators(subdestination.c_str());
                 subdestination = filePath.toStdString();
                 std::cout << subsource << " to " << subdestination << std::endl;
-                fileFromCluster(subsource, subdestination);
+
+                getClusterFile(subsource, subdestination, session, sftp);
+
             }
+
         }
     }
+}
+
+
+
+int folderFromCluster(std::string source, std::string destination){
+    int rc;
+    sftp_session sftp;
+
+    ssh_session session = createSSHSession();
+    sftp = createSFTPSession(session);
+
+    getClusterFolder( source, destination, session, sftp);
 
     ssh_disconnect(session);
     ssh_free(session);
