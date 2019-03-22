@@ -3,6 +3,7 @@
 #include "ConfigSimulationDialog.h"
 #include "ui_ConfigSimulationDialog.h"
 #include "MeshDialog.h"
+#include "ClusterLoginDialog.h"
 
 ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent, bool enabled) :
     QDialog(parent),
@@ -33,6 +34,7 @@ ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidg
     ui->optimisationParameterBox->setEnabled(mEnabled);
     ui->runCondBox->setEnabled(mEnabled);
     ui->projectOptionBox->setEnabled(mEnabled);
+    ui->runOnCluster->setEnabled(true);
 }
 
 ConfigSimulationDialog::~ConfigSimulationDialog()
@@ -76,6 +78,15 @@ void ConfigSimulationDialog::accept()
         mData->setFreeAlpha(ui->angle->value());
         mData->setFreePress(ui->pressure->value());
         mData->setFreeTemp(ui->temp->value());
+
+        mData->runOnCluster = ui->runOnCluster->checkState();
+
+        if(mData->runOnCluster && mData->mClusterPassword.isEmpty()) {
+            ClusterLoginDialog loginDiag(mData, this);
+            if( loginDiag.exec() == QDialog::Accepted){
+                QDialog::reject();
+            }
+        }
 
     }
 

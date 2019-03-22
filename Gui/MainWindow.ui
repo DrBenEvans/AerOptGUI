@@ -294,7 +294,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>:/images/Map.png</pixmap>
+                <pixmap resource="../Resourses.qrc">:/images/Map.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -336,7 +336,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/canvas_logo.png</pixmap>
+            <pixmap resource="../Resourses.qrc">:/images/canvas_logo.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -382,8 +382,15 @@
     </property>
     <addaction name="actionShowLog"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionPreferences"/>
+   </widget>
    <addaction name="menuOptimisations"/>
    <addaction name="menuLog"/>
+   <addaction name="menuSettings"/>
   </widget>
   <action name="actionNewOptimisation">
    <property name="text">
@@ -423,6 +430,11 @@
     <string>Ctrl+C</string>
    </property>
   </action>
+  <action name="actionPreferences">
+   <property name="text">
+    <string>Cluster Login</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
@@ -437,6 +449,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../Resourses.qrc"/>
+ </resources>
  <connections/>
 </ui>

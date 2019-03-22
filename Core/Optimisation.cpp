@@ -293,6 +293,7 @@ bool Optimisation::run() {
     QString AerOpt = settings.value("AerOpt/executable").toString();
     QString AerOptWorkDir = settings.value("AerOpt/workingDirectory").toString();
     QString inFolder = settings.value("AerOpt/inFolder").toString();
+    QString username = settings.value("Cluster/Username").toString();
 
     setInitProfilePoints(initMesh()->profilePoints());
     bool r = true;
@@ -312,9 +313,12 @@ bool Optimisation::run() {
     if (r)
     {
 #ifdef SUBMIT_TO_CLUSTER
-        submitToCluster(AerOptInFile, simulationDirectoryName());
+
+        submitToCluster(AerOptInFile, simulationDirectoryName(), username, mClusterPassword);
 
         clusterChecker->setWorkingDirectory(simulationDirectoryName());
+        clusterChecker->setUsername(username);
+        clusterChecker->setPassword(mClusterPassword);
         clusterChecker->start();
 #else
         mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());

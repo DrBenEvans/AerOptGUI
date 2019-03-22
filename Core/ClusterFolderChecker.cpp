@@ -13,17 +13,25 @@ ClusterFolderChecker::~ClusterFolderChecker()
 }
 
 
-void ClusterFolderChecker::setWorkingDirectory(QString workDir){
-    workingDirectory = workDir.toStdString();
+void ClusterFolderChecker::setWorkingDirectory(QString workDirQString){
+    workingDirectory = workDirQString.toStdString();
+}
+
+void ClusterFolderChecker::setUsername(QString usernameQString){
+    username = usernameQString.toStdString();
+}
+
+void ClusterFolderChecker::setPassword(QString passwordQString){
+    password = passwordQString.toStdString();
 }
 
 
 void ClusterFolderChecker::run(){
-    QSettings settings;
     std::string outputFilename;
     std::string localFilename;
     std::string localFolder;
     int line_number=0;
+
     while (1) {
 
         outputFilename = workingDirectory + "/Output_Data/output.log";
@@ -36,7 +44,7 @@ void ClusterFolderChecker::run(){
         localFolder = filePath.toStdString();
 
 
-        folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory);
+        folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
 
         emit directoryChanged(filePath);
 
@@ -63,27 +71,19 @@ void ClusterFolderChecker::run(){
             outputfile.close();
         }
 
-        sleep(1);
+        sleep(2);
     }
 }
 
 
 
-ssh_session createSSHSession(){
+ssh_session createSSHSession( std::string username, std::string password ){
     ssh_session session = ssh_new();
     int rc;
     if (session == NULL)
         exit(-1);
 
     ssh_options_set(session, SSH_OPTIONS_HOST, "sunbird.swansea.ac.uk");
-    std::string username;
-    std::string password;
-    std::ifstream infile("clusterlogin", std::ifstream::in);
-    std::getline(infile, username);
-    std::getline(infile, password);
-
-    infile.close();
-
     ssh_options_set(session, SSH_OPTIONS_USER, username.c_str());
 
     rc = ssh_connect(session);
@@ -265,7 +265,6 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
           }
     }
 
-    close(fd);
 
     rc = sftp_close(file);
     if (rc != SSH_OK) {
@@ -303,6 +302,7 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
                 subdestination = filePath.toStdString();
 
                 if( __cluster_file_size_map[subdestination] != file_attr->size ){
+                    std::cout << subsource << " " << subdestination << std::endl;
                     int rc = getClusterFile(subsource, subdestination, session, sftp);
 
                     if(!rc){
@@ -317,8 +317,8 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
 
 
 
-int submitToCluster( QString AerOptInFile, QString simulationDirectoryName ){
-    ssh_session session = createSSHSession();
+int submitToCluster( QString AerOptInFile, QString simulationDirectoryName, QString username, QString password ){
+    ssh_session session = createSSHSession( username.toStdString(), password.toStdString() );
 
     fileToCluster(AerOptInFile.toUtf8().constData(),"AerOpt/Input_Data/AerOpt_InputParameters.txt", session);
 
@@ -339,10 +339,10 @@ int submitToCluster( QString AerOptInFile, QString simulationDirectoryName ){
 
 
 
-int folderFromCluster(std::string source, std::string destination){
+int folderFromCluster(std::string source, std::string destination, std::string username, std::string password){
     sftp_session sftp;
 
-    ssh_session session = createSSHSession();
+    ssh_session session = createSSHSession(username, password);
     sftp = createSFTPSession(session);
 
     getClusterFolder( source, destination, session, sftp);

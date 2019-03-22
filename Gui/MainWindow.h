@@ -49,6 +49,7 @@ private:
     int mCurrentOptimisationIndex = -1;
     MeshModel* mCurrentMeshViewModel;
     ProfileView* mProfileView = 0;
+    QString mClusterPassword="";
 };
 
 #endif // MAINWINDOW_H

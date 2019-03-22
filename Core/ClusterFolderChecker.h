@@ -22,7 +22,10 @@ class ClusterFolderChecker : public QThread
 public:
     ClusterFolderChecker();
     ~ClusterFolderChecker();
+
     void setWorkingDirectory(QString workDir);
+    void setUsername(QString username);
+    void setPassword(QString password);
 
 signals:
     void directoryChanged(const QString&);
@@ -32,15 +35,16 @@ signals:
 private:
 
     std::string workingDirectory;
-    std::string runName;
+    std::string username = "";
+    std::string password = "";
 
     void run();
 
 };
 
 
-int submitToCluster( QString AerOptInFile, QString simulationDirectoryName );
-int folderFromCluster(std::string source, std::string destination);
+int submitToCluster( QString AerOptInFile, QString simulationDirectoryName, QString username, QString password );
+int folderFromCluster( std::string source, std::string destination, std::string username, std::string password );
 
 
 #endif // CLUSTERFOLDERCHECKER_H

@@ -198,6 +198,10 @@ public:
     std::pair<double,double> fitnessRange();
 
     ProfilePoints initProfilePoints();
+
+    bool runOnCluster = false;
+    QString mClusterPassword = "";
+
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
     bool createAerOptInFile(const QString &filePath);
