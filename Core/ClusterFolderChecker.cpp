@@ -35,16 +35,17 @@ void ClusterFolderChecker::run(){
         QDir::toNativeSeparators(filePath);
         localFolder = filePath.toStdString();
 
-        std::cout << localFolder << std::endl;
 
         folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory);
+
 
         std::ifstream outputfile(localFilename);
         std::string line = "";
         std::string output = "";
 
-        if (!outputfile.is_open())
+        if (!outputfile.is_open()) {
             perror("File not open");
+        }
 
         for( int l=0; l<line_number; l++ ){
              std::getline(outputfile, line);
@@ -271,6 +272,8 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
           }
     }
 
+    close(fd);
+
     rc = sftp_close(file);
     if (rc != SSH_OK) {
         fprintf(stderr, "fileFromCluster: Can't close the read file: %s\n",
@@ -282,15 +285,16 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
 }
 
 
+
 int getClusterFolder(std::string source, std::string destination, ssh_session session, sftp_session sftp){
+    static std::map<std::string, uint64_t> __cluster_file_size_map;
     sftp_dir directory;
 
     directory = sftp_opendir (sftp, source.c_str());
     while( ! sftp_dir_eof(directory) ){
         sftp_attributes file_attr = sftp_readdir(sftp, directory);
         if(file_attr != NULL){
-            std::cout << source << "/" << file_attr->name << " " << file_attr->type << std::endl;
-            printf("%d %d\n",file_attr->type,SSH_FILEXFER_TYPE_DIRECTORY);
+
             std::string subsource = source + "/" + file_attr->name;
             std::string subdestination = destination + "/" + file_attr->name;
 
@@ -304,12 +308,15 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
 
                 QString filePath = QDir::toNativeSeparators(subdestination.c_str());
                 subdestination = filePath.toStdString();
-                std::cout << subsource << " to " << subdestination << std::endl;
 
-                getClusterFile(subsource, subdestination, session, sftp);
+                if( __cluster_file_size_map[subdestination] != file_attr->size ){
+                    int rc = getClusterFile(subsource, subdestination, session, sftp);
 
+                    if(!rc){
+                       __cluster_file_size_map[subdestination] = file_attr->size;
+                    }
+                }
             }
-
         }
     }
 }
