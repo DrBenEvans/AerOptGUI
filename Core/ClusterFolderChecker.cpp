@@ -302,7 +302,6 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
                 subdestination = filePath.toStdString();
 
                 if( __cluster_file_size_map[subdestination] != file_attr->size ){
-                    std::cout << subsource << " " << subdestination << std::endl;
                     int rc = getClusterFile(subsource, subdestination, session, sftp);
 
                     if(!rc){

@@ -34,7 +34,7 @@ signals:
 
 private:
 
-    std::string workingDirectory;
+    std::string workingDirectory = "";
     std::string username = "";
     std::string password = "";
 

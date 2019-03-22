@@ -6,8 +6,6 @@
 **
 **********************************************/
 
-#define SUBMIT_TO_CLUSTER
-
 #include <QDebug>
 #include <QPointF>
 #include <QSettings>
@@ -65,22 +63,21 @@ Optimisation::Optimisation() :
         }
     };
 
-#ifdef SUBMIT_TO_CLUSTER
+    mProcess->connect(mProcess, &ProcessManager::directoryChanged, dirReadLambda);
+    mProcess->connect(mProcess, &ProcessManager::stdOut, stdOutLambda);
+    mProcess->connect(mProcess, &ProcessManager::stdErr, stdErrLambda);
+
+
     clusterChecker = new ClusterFolderChecker();
     clusterChecker->connect(clusterChecker, &ClusterFolderChecker::directoryChanged, dirReadLambda);
     clusterChecker->connect(clusterChecker, &ClusterFolderChecker::stdOut, stdOutLambda);
     clusterChecker->connect(clusterChecker, &ClusterFolderChecker::stdErr, stdErrLambda);
-#else
-    mProcess->connect(mProcess, &ProcessManager::directoryChanged, dirReadLambda);
-    mProcess->connect(mProcess, &ProcessManager::stdOut, stdOutLambda);
-    mProcess->connect(mProcess, &ProcessManager::stdErr, stdErrLambda);
-#endif
 }
 
 Optimisation::~Optimisation() {
-#ifndef SUBMIT_TO_CLUSTER
-    mProcess->cleanupProcess();
-#endif
+    if( !runOnCluster ) {
+        mProcess->cleanupProcess();
+    }
 }
 
 void Optimisation::setModel(OptimisationModel* model) {
@@ -312,18 +309,23 @@ bool Optimisation::run() {
     //then run aeropt
     if (r)
     {
-#ifdef SUBMIT_TO_CLUSTER
+        if(runOnCluster){
 
-        submitToCluster(AerOptInFile, simulationDirectoryName(), username, mClusterPassword);
+            QString dirname = simulationDirectoryName();
 
-        clusterChecker->setWorkingDirectory(simulationDirectoryName());
-        clusterChecker->setUsername(username);
-        clusterChecker->setPassword(mClusterPassword);
-        clusterChecker->start();
-#else
-        mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
-        qInfo() << "Copying input files to optimisation output directory";
-#endif
+            submitToCluster(AerOptInFile, dirname, username, mClusterPassword);
+
+            clusterChecker->setWorkingDirectory(dirname);
+            clusterChecker->setUsername(username);
+            clusterChecker->setPassword(mClusterPassword);
+            clusterChecker->start();
+
+        } else {
+
+            mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
+            qInfo() << "Copying input files to optimisation output directory";
+
+        }
         copyFileToSimulationDir(AerOptInFile);
         copyFileToSimulationDir(AerOptNodeFile);
         writeProfilePointsToSimulationDir();
@@ -340,6 +342,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
     bool r = true;
     QSettings settings;
     QString workingDirectory = settings.value("AerOpt/workingDirectory").toString();
+    std::string username = settings.value("Cluster/Username").toString().toStdString();
 
     std::ofstream outfile(filePath.toStdString(), std::ofstream::out);
     r &= outfile.is_open();
@@ -447,35 +450,34 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         outfile << "IV%meanP = .true." << std::endl;
 
         outfile << "! Strings" << std::endl;
-#ifdef SUBMIT_TO_CLUSTER
-        std::ifstream infile("clusterlogin", std::ifstream::in);
-        std::string username;
-        std::getline(infile, username);
-        infile.close();
-        outfile << "IV%filepath = '/home/" << username << "/AerOpt/'" << std::endl;
-        outfile << "IV%clusterpath = '/home/" << username << "/AerOpt/'" << std::endl;
-        outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
-        outfile << "IV%filename = 'Geometry'" << std::endl;
-        outfile << "IV%Account = 'scw1000'" << std::endl;
-        outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
-        outfile << "IV%runOnCluster = 'Y'" << std::endl;
-        outfile << "IV%SystemType = 'B'" << std::endl;
-#else
-        outfile << "IV%filepath = '" << workingDirectory.toStdString() << "'" << std::endl;
-        outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
-        outfile << "IV%filename = 'Geometry'" << std::endl;
-        outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
-        outfile << "IV%runOnCluster = 'N'" << std::endl;
+        if(runOnCluster){
+            std::ifstream infile("clusterlogin", std::ifstream::in);
+            outfile << "IV%filepath = '/home/" << username << "/AerOpt/'" << std::endl;
+            outfile << "IV%clusterpath = '/home/" << username << "/AerOpt/'" << std::endl;
+            outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
+            outfile << "IV%filename = 'Geometry'" << std::endl;
+            outfile << "IV%Account = 'scw1000'" << std::endl;
+            outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
+            outfile << "IV%runOnCluster = 'Y'" << std::endl;
+            outfile << "IV%SystemType = 'B'" << std::endl;
+        } else{
+            outfile << "IV%filepath = '" << workingDirectory.toStdString() << "'" << std::endl;
+            outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
+            outfile << "IV%filename = 'Geometry'" << std::endl;
+            outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
+            outfile << "IV%runOnCluster = 'N'" << std::endl;
+
 
 #ifdef Q_OS_UNIX
-        // do fancy unix stuff
-        outfile << "IV%SystemType = 'L'" << std::endl;
+            // do fancy unix stuff
+            outfile << "IV%SystemType = 'L'" << std::endl;
 #endif
 #ifdef Q_OS_WIN32
-        // do windows stuff here
-        outfile << "IV%SystemType = 'W'" << std::endl;
+            // do windows stuff here
+            outfile << "IV%SystemType = 'W'" << std::endl;
 #endif
-#endif
+
+        }
         outfile << "IV%NoProcessors = 1" << std::endl;
         outfile << "IV%shapeenclosed = .true." << std::endl;
 
@@ -863,18 +865,19 @@ void Optimisation::addToOutputLog(const QString line) {
 
     QString fileName = logCacheFileName();
 
-#ifndef SUBMIT_TO_CLUSTER // If running of the cluster, the outputfile is downloaded and
-                          // already contains all the output
-    // write output to output file
-    QFile logFile(fileName);
-    if(logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
-        QTextStream outputStream(&logFile);
-        outputStream << line;
-        logFile.close();
-    } else {
-        qWarning() << "Write output to log file " << fileName << " failed.";
+    if( !runOnCluster ){
+        // If running of the cluster, the outputfile is downloaded and
+        // already contains all the output
+        // write output to output file
+        QFile logFile(fileName);
+        if(logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
+            QTextStream outputStream(&logFile);
+            outputStream << line;
+            logFile.close();
+        } else {
+            qWarning() << "Write output to log file " << fileName << " failed.";
+        }
     }
-#endif
 }
 
 bool Optimisation::readLogFromFile() {
