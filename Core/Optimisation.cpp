@@ -861,10 +861,13 @@ QString Optimisation::logCacheFileName() {
 }
 
 void Optimisation::addToOutputLog(const QString line) {
+
     mOutputLog += line;
 
     QString fileName = logCacheFileName();
 
+#ifndef SUBMIT_TO_CLUSTER // If running of the cluster, the outputfile is downloaded and
+                          // already contains all the output
     // write output to output file
     QFile logFile(fileName);
     if(logFile.open(QIODevice::WriteOnly | QIODevice::Append)) {
@@ -874,6 +877,7 @@ void Optimisation::addToOutputLog(const QString line) {
     } else {
         qWarning() << "Write output to log file " << fileName << " failed.";
     }
+#endif
 }
 
 bool Optimisation::readLogFromFile() {
