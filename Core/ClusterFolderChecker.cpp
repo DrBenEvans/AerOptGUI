@@ -38,31 +38,30 @@ void ClusterFolderChecker::run(){
 
         folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory);
 
+        emit directoryChanged(filePath);
 
         std::ifstream outputfile(localFilename);
         std::string line = "";
         std::string output = "";
 
-        if (!outputfile.is_open()) {
-            perror("File not open");
+        if ( outputfile.is_open() ){
+
+            for( int l=0; l<line_number; l++ ){
+                std::getline(outputfile, line);
+            }
+
+            while(std::getline(outputfile, line)){
+               output += line + "\n";
+             line_number++;
+            }
+
+            if (outputfile.bad())
+                perror("error while reading file");
+
+            emit stdOut(QString(output.c_str()));
+
+            outputfile.close();
         }
-
-        for( int l=0; l<line_number; l++ ){
-             std::getline(outputfile, line);
-        }
-
-        while(std::getline(outputfile, line)){
-            output += line + "\n";
-            line_number++;
-        }
-
-        if (outputfile.bad())
-            perror("error while reading file");
-
-        emit stdOut(QString(output.c_str()));
-        emit directoryChanged(filePath);
-
-        outputfile.close();
 
         sleep(1);
     }
@@ -121,24 +120,22 @@ ssh_channel createSSHChannel(ssh_session session){
     return channel;
 }
 
-void sshExecute(std::string command){
+void sshExecute(ssh_session session, std::string command){
     int rc;
-    ssh_channel channel;
-    ssh_session session = createSSHSession();
-    channel = createSSHChannel(session);
+    ssh_channel channel = createSSHChannel(session);
+
     rc = ssh_channel_request_exec(channel, command.c_str());
     if (rc != SSH_OK)
     {
-      fprintf(stderr, "Failed to execute command 1\n");
-      fprintf(stderr, "Error opening ssh channel %s\n",
+      fprintf(stderr, "Failed to execute command %s\n",
               ssh_get_error(session));
+      std::cout << "Command: " << command << std::endl;
       ssh_channel_close(channel);
       ssh_channel_free(channel);
       exit(-1);
     }
-    ssh_channel_send_eof(channel);
-    ssh_disconnect(session);
-    ssh_free(session);
+    ssh_channel_close(channel);
+    ssh_channel_free(channel);
 }
 
 
@@ -167,7 +164,7 @@ sftp_session createSFTPSession(ssh_session session){
 }
 
 
-int FileToCluster(std::string source, std::string destination){
+int fileToCluster(std::string source, std::string destination, ssh_session session){
     int rc;
     sftp_session sftp;
     sftp_file file;
@@ -175,7 +172,6 @@ int FileToCluster(std::string source, std::string destination){
     int nbytes, nwritten;
     int fd;
 
-    ssh_session session = createSSHSession();
     sftp = createSFTPSession(session);
 
     file = sftp_open(sftp, destination.c_str(), O_WRONLY | O_CREAT, S_IRUSR|S_IWUSR);
@@ -217,9 +213,6 @@ int FileToCluster(std::string source, std::string destination){
                 ssh_get_error(session));
         return rc;
     }
-
-    ssh_disconnect(session);
-    ssh_free(session);
 }
 
 
@@ -323,8 +316,30 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
 
 
 
+
+int submitToCluster( QString AerOptInFile, QString simulationDirectoryName ){
+    ssh_session session = createSSHSession();
+
+    fileToCluster(AerOptInFile.toUtf8().constData(),"AerOpt/Input_Data/AerOpt_InputParameters.txt", session);
+
+    std::string directory = simulationDirectoryName.toStdString();
+    std::string outputDirectory = directory+"/Output_Data";
+    std::string outputfilename = outputDirectory+"/output.log";
+    sshExecute(session, "cd AerOpt/; mkdir -p "+outputDirectory);
+    sshExecute(session, "cd AerOpt/; echo module load mkl > run.sh");
+    sshExecute(session, "cd AerOpt/; echo './AerOpt 2>&1 > "+outputfilename+"' >> run.sh");
+    sshExecute(session, "cd AerOpt/; chmod +x run.sh");
+    sshExecute(session, "cd AerOpt/; screen -d -m ./run.sh ");
+
+    ssh_disconnect(session);
+    ssh_free(session);
+
+    return 0;
+}
+
+
+
 int folderFromCluster(std::string source, std::string destination){
-    int rc;
     sftp_session sftp;
 
     ssh_session session = createSSHSession();

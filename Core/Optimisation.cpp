@@ -312,14 +312,7 @@ bool Optimisation::run() {
     if (r)
     {
 #ifdef SUBMIT_TO_CLUSTER
-        FileToCluster(AerOptInFile.toUtf8().constData(),"AerOpt/Input_Data/AerOpt_InputParameters.txt");
-        std::string directory = simulationDirectoryName().toStdString()+"/Output_Data";
-        std::string filename = directory+"/output.log";
-        sshExecute("cd AerOpt/; mkdir -p "+directory);
-        sshExecute("cd AerOpt/; echo module load mkl > run.sh");
-        sshExecute("cd AerOpt/; echo './AerOpt 2>&1 > "+filename+"' >> run.sh");
-        sshExecute("cd AerOpt/; chmod +x run.sh");
-        sshExecute("cd AerOpt/; screen -d -m ./run.sh ");
+        submitToCluster(AerOptInFile, simulationDirectoryName());
 
         clusterChecker->setWorkingDirectory(simulationDirectoryName());
         clusterChecker->start();

@@ -39,20 +39,8 @@ private:
 };
 
 
-
-
-
-ssh_session createSSHSession();
-
-ssh_channel createSSHChannel(ssh_session session);
-void sshExecute(std::string command);
-sftp_session createSFTPSession(ssh_session session);
-int FileToCluster(std::string source, std::string destination);
+int submitToCluster( QString AerOptInFile, QString simulationDirectoryName );
 int folderFromCluster(std::string source, std::string destination);
-
-int getClusterFile(std::string source, std::string destination, ssh_session session, sftp_session sftp);
-int getClusterFolder(std::string source, std::string destination, ssh_session session, sftp_session sftp);
-
 
 
 #endif // CLUSTERFOLDERCHECKER_H
