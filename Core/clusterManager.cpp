@@ -40,7 +40,6 @@ int clusterManager::submitToCluster( std::string AerOptInFile, std::string simul
     sshExecute(session, "cd AerOpt/; cp Input_Data/AerOpt_InputParameters.txt "+directory);
     sshExecute(session, "cd AerOpt/; echo module load mkl > run.sh");
     sshExecute(session, "cd AerOpt/; echo './AerOpt 2>&1 > "+outputfilename+"' >> run.sh");
-    sshExecute(session, "cd AerOpt/; echo 'done > "+directory+"/run_complete' >> run.sh");
     sshExecute(session, "cd AerOpt/; chmod +x run.sh");
     sshExecute(session, "cd AerOpt/; screen -d -m ./run.sh ");
 
@@ -57,7 +56,7 @@ void clusterManager::folderCheckLoop(){
     std::string localFolder;
     int line_number=0;
 
-    while ( !fileExists(workingDirectory+"/run_complete") ) {
+    while ( 1 ) {
 
         outputFilename = workingDirectory + "/Output_Data/output.log";
         QString filePath = QString(("AerOptFiles/"+outputFilename).c_str());
