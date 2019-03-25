@@ -319,6 +319,7 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
 
 int getClusterFolder(std::string source, std::string destination, ssh_session session, sftp_session sftp){
     static std::map<std::string, uint64_t> __cluster_file_size_map;
+    static std::map<std::string, uint64_t> __cluster_file_time_map;
     sftp_dir directory;
 
     directory = sftp_opendir (sftp, source.c_str());
@@ -340,11 +341,17 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
                 QString filePath = QDir::toNativeSeparators(subdestination.c_str());
                 subdestination = filePath.toStdString();
 
-                if( __cluster_file_size_map[subdestination] != file_attr->size ){
+                uint64_t old_time = __cluster_file_time_map[subdestination];
+                uint64_t old_size = __cluster_file_size_map[subdestination];
+                std::cout << subsource << " size " << old_size << " " << file_attr->size << std::endl;
+                std::cout << subsource << " time " << old_time << " " << file_attr->mtime << std::endl;
+
+                if( old_size != file_attr->size || old_time != file_attr->mtime ){
                     int rc = getClusterFile(subsource, subdestination, session, sftp);
 
                     if(!rc){
-                       __cluster_file_size_map[subdestination] = file_attr->size;
+                        __cluster_file_time_map[subdestination] = file_attr->mtime;
+                        __cluster_file_size_map[subdestination] = file_attr->size;
                     }
                 }
             }
