@@ -68,13 +68,12 @@ void clusterManager::folderCheckLoop(){
         localFolder = filePath.toStdString();
 
 
-        folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
-
-        emit directoryChanged(filePath);
+        fileFromCluster("AerOpt/"+workingDirectory+"/Output_Data/output.log", "AerOptFiles/"+workingDirectory+"/Output_Data/output.log", username, password);
 
         std::ifstream outputfile(localFilename);
         std::string line = "";
         std::string output = "";
+        boolean changed = false;
 
         if ( outputfile.is_open() ){
 
@@ -85,6 +84,7 @@ void clusterManager::folderCheckLoop(){
             while(std::getline(outputfile, line)){
                 output += line + "\n";
                 line_number++;
+                changed = true;
             }
 
             if (outputfile.bad())
@@ -93,6 +93,11 @@ void clusterManager::folderCheckLoop(){
             emit stdOut(QString(output.c_str()));
 
             outputfile.close();
+        }
+
+        if(changed) {
+            folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
+            emit directoryChanged(filePath);
         }
 
         sleep(2);
@@ -357,6 +362,22 @@ int folderFromCluster(std::string source, std::string destination, std::string u
     sftp = createSFTPSession(session);
 
     getClusterFolder( source, destination, session, sftp);
+
+    ssh_disconnect(session);
+    ssh_free(session);
+
+    return 0;
+}
+
+int fileFromCluster(std::string source, std::string destination, std::string username, std::string password){
+    sftp_session sftp;
+
+    ssh_session session = createSSHSession(username, password);
+    sftp = createSFTPSession(session);
+
+    QString filePath = QDir::toNativeSeparators(destination.c_str());
+    destination = filePath.toStdString();
+    getClusterFile( source, destination, session, sftp);
 
     ssh_disconnect(session);
     ssh_free(session);
