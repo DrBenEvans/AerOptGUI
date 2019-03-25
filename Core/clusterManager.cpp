@@ -119,8 +119,10 @@ void clusterManager::run(){
 ssh_session createSSHSession( std::string username, std::string password ){
     ssh_session session = ssh_new();
     int rc;
-    if (session == NULL)
+    if (session == NULL) {
+        printf("Could not create session\n");
         exit(-1);
+    }
 
     ssh_options_set(session, SSH_OPTIONS_HOST, "sunbird.swansea.ac.uk");
     ssh_options_set(session, SSH_OPTIONS_USER, username.c_str());
