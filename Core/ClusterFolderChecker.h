@@ -39,13 +39,17 @@ private:
     std::string password = "";
 
     void run();
+    void folderCheckLoop();
+    int submitToCluster( std::string AerOptInFile, std::string simulationDirectoryName, std::string username, std::string password );
 
 };
 
 
-int submitToCluster( QString AerOptInFile, QString simulationDirectoryName, QString username, QString password );
 int folderFromCluster( std::string source, std::string destination, std::string username, std::string password );
 int sshVerifyPassword( QString username, QString password );
+void sshExecute(ssh_session session, std::string command);
+int fileToCluster(std::string source, std::string destination, ssh_session session);
+ssh_session createSSHSession( std::string username, std::string password );
 
 
 #endif // CLUSTERFOLDERCHECKER_H

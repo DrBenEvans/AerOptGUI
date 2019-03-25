@@ -313,8 +313,6 @@ bool Optimisation::run() {
 
             QString dirname = simulationDirectoryName();
 
-            submitToCluster(AerOptInFile, dirname, username, mClusterPassword);
-
             clusterChecker->setWorkingDirectory(dirname);
             clusterChecker->setUsername(username);
             clusterChecker->setPassword(mClusterPassword);
