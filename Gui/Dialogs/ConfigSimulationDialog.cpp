@@ -82,15 +82,22 @@ void ConfigSimulationDialog::accept()
         mData->runOnCluster = ui->runOnCluster->checkState();
 
         if(mData->runOnCluster && mData->mClusterPassword.isEmpty()) {
+
             ClusterLoginDialog loginDiag(mData, this);
             if( loginDiag.exec() == QDialog::Accepted){
-                QDialog::reject();
+                printf("Dialog accepted\n");
+                QDialog::accept();
+            } else {
+                // Return without dismissing the window
+                return;
             }
+
         }
 
     }
 
     QDialog::accept();
+
 }
 
 int ConfigSimulationDialog::objFuncEnumToIndex(Enum::ObjFunc enumeration) {

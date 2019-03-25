@@ -1,6 +1,8 @@
 #include <QSettings>
+#include <QMessageBox>
 #include "ClusterLoginDialog.h"
 #include "ui_ClusterLoginDialog.h"
+#include "ClusterFolderChecker.h"
 
 ClusterLoginDialog::ClusterLoginDialog(Optimisation* opt, QWidget *parent) :
     QDialog(parent),
@@ -23,8 +25,19 @@ void ClusterLoginDialog::accept()
 {
     QSettings settings;
 
-    mData->mClusterPassword = ui->password->text();
-    settings.setValue("Cluster/Username", ui->username->text());
+    QString password = ui->password->text();
+    QString username = ui->username->text();
 
-    QDialog::accept();
+    int failed = sshVerifyPassword(username, password);
+
+    if( failed ){
+        QMessageBox msgBox;
+        msgBox.setText("Unable to login. Please check the password and try again.");
+        msgBox.exec();
+    } else {
+        settings.setValue("Cluster/Username", ui->username->text());
+        mData->mClusterPassword = ui->password->text();
+
+        QDialog::accept();
+    }
 }

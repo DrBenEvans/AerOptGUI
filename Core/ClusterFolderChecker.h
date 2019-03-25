@@ -45,6 +45,7 @@ private:
 
 int submitToCluster( QString AerOptInFile, QString simulationDirectoryName, QString username, QString password );
 int folderFromCluster( std::string source, std::string destination, std::string username, std::string password );
+int sshVerifyPassword( QString username, QString password );
 
 
 #endif // CLUSTERFOLDERCHECKER_H

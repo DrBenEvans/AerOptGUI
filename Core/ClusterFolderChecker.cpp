@@ -351,3 +351,31 @@ int folderFromCluster(std::string source, std::string destination, std::string u
 
     return 0;
 }
+
+int sshVerifyPassword( QString username, QString password ){
+    ssh_session session = ssh_new();
+    int rc;
+    if (session == NULL) {
+        fprintf(stderr, "Failed to create ssh session\n");
+        exit(-1);
+    }
+
+    ssh_options_set(session, SSH_OPTIONS_HOST, "sunbird.swansea.ac.uk");
+    ssh_options_set(session, SSH_OPTIONS_USER, username.toStdString().c_str());
+
+    rc = ssh_connect(session);
+    if (rc != SSH_AUTH_SUCCESS) {
+      fprintf(stderr, "Failed to connect to the cluster\n");
+      exit(-1);
+    }
+
+    rc = ssh_userauth_password(session, NULL, password.toStdString().c_str());
+    if (rc != SSH_AUTH_SUCCESS)
+    {
+      fprintf(stderr, "Authentication failed\n");
+      return 1;
+    }
+
+    return 0;
+}
+
