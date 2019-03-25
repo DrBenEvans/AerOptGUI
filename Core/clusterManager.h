@@ -1,5 +1,5 @@
-#ifndef CLUSTERFOLDERCHECKER_H
-#define CLUSTERFOLDERCHECKER_H
+#ifndef clusterManager_H
+#define clusterManager_H
 
 #include <iostream>
 #include <fstream>
@@ -16,12 +16,12 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
-class ClusterFolderChecker : public QThread
+class clusterManager : public QThread
 {
     Q_OBJECT
 public:
-    ClusterFolderChecker();
-    ~ClusterFolderChecker();
+    clusterManager();
+    ~clusterManager();
 
     void setWorkingDirectory(QString workDir);
     void setUsername(QString username);
@@ -45,11 +45,12 @@ private:
 };
 
 
-int folderFromCluster( std::string source, std::string destination, std::string username, std::string password );
 int sshVerifyPassword( QString username, QString password );
+int fileExists(std::string filename);
+int folderFromCluster( std::string source, std::string destination, std::string username, std::string password );
 void sshExecute(ssh_session session, std::string command);
 int fileToCluster(std::string source, std::string destination, ssh_session session);
 ssh_session createSSHSession( std::string username, std::string password );
 
 
-#endif // CLUSTERFOLDERCHECKER_H
+#endif // clusterManager_H

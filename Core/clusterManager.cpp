@@ -1,33 +1,33 @@
-#include "ClusterFolderChecker.h"
+#include "clusterManager.h"
 #include <FileManipulation.h>
 #include <QDebug>
 #include <QSettings>
 #include <QDir>
 #include <QFileInfo>
 
-ClusterFolderChecker::ClusterFolderChecker()
+clusterManager::clusterManager()
 {
 }
 
-ClusterFolderChecker::~ClusterFolderChecker()
+clusterManager::~clusterManager()
 {
 }
 
 
-void ClusterFolderChecker::setWorkingDirectory(QString workDirQString){
+void clusterManager::setWorkingDirectory(QString workDirQString){
     workingDirectory = workDirQString.toStdString();
 }
 
-void ClusterFolderChecker::setUsername(QString usernameQString){
+void clusterManager::setUsername(QString usernameQString){
     username = usernameQString.toStdString();
 }
 
-void ClusterFolderChecker::setPassword(QString passwordQString){
+void clusterManager::setPassword(QString passwordQString){
     password = passwordQString.toStdString();
 }
 
 
-int ClusterFolderChecker::submitToCluster( std::string AerOptInFile, std::string simulationDirectoryName, std::string username, std::string password ){
+int clusterManager::submitToCluster( std::string AerOptInFile, std::string simulationDirectoryName, std::string username, std::string password ){
     ssh_session session = createSSHSession( username, password );
 
     fileToCluster(AerOptInFile.c_str(),"AerOpt/Input_Data/AerOpt_InputParameters.txt", session);
@@ -35,9 +35,12 @@ int ClusterFolderChecker::submitToCluster( std::string AerOptInFile, std::string
     std::string directory = simulationDirectoryName;
     std::string outputDirectory = directory+"/Output_Data";
     std::string outputfilename = outputDirectory+"/output.log";
+    sshExecute(session, "cd AerOpt/; rm -r "+directory);
     sshExecute(session, "cd AerOpt/; mkdir -p "+outputDirectory);
+    sshExecute(session, "cd AerOpt/; cp Input_Data/AerOpt_InputParameters.txt "+directory);
     sshExecute(session, "cd AerOpt/; echo module load mkl > run.sh");
     sshExecute(session, "cd AerOpt/; echo './AerOpt 2>&1 > "+outputfilename+"' >> run.sh");
+    sshExecute(session, "cd AerOpt/; echo 'done > "+directory+"/run_complete' >> run.sh");
     sshExecute(session, "cd AerOpt/; chmod +x run.sh");
     sshExecute(session, "cd AerOpt/; screen -d -m ./run.sh ");
 
@@ -48,13 +51,13 @@ int ClusterFolderChecker::submitToCluster( std::string AerOptInFile, std::string
 }
 
 
-void ClusterFolderChecker::folderCheckLoop(){
+void clusterManager::folderCheckLoop(){
     std::string outputFilename;
     std::string localFilename;
     std::string localFolder;
     int line_number=0;
 
-    while (1) {
+    while ( !fileExists(workingDirectory+"/run_complete") ) {
 
         outputFilename = workingDirectory + "/Output_Data/output.log";
         QString filePath = QString(("AerOptFiles/"+outputFilename).c_str());
@@ -98,7 +101,7 @@ void ClusterFolderChecker::folderCheckLoop(){
 }
 
 
-void ClusterFolderChecker::run(){
+void clusterManager::run(){
     QSettings settings;
     std::string AerOptInFile = settings.value("AerOpt/inputFile").toString().toStdString();
 
@@ -389,3 +392,12 @@ int sshVerifyPassword( QString username, QString password ){
     return 0;
 }
 
+
+int fileExists(std::string filename){
+    FILE *file;
+    if( (file = fopen(filename.c_str(), "r")) ){
+        fclose(file);
+        return 1;
+    }
+    return 0;
+}

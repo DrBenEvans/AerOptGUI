@@ -2,7 +2,7 @@
 #include <QMessageBox>
 #include "ClusterLoginDialog.h"
 #include "ui_ClusterLoginDialog.h"
-#include "ClusterFolderChecker.h"
+#include "clusterManager.h"
 
 ClusterLoginDialog::ClusterLoginDialog(Optimisation* opt, QWidget *parent) :
     QDialog(parent),

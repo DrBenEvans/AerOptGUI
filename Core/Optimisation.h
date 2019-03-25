@@ -14,7 +14,7 @@
 #include "BoundaryPoint.h"
 #include <QString>
 
-#include <ClusterFolderChecker.h>
+#include <clusterManager.h>
 
 
 class OptimisationModel;
@@ -253,7 +253,7 @@ private:
 
     ProfilePoints mProfilePoints;
 
-    ClusterFolderChecker* clusterChecker = nullptr;
+    clusterManager* clusterChecker = nullptr;
 };
 
 

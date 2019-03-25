@@ -68,10 +68,10 @@ Optimisation::Optimisation() :
     mProcess->connect(mProcess, &ProcessManager::stdErr, stdErrLambda);
 
 
-    clusterChecker = new ClusterFolderChecker();
-    clusterChecker->connect(clusterChecker, &ClusterFolderChecker::directoryChanged, dirReadLambda);
-    clusterChecker->connect(clusterChecker, &ClusterFolderChecker::stdOut, stdOutLambda);
-    clusterChecker->connect(clusterChecker, &ClusterFolderChecker::stdErr, stdErrLambda);
+    clusterChecker = new clusterManager();
+    clusterChecker->connect(clusterChecker, &clusterManager::directoryChanged, dirReadLambda);
+    clusterChecker->connect(clusterChecker, &clusterManager::stdOut, stdOutLambda);
+    clusterChecker->connect(clusterChecker, &clusterManager::stdErr, stdErrLambda);
 }
 
 Optimisation::~Optimisation() {
