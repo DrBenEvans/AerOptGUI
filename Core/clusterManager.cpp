@@ -276,7 +276,9 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
     QString filePath = QString(destination.c_str());
     QFileInfo fileinfo(filePath);
     QDir directory=fileinfo.dir();
-    FileManipulation::emptyFolder(QString(directory.path()));
+    if(!directory.exists()) {
+        QDir().mkpath(directory.path());
+    }
 
     fd = open(destination.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR|S_IWUSR);
     if (fd < 0) {
