@@ -338,6 +338,19 @@ bool Optimisation::run() {
     return r;
 }
 
+bool Optimisation::refreshFromCluster() {
+    QSettings settings;
+    std::string username = settings.value("Cluster/Username").toString().toStdString();
+    std::string password =mClusterPassword.toStdString();
+    std::string dir = simulationDirectoryName().toStdString();
+    folderFromCluster("AerOpt/"+dir, "AerOptFiles/"+dir, username, password);
+    readFitness();
+    if(mOptimisationModel != 0) {
+        mOptimisationModel->emitOptimisationFitnessChanged(this);
+    }
+}
+
+
 bool Optimisation::createAerOptInFile(const QString& filePath)
 {
     bool r = true;
