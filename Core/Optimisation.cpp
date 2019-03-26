@@ -318,6 +318,9 @@ bool Optimisation::run() {
             clusterChecker->setPassword(mClusterPassword);
             clusterChecker->start();
 
+            QDir dir(simulationDirectoryPath());
+            dir.mkdir(".");
+
         } else {
 
             mProcess->run(AerOpt, AerOptWorkDir, outputDataDirectory());
@@ -753,7 +756,7 @@ bool Optimisation::readAerOptSettings(QString filePath) {
         {
             qline = QString::fromStdString(line);
             strList = qline.split(QRegExp("\\s*=\\s*"));
-            value;
+
             if(strList.length()==2) {
                 variable = strList.at(0).toStdString();
                 value = strList.at(1);
