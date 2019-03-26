@@ -85,7 +85,6 @@ void ConfigSimulationDialog::accept()
 
             ClusterLoginDialog loginDiag(mData, this);
             if( loginDiag.exec() == QDialog::Accepted){
-                printf("Dialog accepted\n");
                 QDialog::accept();
             } else {
                 // Return without dismissing the window
