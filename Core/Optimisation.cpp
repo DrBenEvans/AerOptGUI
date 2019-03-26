@@ -848,6 +848,15 @@ bool Optimisation::readAerOptSettings(QString filePath) {
                 else if("IV%smoothfactor") {
                     QStringList smoothfactor = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
                 }
+                else if("IV%runOnCluster"){
+                    QString yesValue = QString("'Y'");
+                    std::cout << value.toStdString() << std::endl;
+                    if( value.compare( yesValue ) ){
+                        runOnCluster = false;
+                    } else {
+                        runOnCluster = true;
+                    }
+                }
             }
         }
 
