@@ -82,15 +82,14 @@ void clusterManager::folderCheckLoop(){
             }
 
             while(std::getline(outputfile, line)){
-                output += line + "\n";
+                output = line + "\n";
+                emit stdOut(QString(output.c_str()));
                 line_number++;
                 changed = true;
             }
 
             if (outputfile.bad())
                 perror("error while reading file");
-
-            emit stdOut(QString(output.c_str()));
 
             outputfile.close();
         }
