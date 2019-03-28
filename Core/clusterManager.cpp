@@ -41,12 +41,12 @@ int clusterManager::submitToCluster( std::string AerOptInFile, std::string simul
     sshExecute(session, "cd AerOpt/; echo module load mkl > run.sh");
     sshExecute(session, "cd AerOpt/; echo './AerOpt 2>&1 > "+outputfilename+"' >> run.sh");
     sshExecute(session, "cd AerOpt/; chmod +x run.sh");
-    sshExecute(session, "cd AerOpt/; screen -d -m ./run.sh ");
+    sshExecute(session, "cd AerOpt/; screen -L -d -m ./run.sh ");
 
     ssh_disconnect(session);
     ssh_free(session);
 
-    return 1;
+    return 0;
 }
 
 
@@ -109,7 +109,7 @@ void clusterManager::run(){
     QSettings settings;
     std::string AerOptInFile = settings.value("AerOpt/inputFile").toString().toStdString();
 
-    if( submitToCluster(AerOptInFile, workingDirectory, username, password) ){
+    if( submitToCluster(AerOptInFile, workingDirectory, username, password)==0 ){
         folderCheckLoop();
     }
 }
