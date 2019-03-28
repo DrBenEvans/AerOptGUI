@@ -349,8 +349,6 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
 
                 uint64_t old_time = __cluster_file_time_map[subdestination];
                 uint64_t old_size = __cluster_file_size_map[subdestination];
-                std::cout << subsource << " size " << old_size << " " << file_attr->size << std::endl;
-                std::cout << subsource << " time " << old_time << " " << file_attr->mtime << std::endl;
 
                 if( old_size != file_attr->size || old_time != file_attr->mtime ){
                     int rc = getClusterFile(subsource, subdestination, session, sftp);
