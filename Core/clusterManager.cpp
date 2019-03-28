@@ -263,7 +263,7 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
     sftp_file file;
     char buffer[16384];
     int nbytes, nwritten;
-    int fd;
+    FILE *fd;
 
     file = sftp_open(sftp, source.c_str(), O_RDONLY, 0);
     if (file == NULL) {
@@ -280,8 +280,8 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
         QDir().mkpath(directory.path());
     }
 
-    fd = open(destination.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRUSR|S_IWUSR);
-    if (fd < 0) {
+    fd = fopen(destination.c_str(), "w+");
+    if (fd == NULL) {
         fprintf(stderr, "fileFromCluster: Can't open file for writing: %s\n",
                 strerror(errno));
         fprintf(stderr, "File name: %s\n", destination.c_str());
@@ -299,7 +299,7 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
               sftp_close(file);
               return SSH_ERROR;
           }
-          nwritten = write(fd, buffer, nbytes);
+          nwritten = fwrite(buffer, sizeof(char), nbytes, fd);
           if (nwritten != nbytes) {
               fprintf(stderr, "fileFromCluster: Error writing: %s\n",
                       strerror(errno));
@@ -308,13 +308,15 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
           }
     }
 
-
     rc = sftp_close(file);
     if (rc != SSH_OK) {
         fprintf(stderr, "fileFromCluster: Can't close the read file: %s\n",
                 ssh_get_error(session));
         return rc;
     }
+
+    fflush(fd);
+    fclose(fd);
 
     return 0;
 }
