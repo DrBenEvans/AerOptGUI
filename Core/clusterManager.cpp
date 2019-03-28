@@ -96,10 +96,11 @@ void clusterManager::folderCheckLoop(){
 
         if(changed) {
             folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
+            sleep(2);
             emit directoryChanged(filePath);
         }
 
-        sleep(2);
+        sleep(1);
     }
 }
 
