@@ -40,7 +40,7 @@ private:
 
     void run();
     void folderCheckLoop();
-    int submitToCluster( std::string AerOptInFile, std::string simulationDirectoryName, std::string username, std::string password );
+    int submitToCluster( std::string simulationDirectoryName, std::string username, std::string password );
 
 };
 

@@ -27,21 +27,34 @@ void clusterManager::setPassword(QString passwordQString){
 }
 
 
-int clusterManager::submitToCluster( std::string AerOptInFile, std::string simulationDirectoryName, std::string username, std::string password ){
+int clusterManager::submitToCluster(std::string simulationDirectoryName, std::string username, std::string password ){
+    QSettings settings;
     ssh_session session = createSSHSession( username, password );
 
-    fileToCluster(AerOptInFile.c_str(),"AerOpt/Input_Data/AerOpt_InputParameters.txt", session);
+    std::string AerOptInFile = settings.value("AerOpt/inputFile").toString().toStdString();
+    std::string AerOptNodeFile =  settings.value("AerOpt/nodeFile").toString().toStdString();
+    std::string meshDatFile = settings.value("mesher/initMeshFile").toString().toStdString();
 
+    std::string rundir = "AerOpt/"+simulationDirectoryName;
     std::string directory = simulationDirectoryName;
     std::string outputDirectory = directory+"/Output_Data";
     std::string outputfilename = outputDirectory+"/output.log";
-    sshExecute(session, "cd AerOpt/; rm -r "+directory);
-    sshExecute(session, "cd AerOpt/; mkdir -p "+outputDirectory);
-    sshExecute(session, "cd AerOpt/; cp Input_Data/AerOpt_InputParameters.txt "+directory);
-    sshExecute(session, "cd AerOpt/; echo module load mkl > run.sh");
-    sshExecute(session, "cd AerOpt/; echo './AerOpt 2>&1 > "+outputfilename+"' >> run.sh");
-    sshExecute(session, "cd AerOpt/; chmod +x run.sh");
-    sshExecute(session, "cd AerOpt/; screen -L -d -m ./run.sh ");
+    sshExecute(session, "rm -r "+rundir);
+    sshExecute(session, "mkdir -p "+rundir+"/"+outputDirectory);
+
+    sshExecute(session, "mkdir -p "+rundir+"/Input_Data/");
+    fileToCluster(AerOptInFile.c_str(),rundir+"/Input_Data/AerOpt_InputParameters.txt", session);
+    fileToCluster(AerOptNodeFile.c_str(),rundir+"/Input_Data/Control_Nodes.txt", session);
+    fileToCluster(meshDatFile.c_str(),rundir+"/Input_Data/Mesh.dat", session);
+
+    sshExecute(session, "cd "+rundir+"; cp Input_Data/AerOpt_InputParameters.txt "+directory);
+    sshExecute(session, "cd "+rundir+"; cp ../AerOpt ./");
+    sshExecute(session, "cd "+rundir+"; cp -r ../Executables ../executables ./");
+
+    sshExecute(session, "cd "+rundir+"; echo module load mkl > run.sh");
+    sshExecute(session, "cd "+rundir+"; echo './AerOpt 2>&1 > "+outputfilename+"' >> run.sh");
+    sshExecute(session, "cd "+rundir+"; chmod +x run.sh");
+    sshExecute(session, "cd "+rundir+"; screen -L -d -m ./run.sh ");
 
     ssh_disconnect(session);
     ssh_free(session);
@@ -58,6 +71,7 @@ void clusterManager::folderCheckLoop(){
 
     while ( 1 ) {
 
+        std::string rundir = "AerOpt/" + workingDirectory+"/";
         outputFilename = workingDirectory + "/Output_Data/output.log";
         QString filePath = QString(("AerOptFiles/"+outputFilename).c_str());
         QDir::toNativeSeparators(filePath);
@@ -67,8 +81,7 @@ void clusterManager::folderCheckLoop(){
         QDir::toNativeSeparators(filePath);
         localFolder = filePath.toStdString();
 
-
-        fileFromCluster("AerOpt/"+workingDirectory+"/Output_Data/output.log", "AerOptFiles/"+workingDirectory+"/Output_Data/output.log", username, password);
+        fileFromCluster(rundir+workingDirectory+"/Output_Data/output.log", "AerOptFiles/"+workingDirectory+"/Output_Data/output.log", username, password);
 
         std::ifstream outputfile(localFilename);
         std::string line = "";
@@ -95,7 +108,7 @@ void clusterManager::folderCheckLoop(){
         }
 
         if(changed) {
-            folderFromCluster("AerOpt/"+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
+            folderFromCluster(rundir+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
             sleep(2);
             emit directoryChanged(filePath);
         }
@@ -106,10 +119,7 @@ void clusterManager::folderCheckLoop(){
 
 
 void clusterManager::run(){
-    QSettings settings;
-    std::string AerOptInFile = settings.value("AerOpt/inputFile").toString().toStdString();
-
-    if( submitToCluster(AerOptInFile, workingDirectory, username, password)==0 ){
+    if( submitToCluster(workingDirectory, username, password)==0 ){
         folderCheckLoop();
     }
 }

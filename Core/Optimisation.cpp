@@ -466,9 +466,11 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
         outfile << "! Strings" << std::endl;
         if(runOnCluster){
             std::ifstream infile("clusterlogin", std::ifstream::in);
-            outfile << "IV%filepath = '/home/" << username << "/AerOpt/'" << std::endl;
-            outfile << "IV%clusterpath = '/home/" << username << "/AerOpt/'" << std::endl;
-            outfile << "IV%SimulationName = '" << simulationDirectoryName().toStdString() << "'" << std::endl;
+            std::string runname = simulationDirectoryName().toStdString();
+            std::string path = "/home/" + username + "/AerOpt/" + runname;
+            outfile << "IV%filepath = '" << path << "'" << std::endl;
+            outfile << "IV%clusterpath = '" << path << "'" << std::endl;
+            outfile << "IV%SimulationName = '" << runname << "'" << std::endl;
             outfile << "IV%filename = 'Geometry'" << std::endl;
             outfile << "IV%Account = 'scw1000'" << std::endl;
             outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
