@@ -11,6 +11,7 @@ ZoomPanView::ZoomPanView(QWidget* parent) :
     setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     setTransformationAnchor(QGraphicsView::AnchorViewCenter);
+    setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 void ZoomPanView::touchEvent(QTouchEvent *touchEvent){
