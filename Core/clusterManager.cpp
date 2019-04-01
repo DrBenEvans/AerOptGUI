@@ -405,6 +405,10 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
                     if(!rc){
                         __cluster_file_time_map[subdestination] = file_attr->mtime;
                         __cluster_file_size_map[subdestination] = file_attr->size;
+                    } else {
+                        QString filePath = QString(destination.c_str());
+                        QFile file(filePath);
+                        file.remove();
                     }
                 }
             }
