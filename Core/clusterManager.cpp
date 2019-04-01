@@ -351,6 +351,24 @@ int getClusterFile(std::string source, std::string destination, ssh_session sess
 }
 
 
+int downloadAndVerifyClusterFile(std::string source, std::string destination, int size, ssh_session session, sftp_session sftp){
+    struct stat stat_buf;
+    int rc = getClusterFile(source, destination, session, sftp);
+    rc &= stat(destination.c_str(), &stat_buf);
+
+    int ntry = 0;
+    while( !rc && stat_buf.st_size < size/2 ){
+        if(ntry>10){
+            return 1;
+        }
+        rc = getClusterFile(source, destination, session, sftp);
+        rc &= stat(destination.c_str(), &stat_buf);
+        ntry++;
+    }
+    return rc;
+}
+
+
 
 int getClusterFolder(std::string source, std::string destination, ssh_session session, sftp_session sftp){
     static std::map<std::string, uint64_t> __cluster_file_size_map;
@@ -379,8 +397,10 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
                 uint64_t old_time = __cluster_file_time_map[subdestination];
                 uint64_t old_size = __cluster_file_size_map[subdestination];
 
+                std::cout << subdestination << " " << old_size << " " << file_attr->size << std::endl;
+
                 if( old_size != file_attr->size || old_time != file_attr->mtime ){
-                    int rc = getClusterFile(subsource, subdestination, session, sftp);
+                    int rc = downloadAndVerifyClusterFile(subsource, subdestination, file_attr->size, session, sftp);
 
                     if(!rc){
                         __cluster_file_time_map[subdestination] = file_attr->mtime;
