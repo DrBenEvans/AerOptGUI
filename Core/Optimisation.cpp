@@ -472,7 +472,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
             outfile << "IV%clusterpath = '" << path << "'" << std::endl;
             outfile << "IV%SimulationName = '" << runname << "'" << std::endl;
             outfile << "IV%filename = 'Geometry'" << std::endl;
-            outfile << "IV%Account = 'scw1000'" << std::endl;
+            outfile << "IV%Account = 'scw1022'" << std::endl;
             outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
             outfile << "IV%runOnCluster = 'Y'" << std::endl;
             outfile << "IV%SystemType = 'B'" << std::endl;
