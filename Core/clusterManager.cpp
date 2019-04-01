@@ -81,12 +81,11 @@ void clusterManager::folderCheckLoop(){
         QDir::toNativeSeparators(filePath);
         localFolder = filePath.toStdString();
 
-        fileFromCluster(rundir+workingDirectory+"/Output_Data/output.log", "AerOptFiles/"+workingDirectory+"/Output_Data/output.log", username, password);
+        folderFromCluster(rundir+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
 
         std::ifstream outputfile(localFilename);
         std::string line = "";
         std::string output = "";
-        boolean changed = false;
 
         if ( outputfile.is_open() ){
 
@@ -98,7 +97,6 @@ void clusterManager::folderCheckLoop(){
                 output = line + "\n";
                 emit stdOut(QString(output.c_str()));
                 line_number++;
-                changed = true;
             }
 
             if (outputfile.bad())
@@ -107,13 +105,34 @@ void clusterManager::folderCheckLoop(){
             outputfile.close();
         }
 
-        if(changed) {
-            folderFromCluster(rundir+workingDirectory, "AerOptFiles/"+workingDirectory, username, password);
-            sleep(2);
+        /* Check for new lines in the fitness file */
+        filePath = QString(("AerOptFiles/"+workingDirectory + "/FitnessAll.txt").c_str());
+        QDir::toNativeSeparators(filePath);
+        localFilename = filePath.toStdString();
+
+        std::ifstream fitness_file(localFilename);
+
+        if ( fitness_file.is_open() ){
+            int lines = 0;
+            static int fitness_lines = 0;
+
+            while(std::getline(fitness_file, line)){
+                lines++;
+            }
+
+            if (fitness_file.bad())
+                perror("error while reading file");
+
+            if( lines > fitness_lines ){
+                fitness_lines = lines;
             emit directoryChanged(filePath);
         }
 
-        sleep(1);
+            fitness_file.close();
+        }
+
+
+        sleep(5);
     }
 }
 
