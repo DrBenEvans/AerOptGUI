@@ -22,7 +22,7 @@ public slots:
 private:
     bool activated() const;
     void setActivated(bool active);
-    bool control();
+    bool isControlPoint();
     qreal radius() const;
     qreal w(qreal width);
     qreal h(qreal width);

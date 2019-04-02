@@ -107,7 +107,7 @@ void BoundaryPointView::refreshControlPointState(int index, bool ctl) {
     }
 }
 
-bool BoundaryPointView::control() {
+bool BoundaryPointView::isControlPoint() {
     return mControl;
 }
 
