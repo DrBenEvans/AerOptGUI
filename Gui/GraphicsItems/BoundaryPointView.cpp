@@ -93,17 +93,22 @@ void BoundaryPointView::setActivePoint(int index) {
 
 }
 
+
 void BoundaryPointView::refreshControlPointState(int index, bool ctl) {
-    if(index == mBoundaryPointIndex) {
-        //build bounding box, unless it exists
-        if(mControlPointHandles == nullptr && ctl)
-            mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, mScale, this);
+    if (index == mBoundaryPointIndex){
 
-        mControlPointHandles->setVisible(ctl);
+        // Only need to refresh if different
+        if(mControl != ctl) {
+            //build bounding box, unless it exists
+            if(mControlPointHandles == nullptr && ctl)
+                mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, mScale, this);
 
-        mControl = ctl;
-        mBoundaryPointModel->setActiveIndex(mBoundaryPointIndex);
+            mControlPointHandles->setVisible(ctl);
+
+            mControl = ctl;
+        }
     }
+
 }
 
 bool BoundaryPointView::isControlPoint() {
