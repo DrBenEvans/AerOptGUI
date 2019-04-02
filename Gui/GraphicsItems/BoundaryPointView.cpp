@@ -37,8 +37,7 @@ QRectF BoundaryPointView::boundingRect() const
 {
     qreal margin = 5;
     QRectF r = mPointRect;
-    r.adjust(-margin, -margin, margin, margin);
-    return r;
+    return r.adjusted(-margin, -margin, margin, margin);
 }
 
 void BoundaryPointView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -60,7 +59,6 @@ void BoundaryPointView::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     painter->setBrush(brush);
     painter->setPen(pen);
 
-    int r = radius();
     QPainterPath path;
     path.addRect(mPointRect);
     painter->fillPath(path, brush);
