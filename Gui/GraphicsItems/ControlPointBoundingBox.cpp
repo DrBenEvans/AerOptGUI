@@ -1,5 +1,6 @@
 #include "ControlPointBoundingBox.h"
 #include <QPainter>
+#include "BoundaryPointModel.h"
 
 ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int index, ViewScaler* scaler, QGraphicsItem *parent) :
     QGraphicsObject(parent),
@@ -8,8 +9,8 @@ ControlPointBoundingBox::ControlPointBoundingBox(BoundaryPointModel* model, int 
     mBoundaryPointIndex(index),
     mScale(scaler)
 {
-    mTopLeft = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, true, mScale, this);
-    mBottomRight = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, false, mScale, this);
+    mTopLeft = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, BoundaryPointModel::TOPLEFT, mScale, this);
+    mBottomRight = new ControlPointDragHandle(mBoundaryPointModel, mBoundaryPointIndex, BoundaryPointModel::BOTTOMRIGHT, mScale, this);
     connect(mBoundaryPointModel, &BoundaryPointModel::controlPointBoundsChanged, this, &ControlPointBoundingBox::boundsChanged);
 }
 

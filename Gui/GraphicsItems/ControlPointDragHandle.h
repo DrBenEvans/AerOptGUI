@@ -10,7 +10,7 @@ class ControlPointBoundingBox;
 class ControlPointDragHandle : public QGraphicsItem
 {
 public:
-    ControlPointDragHandle(BoundaryPointModel* model, int index, bool isTopLeft, ViewScaler* scaler, QGraphicsItem* parent = 0);
+    ControlPointDragHandle(BoundaryPointModel* model, int index, BoundaryPointModel::CornerPosition corner, ViewScaler* scaler, QGraphicsItem* parent = 0);
 
     QRectF boundingRect() const override;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *item, QWidget */*widget*/) override;
@@ -21,7 +21,7 @@ private:
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
     QVariant itemChange(GraphicsItemChange change, const QVariant &value) override;
 
-    bool mTopLeft;
+    BoundaryPointModel::CornerPosition corner;
     QRectF mHandleRect;
     QRectF mHoverRect;
     BoundaryPointModel* mBoundaryPointModel;
