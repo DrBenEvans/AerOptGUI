@@ -70,26 +70,27 @@ bool BoundaryPointView::activated() const {
 }
 
 void BoundaryPointView::setActivePoint(int index) {
-    setActivated(index == mBoundaryPointIndex);
-}
+    bool active = (index == mBoundaryPointIndex);
 
-void BoundaryPointView::setActivated(bool active) {
-    mActive = active;
-    foreach(auto& view, scene()->views()) {
-        if(active) {
-            view->setDragMode(QGraphicsView::NoDrag);
-        } else {
-            view->setDragMode(QGraphicsView::ScrollHandDrag);
+    // We only need to update a boundary point if the activated value is different
+    if (mActive != active){
+        mActive = active;
+        foreach(auto& view, scene()->views()) {
+            if(active) {
+                view->setDragMode(QGraphicsView::NoDrag);
+            } else {
+                view->setDragMode(QGraphicsView::ScrollHandDrag);
+            }
         }
+
+        if(mControlPointHandles != nullptr) {
+            mControlPointHandles->setActivated(active);
+        }
+
+        prepareGeometryChange();
+        update();
     }
 
-    if(mControlPointHandles != nullptr) {
-        mControlPointHandles->setActivated(active);
-    }
-
-    prepareGeometryChange();
-
-    update();
 }
 
 void BoundaryPointView::refreshControlPointState(int index, bool ctl) {
