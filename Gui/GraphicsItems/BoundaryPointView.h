@@ -24,8 +24,6 @@ private:
     void setActivated(bool active);
     bool isControlPoint();
     qreal radius() const;
-    qreal w(qreal width);
-    qreal h(qreal width);
 
     QRectF mPointRect;
     bool mActive;
