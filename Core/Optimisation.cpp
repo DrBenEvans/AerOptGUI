@@ -764,7 +764,6 @@ bool Optimisation::readAerOptSettings(QString filePath) {
 
     if (success)
     {
-        std::cout << filePath.toStdString() << std::endl;
         std::string line("");
 
         while (std::getline(infile, line))

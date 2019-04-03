@@ -57,7 +57,7 @@ void MainWindow::setupGraphicsView() {
     mProfileView = new ProfileView(mScale);
     mProfileView->setDrawDots(false);
 
-    // crate mesh view
+    // create mesh view
     MeshView* meshView = new MeshView(mScale);
     meshView->setMeshModel(mCurrentMeshViewModel);
 
