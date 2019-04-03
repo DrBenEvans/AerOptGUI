@@ -70,6 +70,7 @@ void ControlPointDragHandle::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     foreach(auto& view, scene()->views()) {
         view->setDragMode(QGraphicsView::NoDrag);
+        view->setCursor(Qt::ArrowCursor);
     }
 
     // send the event to graphics scene and items
