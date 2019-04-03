@@ -77,10 +77,6 @@ void ControlPointDragHandle::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
     QGraphicsItem::hoverLeaveEvent(event);
 }
 
-void ControlPointDragHandle::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-    QGraphicsItem::mouseDoubleClickEvent(event);
-}
-
 QVariant ControlPointDragHandle::itemChange(GraphicsItemChange change, const QVariant &value)
 {
     if (change == ItemPositionChange && scene()) {
