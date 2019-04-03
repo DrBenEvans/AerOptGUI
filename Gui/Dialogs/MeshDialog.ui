@@ -232,7 +232,7 @@
   <customwidget>
    <class>ZoomPanView</class>
    <extends>QGraphicsView</extends>
-   <header>zoompanview.h</header>
+   <header>ZoomPanView.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
