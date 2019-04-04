@@ -4,21 +4,21 @@
 #include <QDialog>
 
 namespace Ui {
-class PlotConfigureDialog;
+class ViewConfigureDialog;
 }
 
-class PlotConfigureDialog : public QDialog
+class ViewConfigureDialog : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit PlotConfigureDialog(int lineSize, int pointSize, QWidget *parent = nullptr);
-    ~PlotConfigureDialog();
+    explicit ViewConfigureDialog(int lineSize, int pointSize, QWidget *parent = nullptr);
+    ~ViewConfigureDialog();
     int getPointSize();
     int getLineSize();
 
 private:
-    Ui::PlotConfigureDialog *ui;
+    Ui::ViewConfigureDialog *ui;
 };
 
 #endif // PLOTCONFIGUREDIALOG_H

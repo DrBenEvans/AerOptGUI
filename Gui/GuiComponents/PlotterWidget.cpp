@@ -1,6 +1,6 @@
 #include "PlotterWidget.h"
 #include "Optimisation.h"
-#include "PlotConfigureDialog.h"
+#include "ViewConfigureDialog.h"
 
 PlotterWidget::PlotterWidget(QWidget *parent) :
     QCustomPlot(parent)
