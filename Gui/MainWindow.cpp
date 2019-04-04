@@ -58,7 +58,7 @@ void MainWindow::setupGraphicsView() {
     mProfileView = new ProfileView(mScale);
     mProfileView->setDrawDots(false);
 
-    // crate mesh view
+    // create mesh view
     MeshView* meshView = new MeshView(mScale);
     meshView->setMeshModel(mCurrentMeshViewModel);
 
@@ -179,12 +179,14 @@ MainWindow::~MainWindow() {
 
 void MainWindow::newOptimisation() {
     Optimisation *opt = new Optimisation();
+    opt->mClusterPassword = mClusterPassword;
     MeshDialogModel *meshDialogModel = new MeshDialogModel(this);
     meshDialogModel->setCurrentMesh(opt->initMesh());
     MeshDialog meshDialog(mProfileModel, meshDialogModel, this);
     if(meshDialog.exec() == QDialog::Accepted) {
         ConfigSimulationDialog diag(opt, this);
         if(diag.exec() == QDialog::Accepted) {
+
             opt->setControlPoints(meshDialog.controlPoints());
             bool success = mOptimisationModel->run(opt);
 
@@ -194,6 +196,7 @@ void MainWindow::newOptimisation() {
                 QMessageBox::warning(this, "Warning", message, QMessageBox::Ok);
             } else {
                 mOptimisationModel->addOptimisation(opt);
+                mClusterPassword = opt->mClusterPassword;
             }
 
             int index = mOptimisationModel->rowCount() - 1;

@@ -14,6 +14,9 @@
 #include "BoundaryPoint.h"
 #include <QString>
 
+#include <clusterManager.h>
+
+
 class OptimisationModel;
 
 /**
@@ -188,6 +191,7 @@ public:
     int controlPointCount();
 
     bool run();
+    bool refreshFromCluster();
     void setModel(OptimisationModel* model);
     std::vector<std::vector<double>> allfitness();
     double fitness(int generationIndex, int agentIndex);
@@ -195,6 +199,10 @@ public:
     std::pair<double,double> fitnessRange();
 
     ProfilePoints initProfilePoints();
+
+    bool runOnCluster = false;
+    QString mClusterPassword = "";
+
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
     bool createAerOptInFile(const QString &filePath);
@@ -245,6 +253,10 @@ private:
     QString mOutputLog = "";
 
     ProfilePoints mProfilePoints;
+
+    clusterManager* clusterChecker = nullptr;
 };
+
+
 
 #endif // OptimisationRun_H

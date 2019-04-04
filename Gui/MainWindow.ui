@@ -294,7 +294,7 @@
                 <string/>
                </property>
                <property name="pixmap">
-                <pixmap>:/images/Map.png</pixmap>
+                <pixmap resource="../Resourses.qrc">:/images/Map.png</pixmap>
                </property>
                <property name="scaledContents">
                 <bool>true</bool>
@@ -336,7 +336,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap>:/images/canvas_logo.png</pixmap>
+            <pixmap resource="../Resourses.qrc">:/images/canvas_logo.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>false</bool>
@@ -452,6 +452,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="../Resourses.qrc"/>
+ </resources>
  <connections/>
 </ui>

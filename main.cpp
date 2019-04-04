@@ -142,6 +142,10 @@ void firstTimeSetup(QString AerOptWorkDir) {
     initialMeshFile = QDir(scratchPath + "Mesh.dat").absolutePath();
     initialMeshFile = QDir::toNativeSeparators(initialMeshFile);
     settings.setValue("mesher/initMeshFile", initialMeshFile);
+
+    settings.setValue("Cluster/Username", "");
+    settings.setValue("Cluster/Account", "scw1022");
+    settings.setValue("Cluster/Address", "sunbird.swansea.ac.uk");
 }
 
 void checkSettings()
