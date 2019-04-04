@@ -24,6 +24,7 @@ public:
     ~clusterManager();
 
     void setWorkingDirectory(QString workDir);
+    void setClusterAddress(QString address);
     void setUsername(QString username);
     void setPassword(QString password);
 
@@ -35,23 +36,24 @@ signals:
 private:
 
     std::string workingDirectory = "";
+    std::string address = "";
     std::string username = "";
     std::string password = "";
 
     void run();
     void folderCheckLoop();
-    int submitToCluster( std::string simulationDirectoryName, std::string username, std::string password );
+    int submitToCluster();
 
 };
 
 
-int sshVerifyPassword( QString username, QString password );
+int sshVerifyPassword( QString address, QString username, QString password );
 int fileExists(std::string filename);
-int folderFromCluster(std::string source, std::string destination, std::string username, std::string password);
-int fileFromCluster(std::string source, std::string destination, std::string username, std::string password);
+int folderFromCluster(std::string source, std::string destination, std::string address, std::string username, std::string password);
+int fileFromCluster(std::string source, std::string destination, std::string address, std::string username, std::string password);
+ssh_session createSSHSession( std::string address, std::string username, std::string password );
 void sshExecute(ssh_session session, std::string command);
 int fileToCluster(std::string source, std::string destination, ssh_session session);
-ssh_session createSSHSession( std::string username, std::string password );
 
 
 #endif // clusterManager_H

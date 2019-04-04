@@ -62,8 +62,10 @@ void MeshView::calcBoundingBox() {
 
     mBoundingBox = QRectF(mXmin-margin, mYmin-margin, (mXmax-mXmin)+2*margin, (mYmax-mYmin)+2*margin);
 
-    QGraphicsScene * Scene = scene();
-    Scene->setSceneRect(mBoundingBox);
+    QGraphicsScene * qscene = scene();
+    if( qscene ){
+        qscene->setSceneRect(mBoundingBox);
+    }
 }
 
 void MeshView::boundaryPointsReset()

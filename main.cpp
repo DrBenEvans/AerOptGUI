@@ -144,6 +144,8 @@ void firstTimeSetup(QString AerOptWorkDir) {
     settings.setValue("mesher/initMeshFile", initialMeshFile);
 
     settings.setValue("Cluster/Username", "");
+    settings.setValue("Cluster/Account", "scw1022");
+    settings.setValue("Cluster/Address", "sunbird.swansea.ac.uk");
 }
 
 void checkSettings()

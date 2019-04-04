@@ -291,6 +291,7 @@ bool Optimisation::run() {
     QString AerOptWorkDir = settings.value("AerOpt/workingDirectory").toString();
     QString inFolder = settings.value("AerOpt/inFolder").toString();
     QString username = settings.value("Cluster/Username").toString();
+    QString address = settings.value("Cluster/Address").toString();
 
     setInitProfilePoints(initMesh()->profilePoints());
     bool r = true;
@@ -315,6 +316,7 @@ bool Optimisation::run() {
 
             clusterChecker->setWorkingDirectory(dirname);
             clusterChecker->setUsername(username);
+            clusterChecker->setClusterAddress(address);
             clusterChecker->setPassword(mClusterPassword);
             clusterChecker->start();
 
@@ -341,9 +343,10 @@ bool Optimisation::run() {
 bool Optimisation::refreshFromCluster() {
     QSettings settings;
     std::string username = settings.value("Cluster/Username").toString().toStdString();
-    std::string password =mClusterPassword.toStdString();
+    std::string address = settings.value("Cluster/Address").toString().toStdString();
+    std::string password = mClusterPassword.toStdString();
     std::string dir = simulationDirectoryName().toStdString();
-    folderFromCluster("AerOpt/"+dir, "AerOptFiles/"+dir, username, password);
+    folderFromCluster("AerOpt/"+dir, "AerOptFiles/"+dir, address, username, password);
     readFitness();
     if(mOptimisationModel != 0) {
         mOptimisationModel->emitOptimisationFitnessChanged(this);
@@ -357,6 +360,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
     QSettings settings;
     QString workingDirectory = settings.value("AerOpt/workingDirectory").toString();
     std::string username = settings.value("Cluster/Username").toString().toStdString();
+    std::string account = settings.value("Cluster/Account").toString().toStdString();
 
     std::ofstream outfile(filePath.toStdString(), std::ofstream::out);
     r &= outfile.is_open();
@@ -472,7 +476,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
             outfile << "IV%clusterpath = '" << path << "'" << std::endl;
             outfile << "IV%SimulationName = '" << runname << "'" << std::endl;
             outfile << "IV%filename = 'Geometry'" << std::endl;
-            outfile << "IV%Account = 'scw1022'" << std::endl;
+            outfile << "IV%Account = '" << account << "'" << std::endl;
             outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
             outfile << "IV%runOnCluster = 'Y'" << std::endl;
             outfile << "IV%SystemType = 'B'" << std::endl;
@@ -851,7 +855,6 @@ bool Optimisation::readAerOptSettings(QString filePath) {
                 }
                 else if("IV%runOnCluster"){
                     QString yesValue = QString("'Y'");
-                    std::cout << value.toStdString() << std::endl;
                     if( value.compare( yesValue ) ){
                         runOnCluster = false;
                     } else {
