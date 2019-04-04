@@ -39,6 +39,8 @@ private slots:
     void on_loadOptimisationButton_clicked();
     void on_actionCurrent_Optimisation_Settings_triggered();
 
+    void on_actionVisualSettings_triggered();
+
 private:
     void setMeshViewSimulation(int iGen, int agent);
     void setLogText();

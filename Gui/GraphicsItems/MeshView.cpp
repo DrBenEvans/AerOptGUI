@@ -81,7 +81,7 @@ void MeshView::boundaryPointsReset()
             BoundaryPointView* bpView = new BoundaryPointView(mBoundaryPointModel, index, mScale, this);
         }
     }
-    QGraphicsItem::update();
+    update();
 }
 
 QRectF MeshView::boundingRect() const

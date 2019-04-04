@@ -386,7 +386,7 @@
     <property name="title">
      <string>Settings</string>
     </property>
-    <addaction name="actionPreferences"/>
+    <addaction name="actionVisualSettings"/>
    </widget>
    <addaction name="menuOptimisations"/>
    <addaction name="menuLog"/>
@@ -430,9 +430,12 @@
     <string>Ctrl+C</string>
    </property>
   </action>
-  <action name="actionPreferences">
+  <action name="actionVisualSettings">
    <property name="text">
-    <string>Cluster Login</string>
+    <string>Visual settings...</string>
+   </property>
+   <property name="toolTip">
+    <string>Visual settings</string>
    </property>
   </action>
  </widget>
@@ -440,7 +443,7 @@
   <customwidget>
    <class>ZoomPanView</class>
    <extends>QGraphicsView</extends>
-   <header>zoompanview.h</header>
+   <header>ZoomPanView.h</header>
   </customwidget>
   <customwidget>
    <class>PlotterWidget</class>

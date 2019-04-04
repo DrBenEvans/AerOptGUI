@@ -15,6 +15,9 @@ public:
     void setCurrentOptimisationIndex(int index);
     void setCurrentlySelectedPoint(int iGen, int agent);
     void clearCurrentSelection();
+    int getLineSize();
+    int getPointSize();
+    void configureView(int lineSize, int pointSize);
 
 signals:
     void selectedPointChanged(int iGen, int agent);
@@ -28,6 +31,10 @@ private:
     double mXMin = 0.7;
     double mYMax = 10000;
     double mMinRange = 3;
+
+    // Display size
+    int mPointSize = 15;
+    int mLineSize = 5;
 
     void signalCurrentlySelectedPoint();
     Optimisation* currentOptimisation();

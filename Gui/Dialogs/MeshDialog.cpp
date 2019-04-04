@@ -37,6 +37,10 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidg
         mProfileView->setVisible(checked);
     });
 
+    connect(ui->zoomSlider,&QSlider::valueChanged,[this](int scale) {
+        ui->graphicsView->setTransform(QTransform::fromScale(float(scale)/100, float(scale)/100));;
+    });
+
     connect(&mProfileModel, &ProfileModel::newProfileAdded, [this](int index) {
         ui->profile->setCurrentIndex(index);
         ui->profile->update();
