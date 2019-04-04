@@ -43,7 +43,6 @@ QMAKE_CXXFLAGS += -Wno-deprecated
 QMAKE_CXXFLAGS += -Wno-unused-function
 QMAKE_CXXFLAGS += -fmessage-length=0
 
-QMAKE_LFLAGS += -Bstatic
 
 TARGET = AerOptGui
 TEMPLATE = app
@@ -77,7 +76,10 @@ SOURCES += \
     Core/MeshDialogModel.cpp \
     Core/MeshModel.cpp \
     Gui/GraphicsItems/ColorMapper.cpp \
-    Gui/Dialogs/windowsizing.cpp
+    Gui/Dialogs/windowsizing.cpp \
+    Gui/Dialogs/ClusterLoginDialog.cpp \
+    Core/clusterManager.cpp\
+    Gui/Dialogs/ViewConfigureDialog.cpp
 
 HEADERS  += \
     Gui/DebugOutput.h \
@@ -109,14 +111,19 @@ HEADERS  += \
     Core/MeshDialogModel.h \
     Core/MeshModel.h \
     Gui/GraphicsItems/ColorMapper.h \
-    Gui/Dialogs/windowsizing.h
+    Gui/Dialogs/windowsizing.h \
+    Gui/Dialogs/ClusterLoginDialog.h \
+    Core/clusterManager.h \
+    Gui/Dialogs/ViewConfigureDialog.h
 
 FORMS    += \
     Gui/DebugOutput.ui \
     Gui/Dialogs/ConfigSimulationDialog.ui \
     Gui/MainWindow.ui \
     Gui/Dialogs/MeshDialog.ui \
-    Gui/GuiComponents/ControlPointView.ui
+    Gui/GuiComponents/ControlPointView.ui \
+    Gui/Dialogs/ClusterLoginDialog.ui \
+    Gui/Dialogs/ViewConfigureDialog.ui
 
 INCLUDEPATH += \
     Gui \
@@ -130,18 +137,15 @@ INCLUDEPATH += \
 RESOURCES += \
     Resourses.qrc
 
+
+
+PRE_TARGETDEPS += $$PWD/../vcpkg/packages/libssh_x64-windows/lib/ssh.lib
 LIBS += -L$$PWD/../vcpkg/packages/libssh_x64-windows/lib/ -lssh
 INCLUDEPATH += $$PWD/../vcpkg/packages/libssh_x64-windows/include
 DEPENDPATH += $$PWD/../vcpkg/packages/libssh_x64-windows/include
-
-LIBS += -L$$PWD/../vcpkg/packages/librsync_x64-windows/lib/ -lrsync
-INCLUDEPATH += $$PWD/../vcpkg/packages/librsync_x64-windows/include
-DEPENDPATH += $$PWD/../vcpkg/packages/librsync_x64-windows/include
 
 LIBS += -L$$PWD/../vcpkg/packages/openssl-windows_x64-windows/lib/ -llibeay32 -lssleay32
 INCLUDEPATH += $$PWD/../vcpkg/packages/openssl-windows_x64-windows/include
 DEPENDPATH += $$PWD/../vcpkg/packages/openssl-windows_x64-windows/include
 
-LIBS += -L$$PWD/../vcpkg/packages/zlib_x64-windows/lib/ -lzlib
-INCLUDEPATH += $$PWD/../vcpkg/packages/zlib_x64-windows/include
-DEPENDPATH += $$PWD/../vcpkg/packages/zlib_x64-windows/include
+
