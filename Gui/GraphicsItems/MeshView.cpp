@@ -34,7 +34,7 @@ void MeshView::setBoundaryPointModel(BoundaryPointModel* model) {
 void MeshView::meshChanged() {
     calcBoundingBox();
     prepareGeometryChange();
-    QGraphicsItem::update();
+    update();
 }
 
 void MeshView::calcBoundingBox() {
@@ -77,7 +77,7 @@ void MeshView::boundaryPointsReset()
             BoundaryPointView* bpView = new BoundaryPointView(mBoundaryPointModel, index, mScale, this);
         }
     }
-    QGraphicsItem::update();
+    update();
 }
 
 QRectF MeshView::boundingRect() const
