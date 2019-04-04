@@ -8,6 +8,7 @@
 #include "MeshView.h"
 #include "Mesh.h"
 #include "windowsizing.h"
+#include "PlotConfigureDialog.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -251,5 +252,21 @@ void MainWindow::on_actionCurrent_Optimisation_Settings_triggered()
     if(opt) {
         ConfigSimulationDialog diag(opt, this, false);
         diag.exec();
+    }
+}
+
+void MainWindow::on_actionVisualSettings_triggered()
+{
+    int pointSize = ui->fitnessPlot->getPointSize();
+    int lineSize = ui->fitnessPlot->getLineSize();
+
+    PlotConfigureDialog diag(lineSize, pointSize, this);
+    int accepted = diag.exec();
+
+    if(accepted) {
+        pointSize = diag.getPointSize();
+        lineSize = diag.getLineSize();
+
+        ui->fitnessPlot->configureView(lineSize, pointSize);
     }
 }

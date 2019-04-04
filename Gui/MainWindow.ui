@@ -382,8 +382,15 @@
     </property>
     <addaction name="actionShowLog"/>
    </widget>
+   <widget class="QMenu" name="menuSettings">
+    <property name="title">
+     <string>Settings</string>
+    </property>
+    <addaction name="actionVisualSettings"/>
+   </widget>
    <addaction name="menuOptimisations"/>
    <addaction name="menuLog"/>
+   <addaction name="menuSettings"/>
   </widget>
   <action name="actionNewOptimisation">
    <property name="text">
@@ -421,6 +428,14 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+C</string>
+   </property>
+  </action>
+  <action name="actionVisualSettings">
+   <property name="text">
+    <string>Visual settings...</string>
+   </property>
+   <property name="toolTip">
+    <string>Visual settings</string>
    </property>
   </action>
  </widget>
