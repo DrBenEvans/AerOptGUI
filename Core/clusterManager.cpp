@@ -86,7 +86,7 @@ void clusterManager::folderCheckLoop(){
         QDir::toNativeSeparators(filePath);
         localFolder = filePath.toStdString();
 
-        folderFromCluster(rundir+workingDirectory, "AerOptFiles/"+workingDirectory, address, username, password);
+        folderFromCluster(rundir+workingDirectory, "AerOptFiles/"+workingDirectory);
 
         std::ifstream outputfile(localFilename);
         std::string line = "";
@@ -402,7 +402,6 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
                 uint64_t old_time = __cluster_file_time_map[subdestination];
                 uint64_t old_size = __cluster_file_size_map[subdestination];
 
-                std::cout << subdestination << " " << old_size << " " << file_attr->size << std::endl;
 
                 if( old_size != file_attr->size || old_time != file_attr->mtime ){
                     int rc = downloadAndVerifyClusterFile(subsource, subdestination, file_attr->size, session, sftp);
@@ -424,7 +423,7 @@ int getClusterFolder(std::string source, std::string destination, ssh_session se
 
 
 
-int folderFromCluster(std::string source, std::string destination, std::string address, std::string username, std::string password){
+int clusterManager::folderFromCluster(std::string source, std::string destination){
     sftp_session sftp;
 
     ssh_session session = createSSHSession(address, username, password);
@@ -438,7 +437,7 @@ int folderFromCluster(std::string source, std::string destination, std::string a
     return 0;
 }
 
-int fileFromCluster(std::string source, std::string destination, std::string address, std::string username, std::string password){
+int clusterManager::fileFromCluster(std::string source, std::string destination){
     sftp_session sftp;
 
     ssh_session session = createSSHSession(address, username, password);
