@@ -34,6 +34,7 @@ void clusterManager::setPassword(QString passwordQString){
 
 int clusterManager::submitToCluster(){
     QSettings settings;
+
     ssh_session session = createSSHSession( address, username, password );
 
     std::string AerOptInFile = settings.value("AerOpt/inputFile").toString().toStdString();
@@ -69,8 +70,11 @@ int clusterManager::submitToCluster(){
 
 
 void clusterManager::folderCheckLoop(){
+    QSettings settings;
+
+    std::string rundirpath = settings.value("AerOpt/workingDirectory").toString().toStdString();
     std::string outputFilename;
-    std::string localFilename;
+    std::string fitnessFilename;
     std::string localFolder;
     int line_number=0;
 
@@ -78,17 +82,17 @@ void clusterManager::folderCheckLoop(){
 
         std::string rundir = "AerOpt/" + workingDirectory+"/";
         outputFilename = workingDirectory + "/Output_Data/output.log";
-        QString filePath = QString(("AerOptFiles/"+outputFilename).c_str());
+        QString filePath = QString((rundirpath+outputFilename).c_str());
         QDir::toNativeSeparators(filePath);
-        localFilename = filePath.toStdString();
+        outputFilename = filePath.toStdString();
 
-        filePath = QString(("AerOptFiles/"+workingDirectory).c_str());
+        filePath = QString((rundirpath+workingDirectory).c_str());
         QDir::toNativeSeparators(filePath);
         localFolder = filePath.toStdString();
 
-        folderFromCluster(rundir+workingDirectory, "AerOptFiles/"+workingDirectory);
+        folderFromCluster(rundir+workingDirectory, rundirpath+workingDirectory);
 
-        std::ifstream outputfile(localFilename);
+        std::ifstream outputfile(outputFilename);
         std::string line = "";
         std::string output = "";
 
@@ -111,11 +115,12 @@ void clusterManager::folderCheckLoop(){
         }
 
         /* Check for new lines in the fitness file */
-        filePath = QString(("AerOptFiles/"+workingDirectory + "/FitnessAll.txt").c_str());
+        fitnessFilename = workingDirectory + "/FitnessAll.txt";
+        filePath = QString((rundirpath+fitnessFilename ).c_str());
         QDir::toNativeSeparators(filePath);
-        localFilename = filePath.toStdString();
+        fitnessFilename = filePath.toStdString();
 
-        std::ifstream fitness_file(localFilename);
+        std::ifstream fitness_file(fitnessFilename);
 
         if ( fitness_file.is_open() ){
             int lines = 0;
