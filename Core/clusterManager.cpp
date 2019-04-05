@@ -481,12 +481,3 @@ int sshVerifyPassword( QString address, QString username, QString password ){
     return 0;
 }
 
-
-int fileExists(std::string filename){
-    FILE *file;
-    if( (file = fopen(filename.c_str(), "r")) ){
-        fclose(file);
-        return 1;
-    }
-    return 0;
-}

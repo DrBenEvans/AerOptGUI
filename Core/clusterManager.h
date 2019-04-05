@@ -48,7 +48,6 @@ private:
 
 
 int sshVerifyPassword( QString address, QString username, QString password );
-int fileExists(std::string filename);
 int folderFromCluster(std::string source, std::string destination, std::string address, std::string username, std::string password);
 int fileFromCluster(std::string source, std::string destination, std::string address, std::string username, std::string password);
 ssh_session createSSHSession( std::string address, std::string username, std::string password );
