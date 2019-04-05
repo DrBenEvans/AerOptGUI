@@ -35,10 +35,10 @@ signals:
 
 private:
 
-    std::string workingDirectory = "";
-    std::string address = "";
-    std::string username = "";
-    std::string password = "";
+    std::string mWorkingDirectory = "";
+    std::string mAddress = "";
+    std::string mUsername = "";
+    std::string mPassword = "";
 
     void run();
     void folderCheckLoop();
