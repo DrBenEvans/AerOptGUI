@@ -191,7 +191,6 @@ public:
     int controlPointCount();
 
     bool run();
-    bool refreshFromCluster();
     void setModel(OptimisationModel* model);
     std::vector<std::vector<double>> allfitness();
     double fitness(int generationIndex, int agentIndex);
