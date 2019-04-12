@@ -326,6 +326,13 @@
             </property>
            </widget>
           </item>
+          <item row="5" column="1">
+           <widget class="QCheckBox" name="runOnCluster">
+            <property name="text">
+             <string>Run on cluster</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>

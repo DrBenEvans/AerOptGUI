@@ -1,5 +1,6 @@
 #include "PlotterWidget.h"
 #include "Optimisation.h"
+#include "ViewConfigureDialog.h"
 
 PlotterWidget::PlotterWidget(QWidget *parent) :
     QCustomPlot(parent)
@@ -196,9 +197,13 @@ void PlotterWidget::clearData()
     // give the axes some labels:
     xAxis->setLabel("Generation No.");
     yAxis->setLabel("Fitness");
+
     // set axes ranges, so we see all data:
     xAxis->setRange(mXMin, 10);
     yAxis->setRange(0, 1);
+
+    QColor color = QColor(255, 100, 0);
+    QPen pen = QPen(color, mLineSize);
 
     int num = graphCount();
     for (int i = 0; i < num; ++i)
@@ -206,9 +211,9 @@ void PlotterWidget::clearData()
         QVector<double> x(i);
         QVector<double> y(i);
         graph(i)->setData(x, y);
-        graph(i)->setPen(QPen(QColor(255, 100, 0)));
+        graph(i)->setPen(pen);
         graph(i)->setLineStyle(QCPGraph::lsLine);
-        graph(i)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, 15));
+        graph(i)->setScatterStyle(QCPScatterStyle(QCPScatterStyle::ssDisc, mPointSize));
         graph(i)->setVisible(false);
         graph(i)->setSelectable(QCP::stSingleData);
     }
@@ -216,4 +221,21 @@ void PlotterWidget::clearData()
     setInteractions(QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectPlottables);
 
     replot();
+}
+
+int PlotterWidget::getLineSize() {
+    return mLineSize;
+}
+
+int PlotterWidget::getPointSize() {
+    return mPointSize;
+}
+
+void PlotterWidget::configureView(int lineSize, int pointSize) {
+
+    mLineSize = lineSize;
+    mPointSize = pointSize;
+
+    clearData();
+    updatePlot();
 }

@@ -39,6 +39,8 @@ private slots:
     void on_loadOptimisationButton_clicked();
     void on_actionCurrent_Optimisation_Settings_triggered();
 
+    void on_actionVisualSettings_triggered();
+
 private:
     void setMeshViewSimulation(int iGen, int agent);
     void setLogText();
@@ -49,6 +51,7 @@ private:
     int mCurrentOptimisationIndex = -1;
     MeshModel* mCurrentMeshViewModel;
     ProfileView* mProfileView = 0;
+    QString mClusterPassword="";
 };
 
 #endif // MAINWINDOW_H
