@@ -52,7 +52,6 @@ SOURCES += \
     Gui/DebugOutput.cpp \
     Gui/Dialogs/MeshDialog.cpp \
     Gui/Plotter/qcustomplot.cpp \
-    Gui/GuiComponents/Arrow.cpp \
     Gui/Dialogs/ConfigSimulationDialog.cpp \
     Gui/MainWindow.cpp \
     Core/Mesh.cpp \
@@ -85,7 +84,6 @@ HEADERS  += \
     Gui/DebugOutput.h \
     Gui/Dialogs/MeshDialog.h \
     Gui/Plotter/qcustomplot.h \
-    Gui/GuiComponents/Arrow.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
     Gui/MainWindow.h \
     Core/Mesh.h \
