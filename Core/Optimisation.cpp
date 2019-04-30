@@ -44,21 +44,21 @@ Optimisation::Optimisation() :
 
     auto dirReadLambda = [this](const QString& path) {
         readFitness();
-        if(mOptimisationModel != 0) {
+        if(mOptimisationModel != nullptr) {
             mOptimisationModel->emitOptimisationFitnessChanged(this);
         }
     };
 
     auto stdOutLambda = [this](const QString line) {
         addToOutputLog(line);
-        if(mOptimisationModel != 0) {
+        if(mOptimisationModel != nullptr) {
             mOptimisationModel->emitOptimisationOutputChanged(this);
         }
     };
 
     auto stdErrLambda = [this](const QString line) {
         addToOutputLog("Standard Error: "+line);
-        if(mOptimisationModel != 0) {
+        if(mOptimisationModel != nullptr) {
             mOptimisationModel->emitOptimisationOutputChanged(this);
         }
     };
@@ -611,7 +611,7 @@ Mesh* Optimisation::mesh(int genIndex, int agentIndex)
 {
     bool success = true;
 
-    Mesh* mesh = 0;
+    Mesh* mesh = nullptr;
 
     QString base_path = outputDataDirectory();
     base_path += "/Geometry";
