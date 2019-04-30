@@ -4,6 +4,7 @@
 #include "ui_ConfigSimulationDialog.h"
 #include "MeshDialog.h"
 #include "Enumerations.h"
+#include "ClusterLoginDialog.h"
 
 ConfigSimulationDialog::ConfigSimulationDialog(Optimisation *optimisation, QWidget *parent, bool enabled) :
     QDialog(parent),
