@@ -41,11 +41,9 @@ QVariant OptimisationModel::data(const QModelIndex& index, int role) const
     switch (role) {
         case Qt::DisplayRole:
             return  mOptimisations.at(index.row())->label();
-            break;
 
         case Roles::Object:
             return QVariant::fromValue(mOptimisations.at(index.row()));
-            break;
 
         default:
             return QVariant();
