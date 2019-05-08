@@ -844,16 +844,16 @@ bool Optimisation::readAerOptSettings(QString filePath) {
                         setLabel(label);
                     }
                 }
-                else if("IV%xrange") {
+                else if(variable == "IV%xrange") {
                     QStringList xrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
                 }
-                else if("IV%yrange") {
+                else if(variable == "IV%yrange") {
                     QStringList yrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
                 }
-                else if("IV%smoothfactor") {
+                else if(variable == "IV%smoothfactor") {
                     QStringList smoothfactor = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
                 }
-                else if("IV%runOnCluster"){
+                else if(variable == "IV%runOnCluster"){
                     QString yesValue = QString("'Y'");
                     if( value.compare( yesValue ) ){
                         runOnCluster = false;
