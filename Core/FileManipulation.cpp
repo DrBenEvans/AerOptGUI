@@ -7,25 +7,32 @@ bool FileManipulation::emptyFolder(const QString& path)
     bool r = true;
 
     QDir dir(path);
+
+    // If the directory path doesn't already exist, create it
     if(!dir.exists()) {
         QDir().mkpath(path);
         qInfo() << QString("Creating directory: %1").arg(path);
         if(dir.exists())
+            // Empty folder created at directory path - success
             return true;
         else
             return false;
             qInfo() << QString("Failed to create directory: %1").arg(path);
+
+    // If the directory does exist, then delete every file within it
+    } else {
+        qInfo() << QString("Emptying directory: %1").arg(path);
+        dir.setNameFilters(QStringList() << "*.*");
+        dir.setFilter(QDir::Files);
+        foreach(QString dirFile, dir.entryList())
+        {
+            r &= dir.remove(dirFile);
+        }
+
+        return r;
     }
 
-    qInfo() << QString("Emptying directory: %1").arg(path);
-    dir.setNameFilters(QStringList() << "*.*");
-    dir.setFilter(QDir::Files);
-    foreach(QString dirFile, dir.entryList())
-    {
-        dir.remove(dirFile);
-    }
 
-    return r;
 }
 
 bool FileManipulation::copyFolder(const QString& source, const QString& dest)
@@ -106,19 +113,19 @@ bool FileManipulation::removeFolder(const QString& path)
 
     if (dir.exists(path))
     {
+        // Delete all folders and files at path
         Q_FOREACH(QFileInfo info, dir.entryInfoList(QDir::NoDotAndDotDot | QDir::System | QDir::Hidden  | QDir::AllDirs | QDir::Files, QDir::DirsFirst))
         {
-            if (info.isDir())
-            {
+
+            if (info.isDir()) {
+                // If folder then make recursive call
                 r = removeFolder(info.absoluteFilePath());
-            }
-            else
-            {
+            } else {
                 r = QFile::remove(info.absoluteFilePath());
             }
 
-            if (!r)
-            {
+            // If a file could not be deleted, then return error
+            if (!r) {
                 return r;
             }
         }

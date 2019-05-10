@@ -28,11 +28,7 @@ private slots:
 
 private:
     void validationError(QString message);
-    int objFuncEnumToIndex(Enum::ObjFunc enumeration);
-    Enum::ObjFunc indexToObjFuncEnum(int index);
 
-    int optMethodEnumToIndex(Enum::OptMethod enumeration);
-    Enum::OptMethod indexToOptMethodEnum(int index);
 
     Ui::ConfigSimulationDialog *ui;
     Optimisation *mData;

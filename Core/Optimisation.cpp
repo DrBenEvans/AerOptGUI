@@ -44,21 +44,21 @@ Optimisation::Optimisation() :
 
     auto dirReadLambda = [this](const QString& path) {
         readFitness();
-        if(mOptimisationModel != 0) {
+        if(mOptimisationModel != nullptr) {
             mOptimisationModel->emitOptimisationFitnessChanged(this);
         }
     };
 
     auto stdOutLambda = [this](const QString line) {
         addToOutputLog(line);
-        if(mOptimisationModel != 0) {
+        if(mOptimisationModel != nullptr) {
             mOptimisationModel->emitOptimisationOutputChanged(this);
         }
     };
 
     auto stdErrLambda = [this](const QString line) {
         addToOutputLog("Standard Error: "+line);
-        if(mOptimisationModel != 0) {
+        if(mOptimisationModel != nullptr) {
             mOptimisationModel->emitOptimisationOutputChanged(this);
         }
     };
@@ -598,7 +598,7 @@ Mesh* Optimisation::mesh(int genIndex, int agentIndex)
 {
     bool success = true;
 
-    Mesh* mesh = 0;
+    Mesh* mesh = nullptr;
 
     QString base_path = outputDataDirectory();
     base_path += "/Geometry";
@@ -831,16 +831,16 @@ bool Optimisation::readAerOptSettings(QString filePath) {
                         setLabel(label);
                     }
                 }
-                else if("IV%xrange") {
+                else if(variable == "IV%xrange") {
                     QStringList xrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
                 }
-                else if("IV%yrange") {
+                else if(variable == "IV%yrange") {
                     QStringList yrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
                 }
-                else if("IV%smoothfactor") {
+                else if(variable == "IV%smoothfactor") {
                     QStringList smoothfactor = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
                 }
-                else if("IV%runOnCluster"){
+                else if(variable == "IV%runOnCluster"){
                     QString yesValue = QString("'Y'");
                     if( value.compare( yesValue ) ){
                         runOnCluster = false;

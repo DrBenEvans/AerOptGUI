@@ -9,40 +9,48 @@
 #ifndef ENUMERATIONS
 #define ENUMERATIONS
 
+/**
+ * Enums used in the AerOpt Project including ObjectiveFunction, Optimisation Method, and Mesh Densities.
+ */
 namespace Enum
 {
 
-	//1 - Lift/Drag
-	//2 - Distortion
-	//3 - max Lift
-	//4 - min Drag
-	//5 - max Downforce
-	//6 - min Lift
+    /**
+     * @brief The ObjFunc enum represents the different criteria that can be optimised.
+     */
 	enum ObjFunc
 	{
-		LIFTDRAG = 1,
-		DISTORTION,
-		MAXLIFT,
-		MINDRAG,
-		MAXDOWNFORCE,
-        MINLIFT,
-        FUNCNOTSET
+        FUNCNOTSET,         // No setting selected
+        LIFTDRAG,           // Lift-Drag Ratio
+        DISTORTION,         //
+        MAXLIFT,            // Maximise Lift
+        MINDRAG,            // Minimise Drag
+        MAXDOWNFORCE,       // Maximise Downforce
+        MINLIFT,            // Minimise Lift
+
 	};
 
+    /**
+     * @brief The OptMethod enum represents the different Optimisation Algorithms that can be used.
+     */
     enum OptMethod
     {
-        MCS = 0,
-        DE,
-        PSO,
-        METHODNOTSET
+        METHODNOTSET = 0,
+        MCS,            // Modified Cuckoo search
+        DE,             // Differential Evolution
+        PSO             // Particle Swarm Optimisation
     };
 
+    /**
+     * @brief The Mesh enum represents different Mesh density settings.
+     */
 	enum Mesh
 	{
-		COURSE,
+        COARSE,
 		MEDIUM,
 		FINE
 	};
+
 }
 
 #endif // ENUMERATIONS

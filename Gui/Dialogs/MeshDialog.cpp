@@ -50,14 +50,14 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidg
     // profiles QComboBox setup
     ui->profile->setModel(&mProfileModel);
 
-    ui->density->addItem(QString("Coarse"), QVariant::fromValue(Enum::Mesh::COURSE));
+    ui->density->addItem(QString("Coarse"), QVariant::fromValue(Enum::Mesh::COARSE));
     ui->density->addItem(QString("Medium"), QVariant::fromValue(Enum::Mesh::MEDIUM));
     ui->density->addItem(QString("Fine"), QVariant::fromValue(Enum::Mesh::FINE));
 
     Mesh* mesh = mMeshDialogModel->currentMesh();
     switch (mesh->meshDensity())
 	{
-		case Enum::Mesh::COURSE :
+        case Enum::Mesh::COARSE :
             ui->density->setCurrentIndex(0);
 			break;
 		case Enum::Mesh::MEDIUM :

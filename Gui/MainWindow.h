@@ -17,7 +17,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void setOptimisationModel(OptimisationModel* optimisationModel);
     void setSplitterSizes();
@@ -50,7 +50,7 @@ private:
     OptimisationModel* mOptimisationModel;
     int mCurrentOptimisationIndex = -1;
     MeshModel* mCurrentMeshViewModel;
-    ProfileView* mProfileView = 0;
+    ProfileView* mProfileView = nullptr;
     QString mClusterPassword="";
 };
 

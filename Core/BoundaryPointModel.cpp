@@ -49,9 +49,7 @@ int BoundaryPointModel::count() {
 }
 
 int BoundaryPointModel::validIndex(int index) {
-    if(index < 0) {
-        return false;
-    } else if (index >= count()) {
+    if(index < 0 || index >= count()) {
         return false;
     } else {
         return true;

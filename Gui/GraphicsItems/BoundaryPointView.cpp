@@ -37,8 +37,7 @@ QRectF BoundaryPointView::boundingRect() const
 {
     qreal margin = 5;
     QRectF r = mPointRect;
-    r.adjust(-margin, -margin, margin, margin);
-    return r;
+    return r.adjusted(-margin, -margin, margin, margin);
 }
 
 void BoundaryPointView::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -60,7 +59,6 @@ void BoundaryPointView::paint(QPainter *painter, const QStyleOptionGraphicsItem 
     painter->setBrush(brush);
     painter->setPen(pen);
 
-    int r = radius();
     QPainterPath path;
     path.addRect(mPointRect);
     painter->fillPath(path, brush);
@@ -72,42 +70,48 @@ bool BoundaryPointView::activated() const {
 }
 
 void BoundaryPointView::setActivePoint(int index) {
-    setActivated(index == mBoundaryPointIndex);
+    bool active = (index == mBoundaryPointIndex);
+
+    // We only need to update a boundary point if the activated value is different
+    if (mActive != active){
+        mActive = active;
+        foreach(auto& view, scene()->views()) {
+            if(active) {
+                view->setDragMode(QGraphicsView::NoDrag);
+            } else {
+                view->setDragMode(QGraphicsView::ScrollHandDrag);
+            }
+        }
+
+        if(mControlPointHandles != nullptr) {
+            mControlPointHandles->setActivated(active);
+        }
+
+        prepareGeometryChange();
+        update();
+    }
+
 }
 
-void BoundaryPointView::setActivated(bool active) {
-    mActive = active;
-    foreach(auto& view, scene()->views()) {
-        if(active) {
-            view->setDragMode(QGraphicsView::NoDrag);
-        } else {
-            view->setDragMode(QGraphicsView::ScrollHandDrag);
+
+void BoundaryPointView::refreshControlPointState(int index, bool ctl) {
+    if (index == mBoundaryPointIndex){
+
+        // Only need to refresh if different
+        if(mControl != ctl) {
+            //build bounding box, unless it exists
+            if(mControlPointHandles == nullptr && ctl)
+                mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, mScale, this);
+
+            mControlPointHandles->setVisible(ctl);
+
+            mControl = ctl;
         }
     }
 
-    if(mControlPointHandles != nullptr) {
-        mControlPointHandles->setActivated(active);
-    }
-
-    prepareGeometryChange();
-
-    update();
 }
 
-void BoundaryPointView::refreshControlPointState(int index, bool ctl) {
-    if(index == mBoundaryPointIndex) {
-        //build bounding box, unless it exists
-        if(mControlPointHandles == nullptr && ctl)
-            mControlPointHandles = new ControlPointBoundingBox(mBoundaryPointModel, mBoundaryPointIndex, mScale, this);
-
-        mControlPointHandles->setVisible(ctl);
-
-        mControl = ctl;
-        mBoundaryPointModel->setActiveIndex(mBoundaryPointIndex);
-    }
-}
-
-bool BoundaryPointView::control() {
+bool BoundaryPointView::isControlPoint() {
     return mControl;
 }
 

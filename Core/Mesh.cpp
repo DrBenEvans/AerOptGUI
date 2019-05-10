@@ -4,7 +4,7 @@
 #include <QDebug>
 
 Mesh::Mesh(QObject *parent): QObject(parent),
-    mMeshDensity(Enum::Mesh::COURSE),
+    mMeshDensity(Enum::Mesh::COARSE),
     mProfilePoints()
 {
     // Boundary layer setup
@@ -511,7 +511,7 @@ bool Mesh::createBacFile(const std::string& meshBacFile)
         outfile << "InnerRadius" << std::endl;
         switch (meshDensity())
         {
-            case Enum::Mesh::COURSE :
+            case Enum::Mesh::COARSE :
                 outfile << "    0.0  0.0   0.15  0.4  0.6" << std::endl;//<< course
                 outfile << "    1.0  0.0   0.15  0.4  0.6" << std::endl;//<< course
                 break;

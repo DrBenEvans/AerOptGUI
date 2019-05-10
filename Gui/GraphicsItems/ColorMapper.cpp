@@ -31,17 +31,14 @@ void ColorMapper::setMax(const float& max) {
 
 const QColor ColorMapper::color(const float& value) const
 {
-    bool c = true;
     rgba&& colour = std::make_tuple(255, 255, 255, 255);
-    float norm;
 
-    c &= mMin <  mMax;
-
-    if (c)
+    if (mMin <  mMax)
     {
-        norm = (value - mMin) / (mMax - mMin);
+        //Normalise pressure value
+        float norm = (value - mMin) / (mMax - mMin);
 
-        //compute rgba from norm
+        //compute rgba from normalised value
         transferFunction(norm, colour);
     }
 
@@ -55,12 +52,10 @@ const QColor ColorMapper::color(const float& value) const
 
 void ColorMapper::transferFunction(const float& value, rgba& colour) const
 {
-    bool b = false;
     uint i;
     for (i = 0; i < colourmap.size()-1; i++)
     {
-        b |= value < std::get<0>(colourmap.at(i+1));
-        if (b) break;
+        if (value < std::get<0>(colourmap.at(i+1))) break;
     }
 
     if (i < colourmap.size()-1)

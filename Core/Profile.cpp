@@ -26,6 +26,7 @@ bool Profile::setFile(QString filePath)
 
     r &= checkProfileIntegrity();
 
+    // If new profile is invalid, then remove it
     if (!r) clearProfile();
 
     return r;
@@ -74,7 +75,7 @@ void Profile::clearProfile()
     mProfile.clear();
 }
 
-const std::list<std::pair<float, float> > Profile::getProfile() const
+const ProfilePoints Profile::getProfile() const
 {
     return mProfile;
 }
@@ -82,12 +83,9 @@ const std::list<std::pair<float, float> > Profile::getProfile() const
 //Profile Attributes
 bool Profile::checkDuplicates()
 {
-    bool r = true;
-
     //Check for duplicates in curve
     //if duplicates = true then return false
     //Actually just remove all duplicate points.
-    bool c = true;
     std::list<std::list<std::pair<float,float>>::iterator> iters;
     for (auto i = mProfile.begin(); i != mProfile.end(); ++i)
     {
@@ -95,10 +93,11 @@ bool Profile::checkDuplicates()
         {
             if (i == j) continue;
 
-            c = true;
+            bool c = true;
             c &= i->first == j->first;
             c &= i->second == j->second;
 
+            // If point has same X and Y values then points are duplicates
             if (c) iters.push_back(j);
         }
     }
@@ -106,6 +105,7 @@ bool Profile::checkDuplicates()
 //	qDebug() << "Before";
 //	for (auto &p : mProfile) qDebug() << p.first << " : " << p.second;
 
+    // Delete all duplicates
     for (auto i = iters.rbegin(); i != iters.rend(); ++i)
     {
             mProfile.erase(*i);
@@ -114,7 +114,7 @@ bool Profile::checkDuplicates()
 //	qDebug() << "After";
 //	for (auto &p : mProfile) qDebug() << p.first << " : " << p.second;
 
-    return r;
+    return true;
 }
 
 bool Profile::checkClockwise()
@@ -127,12 +127,9 @@ bool Profile::checkClockwise()
     float sum2 = 0;
     for (auto i = std::next(mProfile.begin()); i != mProfile.end(); ++i)
     {
-        if (std::prev(i)->first > i->first)//x is reducing?
-        {
+        if (std::prev(i)->first > i->first) { //x is reducing?
             sum1 += i->second;
-        }
-        else
-        {
+        } else {
             sum2 += i->second;
         }
     }
@@ -146,12 +143,9 @@ bool Profile::checkClockwise()
 
 bool Profile::checkNormalised()
 {
-    bool r = true;
 
     float min =  1000000;
     float max = -1000000;
-    float range = 0;
-    float scale = 0;
 
     for (auto i = mProfile.begin(); i != mProfile.end(); ++i)
     {
@@ -159,18 +153,21 @@ bool Profile::checkNormalised()
         if (i->first > max) max = i->first;
     }
 
-    range = max - min;
-    r &= range != 0;
+    float range = max - min;
 
-    if (r)
-    {
-        scale = 1 / range;
+    if (range != 0) {
+
+        float scale = 1 / range;
         for (auto i = mProfile.begin(); i != mProfile.end(); ++i)
         {
             i->first *= scale;
             i->second *= scale;
         }
+
+        return true;
+
+    } else {
+        return false;
     }
 
-    return r;
 }

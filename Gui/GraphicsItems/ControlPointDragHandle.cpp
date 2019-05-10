@@ -1,10 +1,11 @@
 #include "ControlPointDragHandle.h"
 #include <QPainter>
 #include <QGraphicsView>
+#include "BoundaryPointModel.h"
 
-ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int index, bool isTopLeft, ViewScaler* scaler, QGraphicsItem* parent) :
+ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int index, BoundaryPointModel::CornerPosition corner, ViewScaler* scaler, QGraphicsItem* parent) :
     QGraphicsItem(parent),
-    mTopLeft(isTopLeft),
+    corner(corner),
     mBoundaryPointModel(model),
     mBoundaryPointIndex(index),
     mBoundaryPoint(mBoundaryPointModel->point(mBoundaryPointIndex)),
@@ -17,10 +18,15 @@ ControlPointDragHandle::ControlPointDragHandle(BoundaryPointModel* model, int in
     QRectF rect = mBoundaryPoint->controlPointRect();
     rect = mScale->toSceneScale(rect);
 
-    if(mTopLeft) {
-        setPos(rect.topLeft());
-    } else {
-        setPos(rect.bottomRight());
+    switch(corner){
+
+        case BoundaryPointModel::TOPLEFT:
+            setPos(rect.topLeft());
+            break;
+
+        case BoundaryPointModel::BOTTOMRIGHT:
+            setPos(rect.bottomRight());
+            break;
     }
 
     // build handle rect
@@ -64,14 +70,11 @@ void ControlPointDragHandle::hoverLeaveEvent(QGraphicsSceneHoverEvent *event)
 {
     foreach(auto& view, scene()->views()) {
         view->setDragMode(QGraphicsView::NoDrag);
+        view->setCursor(Qt::ArrowCursor);
     }
 
     // send the event to graphics scene and items
     QGraphicsItem::hoverLeaveEvent(event);
-}
-
-void ControlPointDragHandle::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
-    QGraphicsItem::mouseDoubleClickEvent(event);
 }
 
 QVariant ControlPointDragHandle::itemChange(GraphicsItemChange change, const QVariant &value)
@@ -79,33 +82,32 @@ QVariant ControlPointDragHandle::itemChange(GraphicsItemChange change, const QVa
     if (change == ItemPositionChange && scene()) {
         // value is the new position.
         QPointF pos = value.toPointF();
-        if(mTopLeft) {
-            if(pos.x() > 0) {
-                pos.setX(0);
-            }
 
-            if(pos.y() > 0) {
-                pos.setY(0);
-            }
+        switch(corner){
+            case BoundaryPointModel::TOPLEFT:
+                if(pos.x() > 0) {
+                    pos.setX(0);
+                }
 
-            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, mScale->fromSceneScale(pos), BoundaryPointModel::TOPLEFT);
+                if(pos.y() > 0) {
+                    pos.setY(0);
+                }
+                break;
 
-            return pos;
+            case BoundaryPointModel::BOTTOMRIGHT:
+                if(pos.x() < 0) {
+                    pos.setX(0);
+                }
 
-
-        } else {
-            if(pos.x() < 0) {
-                pos.setX(0);
-            }
-
-            if(pos.y() < 0) {
-                pos.setY(0);
-            }
-
-            mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, mScale->fromSceneScale(pos), BoundaryPointModel::BOTTOMRIGHT);
-
-            return pos;
+                if(pos.y() < 0) {
+                    pos.setY(0);
+                }
+                break;
         }
+
+        mBoundaryPointModel->setControlBoundaryCorner(mBoundaryPointIndex, mScale->fromSceneScale(pos), corner);
+        return pos;
+
     }
     return QGraphicsItem::itemChange(change, value);
 }

@@ -25,7 +25,7 @@ void firstTimeSetup(QString AerOptWorkDir) {
     settings.clear();
 
     if(AerOptWorkDir.indexOf(' ') >= 0) {
-        QMessageBox::critical(0, "Error", "Invalid Path: AerOpt executable path must not contains spaces.", QMessageBox::Ok);
+        QMessageBox::critical(nullptr, "Error", "Invalid Path: AerOpt executable path must not contains spaces.", QMessageBox::Ok);
         exit(-1);
     }
 
@@ -191,7 +191,6 @@ int main(int argc, char *argv[])
 
     //Main window setup and show.
     MainWindow w;
-    w.setWindowTitle("AerOpt");
     centerAndResizeWindow(&w);
     w.setOptimisationModel(optimisationModel);
     w.show();
