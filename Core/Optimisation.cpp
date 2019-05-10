@@ -461,7 +461,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
             std::string path = "/home/" + username + "/AerOpt/" + runname;
             outfile << "IV%filepath = '" << path << "'" << std::endl;
             outfile << "IV%clusterpath = '" << path << "'" << std::endl;
-            outfile << "IV%SimulationName = '" << runname << "'" << std::endl;
+            outfile << "IV%OutputDirectory = '" << runname << "'" << std::endl;
             outfile << "IV%filename = 'Geometry'" << std::endl;
             outfile << "IV%Account = '" << account << "'" << std::endl;
             outfile << "IV%Meshfilename = 'Mesh'" << std::endl;
