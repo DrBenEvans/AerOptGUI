@@ -72,3 +72,47 @@ You will see several lines including the path
 C:\Users\USERNAME\src\vcpkg...
 ```
 Replace `USERNAME` with your username on each line. If `vcpkg` is in a custom location, use that path instead.
+
+### Setup on the Cluster
+
+The AerOpt GUI depends on a specific version of the AerOpt tool on the cluster.
+You can use git to get the newest version.
+Log on to the cluster and run
+```
+mv AerOpt AerOpt-old
+git clone https://github.com/DrBenEvans/AerOpt.git
+```
+
+Compile the new version of AerOpt
+```
+module load mpi
+cd AerOpt/source
+make all
+ls -s AerOpt_v3.5 ../AerOpt
+```
+
+You should now be able to run jobs on the cluster using the GUI.
+
+
+## Deploying
+
+Deploying is essentially creating a compiled executable you can distribute without needing any additional libraries or tools.
+There are two deployed releases in [Jarno's github page](https://github.com/rantahar/AerOpt-gui/releases).
+All you need to do to run this version of AerOpt is to donwload AerOptGui.zip, extract the file and run AerOptGui.exe in the new folder.
+To be able to run on a cluster, you also need to download AerOpt.tar.gz
+on the cluster.
+```
+mv AerOpt AerOpt_backup
+wget https://github.com/rantahar/AerOpt-gui/releases/download/0.2/AerOpt.tar.gz
+tar -xvf AerOpt.tar.gz
+```
+
+This is much easier for a user than compiling the whole thing.
+
+To create a new release compile the program using `release` setting in QT Creator.
+This is above the play symbol on the bottom left in QT Creator 4.9.
+When you compile the program, an executable called `AerOptGui.exe` is created in the same directory the AerOptGui folder is in.
+
+Download the [zip archive](https://github.com/rantahar/AerOpt-gui/releases/download/0.2/AerOptGui.zip) and extract it.
+The folder contains everything AerOptGui needs to run.
+Replace `AerOptGui.exe` with the newly compiled executable and it should work directly.
