@@ -31,6 +31,13 @@ public slots:
     void runMesher();
     void setProfile();
 
+    /**
+     * @brief scaleZoomBarValue Scale the value of the zoom bar slider in response to changed in the view transformation.
+     * Included validation check which places a limit on hte
+     * @param value Scaling value
+     */
+    void scaleZoomBarValue(double value);
+
 private slots:
     void on_profile_currentIndexChanged(int index);
 
