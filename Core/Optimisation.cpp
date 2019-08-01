@@ -267,6 +267,93 @@ bool Optimisation::readProfilePointsFromSimulationDir() {
     Profile profile;
     bool success = profile.setFile(filePath);
     mProfilePoints = profile.getProfile();
+
+
+    // Load Control node coordinates
+    QString cpfilePath = simulationDirectoryPath() + "/Control_Nodes.txt";
+    QDir::toNativeSeparators(cpfilePath);
+    std::ifstream cpInfile(cpfilePath.toStdString(), std::ifstream::in);
+    success &= cpInfile.is_open();
+
+    // Initialise BoundaryPointObjects with coordinates
+    if (success) {
+        QVector<BoundaryPoint*> controlPs;
+        std::string line("");
+        QString qline;
+
+        //Convert input file into BoundaryPoints
+        while (std::getline(cpInfile, line))
+        {
+            qline = QString::fromStdString(line);
+            QStringList strList = qline.split("\t");
+            QString xstr = strList.at(0);
+            QString ystr = strList.at(1);
+            double x = xstr.toDouble();
+            double y = ystr.toDouble();
+            BoundaryPoint* bp = new BoundaryPoint(x,y);
+            bp->setControlPoint(true);
+            controlPs.append(bp);
+        }
+        this->setControlPoints(controlPs.toStdVector());
+    }
+
+
+    // Add Bounding Boxes to Control Points
+    QString inputFilePath = simulationDirectoryPath() + "/AerOpt_InputParameters.txt";
+    std::ifstream bbInfile(inputFilePath.toStdString(), std::ifstream::in);
+    success &= bbInfile.is_open();
+
+    if (success)
+    {
+        QString qline, value;
+        QStringList strList;
+        std::string variable;
+        std::string line("");
+
+        while (std::getline(bbInfile, line))
+        {
+            qline = QString::fromStdString(line);
+            strList = qline.split(QRegExp("\\s*=\\s*"));
+
+            if(strList.length()==2) {
+                variable = strList.at(0).toStdString();
+                value = strList.at(1);
+
+                if(variable == "IV%xrange") {
+                    QStringList xrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+
+                    for (int i = 0; i < xrange.size()/2; i++) {
+
+                        double left = xrange.at(i).toDouble();
+                        double right = xrange.at(i).toDouble();
+
+                        this->controlPoints().at(i)->controlPointRect().setLeft(left);
+                        this->controlPoints().at(i)->controlPointRect().setRight(right);
+                    }
+                }
+                else if(variable == "IV%yrange") {
+                    QStringList yrange = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+
+                    for (int i = 0; i < yrange.size()/2; i++) {
+                        double top = yrange.at(i).toDouble();
+                        double bottom = yrange.at(i).toDouble();
+
+                        this->controlPoints().at(i)->controlPointRect().setTop(top);
+                        this->controlPoints().at(i)->controlPointRect().setBottom(bottom);
+                    }
+                }
+                else if(variable == "IV%smoothfactor") {
+                    QStringList smoothfactor = strList.at(1).split(QRegExp("\\s+"), QString::SkipEmptyParts);
+
+                    for (int i = 0; i < smoothfactor.size(); i++) {
+                        double sf = smoothfactor.at(i).toDouble();
+                        this->controlPoints().at(i)->setSmoothing(sf);
+                    }
+                }
+
+            }
+        }
+    }
     return success;
 }
 
