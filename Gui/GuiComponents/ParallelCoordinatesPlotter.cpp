@@ -160,16 +160,49 @@ QChart* ParallelCoordinatesPlotter::controlPointGraph(QChart *chart) {
     axisY->setTitleText("Normalised Values");
     chart->addAxis(axisY, Qt::AlignLeft);
 
-
-
     // Fetch the number of generations
     int numberOfGenerations = currentOptimisation()->noGens();
     QLineSeries *series;
 
-    //For each generation
+
+    // Get minimum and maximum displacement values from original point for normalisation
+    double min = 0, max = 0;
     for(int g = 0; g < numberOfGenerations; g++){
 
+        //Pick best agent
+        //(at current, agents are returned in fitness-descending order from the optimiser so index  = 0)
+        Mesh* bestAgent = currentOptimisation()->mesh(g, 0);
+        ProfilePoints currentMeshProfile = bestAgent->boundaryPoints();
 
+        // Loop through each profile point and check its XY displacement
+        int bpCount = 0;
+        for (ProfilePoints::iterator it = currentMeshProfile.begin(); it != currentMeshProfile.end(); ++it) {
+            if (bpCount == controlPointIndexes[cpCount]) {
+                // Check X displacement
+                double differencex = it->first  -  initialBoundary.at(bpCount)->pos().x();
+                if(differencex > max){
+                    max = differencex;
+                } else if (differencex < min) {
+                    min = differencex;
+                }
+
+                // Check Y Displacement
+                double differenceY = it->second  -  initialBoundary.at(bpCount)->pos().y();
+                if(differenceY > max){
+                    max = differenceY;
+                } else if (differenceY < min) {
+                    min = differenceY;
+                }
+                bpCount++;
+
+            }
+        }
+
+    }
+
+
+    //Loop through the best agent of each generation and plot normalised displacement
+    for(int g = 0; g < numberOfGenerations; g++){
 
         //Pick best agent
         //(at current, agents are returned in fitness-descending order from the optimiser so index  = 0)
@@ -180,19 +213,18 @@ QChart* ParallelCoordinatesPlotter::controlPointGraph(QChart *chart) {
         series = new QLineSeries();
         for (int cpCount = 0; cpCount < numberOfControlPoints; cpCount++) {
 
+            int bpCount = 0;
             for (ProfilePoints::iterator it = currentMeshProfile.begin(); it != currentMeshProfile.end(); ++it) {
                 if (bpCount == controlPointIndexes[cpCount]) {
-                    double xmin = initialBoundary.at(cpCount)->pos().x() + minXValues[cpCount];
-                    double xmax = initialBoundary.at(cpCount)->pos().x() + maxXValues[cpCount];
-                    double ymin = initialBoundary.at(cpCount)->pos().y() + minYValues[cpCount];
-                    double ymax = initialBoundary.at(cpCount)->pos().y()+ maxYValues[cpCount];
-
-                    qInfo() << "BP" + QString::number(bpCount) + "x = " + QString::number(it->first) + ", min = " + QString::number(xmin) + ", max = " + QString::number(xmax) + ", norm = " + QString::number(normalise(it->first, xmin, xmax));
-                    //normalise actual X/Y values for this agent w.r.t the bounding box limits
+                    //normalise actual X/Y values for this agent w.r.t the maximum displacement values
                     //Add normalised values to series
 
-                    *series << QPointF(2*cpCount, normalise(it->first, xmin, xmax));
-                    *series << QPointF(2*cpCount+1, normalise(it->second, ymin, ymax));
+                    double differenceX = it->first  -  initialBoundary.at(bpCount)->pos().x();
+                    double differenceY = it->second  -  initialBoundary.at(bpCount)->pos().y();
+
+
+                    *series << QPointF(2*cpCount, normalise(differenceX, min, max));
+                    *series << QPointF(2*cpCount+1, normalise(differenceY, min, max));
                     break;
                 }
 
