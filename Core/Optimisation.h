@@ -269,7 +269,19 @@ public:
 
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
+    /**
+     * @brief createAerOptInFile Writes optimisation data to an external file.
+     * @param filePath File location
+     * @return true iff file written successfully
+     */
     bool createAerOptInFile(const QString &filePath);
+
+    /**
+     * @brief createAerOptNodeFile Writes control node coordinates to an external file.
+     * @param filePath File location
+     * @return true iff file written successfully
+     */
     bool createAerOptNodeFile(const QString &filePath);
 
     /**
