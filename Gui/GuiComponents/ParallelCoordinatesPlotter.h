@@ -32,6 +32,16 @@ public:
      */
     QChartView* getGraph();
 
+    /**
+     * @brief The GraphType enum Type of graph to plot
+     */
+    enum GraphType
+    {
+        CONTROL_POINT,         // Parallel Coordinate Graph of Control Points only
+        BOUNDARY_POINT,        // Parallel Coordinate Graph of all boundary points
+
+    };
+
 signals:
 
 public slots:
@@ -66,9 +76,19 @@ private:
     int mLineSize = 5;
 
     /**
+     * @brief drawGraph
+     */
+    void drawGraph(GraphType type);
+
+    /**
      * @brief boundaryPointGraph Draws a parallel coordinate graph of all boundary points in the current optimisation.
      */
-    void boundaryPointGraph();
+    QChart* boundaryPointGraph(QChart *chart);
+
+    /**
+     * @brief controlPointGraph Draws a parallel coordinate graph of all control points in the current optimisation.
+     */
+    QChart* controlPointGraph(QChart *chart);
 
     /**
      * @brief chartView The Parallel Coordinates Graph
