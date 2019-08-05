@@ -46,10 +46,11 @@ public:
 	 */
 	bool boundary() const;
 	/**
-	 * @brief setBoundary
+     * @brief setBoundary Set list of mesh boundary points
 	 * @param boundary Sets the boundary.
 	 */
-	void setBoundary(bool boundary);
+    void setBoundaryPoints(std::vector<BoundaryPoint*> boundaryPoints);
+
 	/**
 	 * @brief optimiser
 	 * @return True if optimiser is set.
@@ -206,6 +207,12 @@ public:
     std::vector<BoundaryPoint*> controlPoints();
 
     /**
+     * @brief boundaryPoints Returns a vector of all boundary points of the initial mesh.
+     * @return
+     */
+    std::vector<BoundaryPoint*> initialBoundaryPoints();
+
+    /**
      * @brief setControlPoints Sets the vector of control nodes.
      * @param controlPoints A vector of Boundary Points for which isControlPoint == true
      */
@@ -264,6 +271,13 @@ private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
     bool createAerOptInFile(const QString &filePath);
     bool createAerOptNodeFile(const QString &filePath);
+
+    /**
+     * @brief createAerOptBoundaryPointFile Writes boundary point information for initial mesh.
+     * @param filePath File location
+     * @return true iff file written successfully
+     */
+    bool createAerOptBoundaryPointFile(const QString &filePath);
     bool saveCurrentProfile(const QString& path);
     QString outputDataDirectory();
     bool readAerOptSettings(QString filePath);
@@ -289,6 +303,11 @@ private:
      */
     bool readLogFromFile();
 
+    /**
+     * @brief readInitialBoundaryPoints Load the initial boundary points.
+     * @return true iff file loaded successfully.
+     */
+    bool readInitialBoundaryPoints();
     /**
      * @brief logCacheFileName Returns the file path for the output log file.
      * @return Output log file directory path.
@@ -364,6 +383,11 @@ private:
      * @brief mControlPoints Vector of Boundary Points that are also optimisable control nodes.
      */
     std::vector<BoundaryPoint*> mControlPoints;
+
+    /**
+     * @brief mBoundaryPoints Vector of all Boundary Points.
+     */
+    std::vector<BoundaryPoint*> mBoundaryPoints;
 
     /**
      * @brief mFitness 2D vector of fitnesses for all agents across all generations.

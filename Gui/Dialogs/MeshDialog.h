@@ -25,7 +25,18 @@ public:
     explicit MeshDialog(ProfileModel &profileModel, MeshDialogModel *model, QWidget* parent = 0);
     ~MeshDialog();
     void accept();
+
+    /**
+     * @brief controlPoints Returns the list of boundary points that are control points.
+     * @return List of control points
+     */
     std::vector<BoundaryPoint*> controlPoints();
+
+    /**
+     * @brief controlPoints Returns the full list of boundary points.
+     * @return List of boundary points
+     */
+    std::vector<BoundaryPoint*> boundaryPoints();
 
 public slots:
     void runMesher();

@@ -114,6 +114,10 @@ std::vector<BoundaryPoint*> MeshDialog::controlPoints() {
     return mMeshDialogModel->boundaryPointModel()->controlPoints();
 }
 
+std::vector<BoundaryPoint*> MeshDialog::boundaryPoints() {
+    return mMeshDialogModel->boundaryPointModel()->boundaryPoints();
+}
+
 void MeshDialog::runMesher() {
     Mesh* mesh = mMeshDialogModel->currentMesh();
     mesh->setMeshDensity(ui->density->currentData().value<Enum::Mesh>());

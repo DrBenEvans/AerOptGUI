@@ -187,6 +187,7 @@ void MainWindow::newOptimisation() {
         ConfigSimulationDialog diag(opt, this);
         if(diag.exec() == QDialog::Accepted) {
 
+            opt->setBoundaryPoints(meshDialog.boundaryPoints());
             opt->setControlPoints(meshDialog.controlPoints());
             bool success = mOptimisationModel->run(opt);
 

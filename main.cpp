@@ -134,6 +134,10 @@ void firstTimeSetup(QString AerOptWorkDir) {
     AerOptNodeFile = QDir::toNativeSeparators(AerOptNodeFile);
     settings.setValue("AerOpt/nodeFile", AerOptNodeFile);
 
+    QString AerOptBoundaryFile = inFolder + "Boundary_Points.txt";
+    AerOptBoundaryFile = QDir::toNativeSeparators(AerOptBoundaryFile);
+    settings.setValue("AerOpt/boundaryFile", AerOptBoundaryFile);
+
     // mesh is created in a scratch directory
     QString scratchPath = QDir::toNativeSeparators(AerOptWorkDir + "Scratch/");
     settings.setValue("mesher/scratchDir", scratchPath);
