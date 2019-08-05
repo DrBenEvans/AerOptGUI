@@ -124,20 +124,6 @@ QChart* ParallelCoordinatesPlotter::controlPointGraph(QChart *chart) {
         }
     }
 
-    // Bounding box limit values for normalisation
-    double minXValues[numberOfControlPoints];
-    double minYValues[numberOfControlPoints];
-    double maxXValues[numberOfControlPoints];
-    double maxYValues[numberOfControlPoints];
-
-    // Get min/max X/Y bounding box limits
-    for(int cp = 0; cp< numberOfControlPoints; cp++){
-        minXValues[cp] = controlPoints[cp]->controlPointRect().left();
-        minYValues[cp] = controlPoints[cp]->controlPointRect().top();
-        maxXValues[cp] = controlPoints[cp]->controlPointRect().right();
-        maxYValues[cp] = controlPoints[cp]->controlPointRect().bottom();
-    }
-
 
     //
     // Set up axes
