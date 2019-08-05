@@ -369,6 +369,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
 
     if (r)
     {
+
         std::string xrange;
         std::string mxrange;
         std::string yrange;
@@ -377,18 +378,11 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
 
         for (auto& point : controlPoints())
         {
-            QRectF rect = point->controlPointRect();
-            float smoothFactor = point->getSmoothFactor();
-
-            xrange += " " + std::to_string(rect.right());
-
-            yrange += " " + std::to_string(rect.bottom());
-
-            mxrange += " " + std::to_string(rect.left());
-
-            myrange += " " + std::to_string(rect.top());
-
-            smoothing += " " + std::to_string(smoothFactor);
+            xrange += " " + std::to_string(point->controlPointRect().right());
+            yrange += " " + std::to_string(point->controlPointRect().bottom());
+            mxrange += " " + std::to_string(point->controlPointRect().left());
+            myrange += " " + std::to_string(point->controlPointRect().top());
+            smoothing += " " + std::to_string(point->getSmoothFactor());
         }
 
         Enum::OptMethod optMethod = getOptimisationMethod();
@@ -407,6 +401,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
             optMethodIndex = -1;
             break;
         }
+
 
         outfile << "&inputVariables" << std::endl;
         outfile << "IV%Ma = " << std::to_string( machNo() ) << std::endl;
@@ -529,10 +524,11 @@ bool Optimisation::createAerOptNodeFile(const QString& filePath)
         std::string yrange;
         std::string myrange;
 
+
         for (auto& point : controlPoints())
         {
             outfile << std::to_string(point->x())
-                    << "	"
+                    << "\t"
                     << std::to_string(point->y())
                     << std::endl;
         }

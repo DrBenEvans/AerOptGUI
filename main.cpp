@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
     checkSettings();
 
     //Application main interaction classes.
-    DebugOutput::Instance();
+    //DebugOutput::Instance();
     qInfo() << " *** Welcome to AerOpt ***";
     qInfo() << " ***     Have a nice day     ***";
 
