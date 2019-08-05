@@ -24,7 +24,7 @@ PlotterWidget::PlotterWidget(QWidget *parent) :
 }
 
 void PlotterWidget::validateXRangeChanged(const QCPRange &range, const QCPRange &oldRange) {
-    fixAxisRange(xAxis, range, mXMin, mXMax, mMinRange);
+    //fixAxisRange(xAxis, range, mXMin, mXMax, mMinRange);
 }
 
 void PlotterWidget::fixAxisRange(QCPAxis *axis, QCPRange range, double lowerBound, double upperBound, double minRange)
