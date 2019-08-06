@@ -81,14 +81,16 @@ private:
     void drawGraph(GraphType type);
 
     /**
-     * @brief boundaryPointGraph Draws a parallel coordinate graph of all boundary points in the current optimisation.
+     * @brief plotGraph Draws a parallel coordinates chart of normalised displacement of boundary points.
+     * Can either return a chart with all Boundary Points, or just with Boundary Points that are Control Points.
+     * @param showAll
+     * @return
      */
-    QChart* boundaryPointGraph(QChart *chart);
+    QChart* plotGraph(bool showAll);
 
     /**
-     * @brief controlPointGraph Draws a parallel coordinate graph of all control points in the current optimisation.
      */
-    QChart* controlPointGraph(QChart *chart);
+    QChart* blankGraph(QChart *chart);
 
     /**
      * @brief chartView The Parallel Coordinates Graph
@@ -106,7 +108,5 @@ private:
     double normalise(double x, double xMin, double xMax);
 
 };
-
-
 
 #endif // PARALLELCOORDINATESPLOTTER_H
