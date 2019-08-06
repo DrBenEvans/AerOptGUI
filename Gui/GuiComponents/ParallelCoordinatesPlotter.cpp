@@ -44,13 +44,13 @@ void ParallelCoordinatesPlotter::drawGraph(GraphType type){
 
     switch(type){
         case CONTROL_POINT:
-            chart->setTitle("Control Point Displacement");
             chart = plotGraph(false);
+            chart->setTitle("Control Point Displacement");
             break;
 
         case BOUNDARY_POINT:
-            chart->setTitle("Boundary Point Displacement");
             chart = plotGraph(true);
+            chart->setTitle("Boundary Point Displacement");
             break;
     }
 
