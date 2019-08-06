@@ -63,12 +63,6 @@ void ParallelCoordinatesPlotter::drawGraph(GraphType type){
 
 }
 
-
-
-    // Initialise axes
-    QCategoryAxis *axisX = new QCategoryAxis;
-    QValueAxis *axisY = new QValueAxis;
-
 QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
 
     QChart *chart = new QChart();
@@ -89,6 +83,10 @@ QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
     //
     // Set up axes
     //
+    // Initialise axes
+    QCategoryAxis *axisX = new QCategoryAxis;
+    QValueAxis *axisY = new QValueAxis;
+
     // Set up X axis
     int numberOfGraphPoints;
     if (showAll){
