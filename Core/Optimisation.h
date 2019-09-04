@@ -259,6 +259,13 @@ public:
     std::pair<double,double> fitnessRange();
 
     /**
+     * @brief fitnessRange Returns the minimum and maximum fitness values for the
+     * best agents of each generation in this optimisation.
+     * @return A pair of double values of the format <minimum, maximum>.
+     */
+    std::pair<double,double> fitnessRangeBestAgents();
+
+    /**
      * @brief initProfilePoints Returns the initial profile.
      * @return mProfilePoints
      */

@@ -795,6 +795,20 @@ std::pair<double,double> Optimisation::fitnessRange() {
     return minMax;
 }
 
+std::pair<double,double> Optimisation::fitnessRangeBestAgents() {
+    std::pair<double,double> minMax;
+    minMax.first = std::numeric_limits<double>::infinity();
+    minMax.second = -std::numeric_limits<double>::infinity();
+
+    for(auto& gen : mFitness){
+        if(gen.at(0) < minMax.first)
+            minMax.first = gen.at(0);
+        if(gen.at(0) > minMax.second)
+            minMax.second = gen.at(0);
+    }
+    return minMax;
+}
+
 QString Optimisation::outputText() {
     return mOutputLog;
 }

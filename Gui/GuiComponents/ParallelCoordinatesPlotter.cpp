@@ -74,6 +74,11 @@ QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
     // Fetch the number of generations
     int numberOfGenerations = currentOptimisation()->noGens();
 
+    // Fetch min and max fitness values
+    std::pair<double,double> fitnessRange = currentOptimisation()->fitnessRangeBestAgents();
+    double minFitness = fitnessRange.first;
+    double maxFitness  = fitnessRange.second;
+
     std::vector<BoundaryPoint*> controlPoints = currentOptimisation()->controlPoints();
 
     // Get the indexes of all control points in the mesh
@@ -183,13 +188,22 @@ QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
             bpCount++;
         }
 
+
+
+        // Colour series according to fitness value
+        double fitnessValue = currentOptimisation()->fitness(g,0);
+        double normalisedFitness = normalise(fitnessValue, minFitness, maxFitness);
+        qInfo() << "Fitness = " + QString::number(fitnessValue) + ", Min = " + QString::number(minFitness) + ", Max = " + QString::number(maxFitness) + ", Norm = " + QString::number(normalisedFitness);
+        series->setColor(*rgb(normalisedFitness));
+
         // Add new series to chart
         chart->addSeries(series);
         series->attachAxis(axisX);
         series->attachAxis(axisY);
-        series->setName("Generation " + QString::number(g+1));
+        //series->setName("Generation " + QString::number(g+1));
 
     }
+    chart->legend()->setVisible(false);
     return chart;
 
 }
@@ -197,5 +211,30 @@ QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
 
 double ParallelCoordinatesPlotter::normalise(double x, double xMin, double xMax){
     return (x-xMin) / (xMax - xMin);
+}
+
+
+QColor* ParallelCoordinatesPlotter::rgb(double ratio)
+{
+    //Flip so red is high and blue is low
+    ratio = 1-ratio;
+    //we want to normalize ratio so that it fits in to 5 regions
+    //where each region is 256 units long
+    int normalized = int(ratio * 256 * 4);
+
+    //find the distance to the start of the closest region
+    int x = normalized % 256;
+
+    int red = 0, grn = 0, blu = 0;
+    switch(normalized / 256)
+    {
+    case 0: red = 255;      grn = x;        blu = 0;       break;//red
+    case 1: red = 255 - x;  grn = 255;      blu = 0;       break;//yellow
+    case 2: red = 0;        grn = 255;      blu = x;       break;//green
+    case 3: red = 0;        grn = 255 - x;  blu = 255;     break;//cyan
+    case 4: red = x;        grn = 0;        blu = 255;     break;//blue
+    }
+
+    return new QColor(red, grn, blu);
 }
 

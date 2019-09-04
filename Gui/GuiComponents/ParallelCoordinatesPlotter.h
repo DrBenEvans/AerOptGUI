@@ -107,6 +107,15 @@ private:
      */
     double normalise(double x, double xMin, double xMax);
 
+    /**
+     * @brief rgb Returns a QColor between Red and Blue based on a normalised value
+     * @param ratio Normalised value between 0 and 1 where 0 is Red and 1 is Blue
+     * @return QColor
+     */
+    QColor* rgb(double ratio);
+
+
+
 };
 
 #endif // PARALLELCOORDINATESPLOTTER_H
