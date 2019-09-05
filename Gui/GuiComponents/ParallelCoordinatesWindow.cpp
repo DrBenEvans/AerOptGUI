@@ -1,43 +1,63 @@
-#include "ParallelCoordinatesPlotter.h"
-#include "QWidget"
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QValueAxis>
+#include "ParallelCoordinatesWindow.h"
+#include "ui_ParallelCoordinatesWindow.h"
+
 #include <QtCharts/QCategoryAxis>
-#include "BoundaryPoint.h"
-#include "Mesh.h"
-#include <QDebug>
+#include <QtCharts/QValueAxis>
+#include <QtCharts/QLineSeries>
+#include <QtCharts/QChartView>
+
+#include "OptimisationModel.h"
+#include "Optimisation.h"
 
 QT_CHARTS_USE_NAMESPACE
-
-ParallelCoordinatesPlotter::ParallelCoordinatesPlotter(QWidget *parent) : QWidget(parent)
+ParallelCoordinatesWindow::ParallelCoordinatesWindow(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::ParallelCoordinatesWindow)
 {
-    if (parent == nullptr){
-        this->resize(1200, 500);
-    } else{
-        this->resize(parent->width(),parent->height());
-    }
-    //this->resize(1200, 500);
-    //QWidget::showFullScreen();
+    ui->setupUi(this);
+    //Possibly draw blank graph here
+    chartView = new QChartView();
+    ui->verticalLayout->addWidget(chartView, 1);
 }
 
-void ParallelCoordinatesPlotter::setOptimisationModel(OptimisationModel* model) {
+ParallelCoordinatesWindow::~ParallelCoordinatesWindow()
+{
+    delete ui;
+}
+
+void ParallelCoordinatesWindow::setOptimisationModel(OptimisationModel* model){
     mOptimisationModel = model;
 }
 
-Optimisation* ParallelCoordinatesPlotter::currentOptimisation() {
+void ParallelCoordinatesWindow::setCurrentOptimisationIndex(int index){
+    if(index != mCurrentOptimisationIndex){
+        mCurrentOptimisationIndex = index;
+        drawGraph(CONTROL_POINT);
+    }
+}
+
+Optimisation* ParallelCoordinatesWindow::currentOptimisation() {
     return mOptimisationModel->optimisation(mCurrentOptimisationIndex);
 }
 
-void ParallelCoordinatesPlotter::setCurrentOptimisationIndex(int index) {
-    mCurrentOptimisationIndex = index;
-    drawGraph(CONTROL_POINT);
+void ParallelCoordinatesWindow::on_switchGraphButton_clicked()
+{
+    //ui->verticalLayout->removeItem(ui->verticalLayout->itemAt(1));
+    if (ui->switchGraphButton->isChecked()){
+        ui->switchGraphButton->setText("Show Control Points Only");
+        drawGraph(BOUNDARY_POINT);
+    } else {
+        ui->switchGraphButton->setText("Show All Boundary Points");
+        drawGraph(CONTROL_POINT);
+    }
+    chartView->repaint();
 }
 
-QChartView* ParallelCoordinatesPlotter::getGraph(){
+QChartView* ParallelCoordinatesWindow::getGraph(){
     return chartView;
 }
 
-void ParallelCoordinatesPlotter::drawGraph(GraphType type){
+void ParallelCoordinatesWindow::drawGraph(GraphType type){
 
     // Set up chart object
     QChart *chart;
@@ -52,18 +72,20 @@ void ParallelCoordinatesPlotter::drawGraph(GraphType type){
             chart = plotGraph(true);
             chart->setTitle("Boundary Point Displacement");
             break;
+
+        default:
+            break;
+
     }
 
     // Render widget
-    chartView = new QChartView(chart);
+    chartView->setChart(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
-    chartView->setParent(this);
-    chartView->resize(this->width(),this->height());
-    chartView->show();
-
+    //chartView->setParent(this);
 }
 
-QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
+
+QChart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
 
     QChart *chart = new QChart();
 
@@ -167,7 +189,7 @@ QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
         int cpCount = 0;
         for (ProfilePoints::iterator it = currentMeshProfile.begin(); it != currentMeshProfile.end(); ++it) {
 
-            // Add a point if we are showing all points, or if it is a control point if we are not
+            // Add a point if we are showing all points, or only if it is a control point otherwise
             if (showAll || currentOptimisation()->initialBoundaryPoints().at(bpCount)->isControlPoint()) {
 
                 double differenceX = it->first  -  initialBoundary.at(bpCount)->pos().x();
@@ -193,7 +215,6 @@ QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
         // Colour series according to fitness value
         double fitnessValue = currentOptimisation()->fitness(g,0);
         double normalisedFitness = normalise(fitnessValue, minFitness, maxFitness);
-        qInfo() << "Fitness = " + QString::number(fitnessValue) + ", Min = " + QString::number(minFitness) + ", Max = " + QString::number(maxFitness) + ", Norm = " + QString::number(normalisedFitness);
         series->setColor(*rgb(normalisedFitness));
 
         // Add new series to chart
@@ -204,17 +225,18 @@ QChart* ParallelCoordinatesPlotter::plotGraph(bool showAll) {
 
     }
     chart->legend()->setVisible(false);
+    chart->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     return chart;
 
 }
 
 
-double ParallelCoordinatesPlotter::normalise(double x, double xMin, double xMax){
+double ParallelCoordinatesWindow::normalise(double x, double xMin, double xMax){
     return (x-xMin) / (xMax - xMin);
 }
 
 
-QColor* ParallelCoordinatesPlotter::rgb(double ratio)
+QColor* ParallelCoordinatesWindow::rgb(double ratio)
 {
     //Flip so red is high and blue is low
     ratio = 1-ratio;
@@ -237,4 +259,3 @@ QColor* ParallelCoordinatesPlotter::rgb(double ratio)
 
     return new QColor(red, grn, blu);
 }
-

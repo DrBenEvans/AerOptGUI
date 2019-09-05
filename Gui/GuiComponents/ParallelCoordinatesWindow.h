@@ -1,18 +1,23 @@
-#ifndef PARALLELCOORDINATESPLOTTER_H
-#define PARALLELCOORDINATESPLOTTER_H
-#include <QWidget>
+#ifndef PARALLELCOORDINATESWINDOW_H
+#define PARALLELCOORDINATESWINDOW_H
+
+#include <QDialog>
 #include "OptimisationModel.h"
-#include "Optimisation.h"
 #include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QValueAxis>
+#include <QtCharts/QChart>
+
+namespace Ui {
+class ParallelCoordinatesWindow;
+}
 
 QT_CHARTS_USE_NAMESPACE
-class ParallelCoordinatesPlotter : public QWidget
+class ParallelCoordinatesWindow : public QDialog
 {
     Q_OBJECT
+
 public:
-    explicit ParallelCoordinatesPlotter(QWidget *parent = nullptr);
+    explicit ParallelCoordinatesWindow(QWidget *parent = nullptr);
+    ~ParallelCoordinatesWindow();
 
     /**
      * @brief setOptimisationModel Sets the optimisation model.
@@ -37,17 +42,22 @@ public:
      */
     enum GraphType
     {
+        BLANK,                 // Blank Graph when an optimisation is not loaded
         CONTROL_POINT,         // Parallel Coordinate Graph of Control Points only
         BOUNDARY_POINT,        // Parallel Coordinate Graph of all boundary points
 
     };
 
-signals:
+private slots:
 
-public slots:
-
+    /**
+     * @brief on_switchGraphButton_clicked When switchGraphButton is clicked, alternate between
+     * the boundary point graph and the control point graph depending on whether the button is checked.
+     */
+    void on_switchGraphButton_clicked();
 
 private:
+    Ui::ParallelCoordinatesWindow *ui;
 
     /**
      * @brief mOptimisationModel Model of all loaded optimisations.
@@ -64,19 +74,10 @@ private:
      * @return
      */
     Optimisation* currentOptimisation();
-    // Display size
-    /**
-     * @brief mPointSize The diameter of plotted points.
-     */
-    int mPointSize = 15;
 
     /**
-     * @brief mLineSize The thickness of plotted lines.
-     */
-    int mLineSize = 5;
-
-    /**
-     * @brief drawGraph
+     * @brief drawGraph Updates chartView to return the specified graph and re-plot.
+     * @param type Specifies what kind of graph to draw based on hte GraphType Enum.
      */
     void drawGraph(GraphType type);
 
@@ -87,10 +88,6 @@ private:
      * @return
      */
     QChart* plotGraph(bool showAll);
-
-    /**
-     */
-    QChart* blankGraph(QChart *chart);
 
     /**
      * @brief chartView The Parallel Coordinates Graph
@@ -109,13 +106,12 @@ private:
 
     /**
      * @brief rgb Returns a QColor between Red and Blue based on a normalised value
+     * https://stackoverflow.com/questions/40629345/fill-array-dynamicly-with-gradient-color-c
      * @param ratio Normalised value between 0 and 1 where 0 is Red and 1 is Blue
      * @return QColor
      */
     QColor* rgb(double ratio);
 
-
-
 };
 
-#endif // PARALLELCOORDINATESPLOTTER_H
+#endif // PARALLELCOORDINATESWINDOW_H
