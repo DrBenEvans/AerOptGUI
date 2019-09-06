@@ -137,7 +137,7 @@ Chart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
     chart->addAxis(axisX, Qt::AlignBottom);
 
     // Set up Y axis
-    axisY->setTickCount(21);
+    axisY->setTickCount(11);
     axisY->setRange(0,1); // values are normalised
     axisY->setTitleText("Normalised Displacement Values");
     chart->addAxis(axisY, Qt::AlignLeft);
