@@ -4,7 +4,8 @@
 #include <QDialog>
 #include "OptimisationModel.h"
 #include <QtCharts/QChartView>
-#include <QtCharts/QChart>
+#include "chart.h"
+
 
 namespace Ui {
 class ParallelCoordinatesWindow;
@@ -87,7 +88,7 @@ private:
      * @param showAll
      * @return
      */
-    QChart* plotGraph(bool showAll);
+    Chart* plotGraph(bool showAll);
 
     /**
      * @brief chartView The Parallel Coordinates Graph

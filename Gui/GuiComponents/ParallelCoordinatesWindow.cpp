@@ -8,6 +8,7 @@
 
 #include "OptimisationModel.h"
 #include "Optimisation.h"
+#include "chart.h"
 
 QT_CHARTS_USE_NAMESPACE
 ParallelCoordinatesWindow::ParallelCoordinatesWindow(QWidget *parent) :
@@ -60,7 +61,7 @@ QChartView* ParallelCoordinatesWindow::getGraph(){
 void ParallelCoordinatesWindow::drawGraph(GraphType type){
 
     // Set up chart object
-    QChart *chart;
+    Chart *chart;
 
     switch(type){
         case CONTROL_POINT:
@@ -74,6 +75,7 @@ void ParallelCoordinatesWindow::drawGraph(GraphType type){
             break;
 
         default:
+            chart = blankGraph();
             break;
 
     }
@@ -85,9 +87,9 @@ void ParallelCoordinatesWindow::drawGraph(GraphType type){
 }
 
 
-QChart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
+Chart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
 
-    QChart *chart = new QChart();
+    Chart *chart = new Chart();
 
     // Fetch the number of control points
     int numberOfControlPoints  = currentOptimisation()->controlPointCount();

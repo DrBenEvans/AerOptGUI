@@ -50,6 +50,7 @@ TEMPLATE = app
 
 SOURCES += \
     Gui/GuiComponents/ParallelCoordinatesWindow.cpp \
+    Gui/GuiComponents/chart.cpp \
     main.cpp \
     Gui/DebugOutput.cpp \
     Gui/Dialogs/MeshDialog.cpp \
@@ -86,6 +87,7 @@ HEADERS  += \
     Gui/DebugOutput.h \
     Gui/Dialogs/MeshDialog.h \
     Gui/GuiComponents/ParallelCoordinatesWindow.h \
+    Gui/GuiComponents/chart.h \
     Gui/Plotter/qcustomplot.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
     Gui/MainWindow.h \
