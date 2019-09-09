@@ -85,9 +85,6 @@ void ParallelCoordinatesWindow::drawGraph(GraphType type){
     // If either the optimsation model or index is not set then draw blank graph
     if (mOptimisationModel == nullptr || mCurrentOptimisationIndex < 0) {
         type = BLANK;
-    // If the optimisation is set, but incomplete then draw blank graph
-    } else if (currentOptimisation()->allfitness().size() < currentOptimisation()->noGens()){
-        type = BLANK;
     }
 
 
@@ -129,7 +126,7 @@ Chart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
     int numberOfBoundaryPoints = currentOptimisation()->initialBoundaryPoints().size();
 
     // Fetch the number of generations
-    int numberOfGenerations = currentOptimisation()->noGens();
+    int numberOfGenerations = currentOptimisation()->allfitness().size();
 
     // Fetch min and max fitness values
     std::pair<double,double> fitnessRange = currentOptimisation()->fitnessRangeBestAgents();
