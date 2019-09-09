@@ -43,10 +43,32 @@ public:
 
 //![2]
 protected:
-    void wheelEvent(QWheelEvent *event);
+    /**
+     * @brief wheelEvent Scale the view on mouse scroll wheel movement.
+     * @param event
+     */
+    void wheelEvent(QWheelEvent *event) override;
+
+    /**
+     * @brief mousePressEvent Listen out for mouse click events to begin panning.
+     * @param event
+     */
+    void mousePressEvent(QMouseEvent *event) override;
+
+    /**
+     * @brief mouseMoveEvent Pan chart while left mouse button is clicked and mouse moves.
+     * @param event
+     */
+    void mouseMoveEvent(QMouseEvent *event) override;
 //![2]
 
 private:
+    /**
+     * @brief m_lastMousePos Last recorded mouse position.
+     * Used for panning.
+     */
+    QPointF m_lastMousePos;
+
 };
 
 #endif

@@ -27,12 +27,15 @@
 **
 ****************************************************************************/
 
-#include "chartview.h"
+#include "ChartView.h"
 #include <QtGui/QMouseEvent>
+#include <QApplication>
 
 ChartView::ChartView(QWidget *parent) :
     QChartView(parent)
 {
+    setDragMode(QGraphicsView::NoDrag);
+    this->setMouseTracking(true);
 
 }
 
@@ -42,4 +45,35 @@ void ChartView::wheelEvent(QWheelEvent* event) {
     } else {
         chart()->zoomOut();
     }
+}
+
+//Credit: https://stackoverflow.com/questions/46805186/qt-chart-move-view-with-pressed-middle-mouse-button
+void ChartView::mousePressEvent(QMouseEvent *event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        QApplication::setOverrideCursor(QCursor(Qt::SizeAllCursor));
+        m_lastMousePos = event->pos();
+        event->accept();
+    }
+
+    QChartView::mousePressEvent(event);
+}
+
+//Credit: https://stackoverflow.com/questions/46805186/qt-chart-move-view-with-pressed-middle-mouse-button
+void ChartView::mouseMoveEvent(QMouseEvent *event)
+{
+    // pan the chart with a middle mouse drag
+    if (event->buttons() & Qt::LeftButton)
+    {
+        auto dPos = event->pos() - m_lastMousePos;
+        chart()->scroll(-dPos.x(), dPos.y());
+
+        m_lastMousePos = event->pos();
+        event->accept();
+
+        QApplication::restoreOverrideCursor();
+    }
+
+    QChartView::mouseMoveEvent(event);
 }
