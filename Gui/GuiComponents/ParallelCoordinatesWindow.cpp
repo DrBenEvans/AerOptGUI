@@ -166,8 +166,18 @@ Chart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
     }
 
     for (int i = 0; i < numberOfGraphPoints; i++){
-        axisX->append("X" + QString::number(i), 2*i);
-        axisX->append("Y" + QString::number(i), 2*i+1);
+
+        if(showAll && currentOptimisation()->initialBoundaryPoints().at(i)->isControlPoint()){
+            axisX->append("X" + QString::number(i+1) + "*", 2*i);
+            axisX->append("Y" + QString::number(i+1) + "*", 2*i+1);
+        } else if (showAll) {
+            axisX->append("X" + QString::number(i+1), 2*i);
+            axisX->append("Y" + QString::number(i+1), 2*i+1);
+        } else {
+            axisX->append("X" + QString::number(i+1) + "*", 2*i);
+            axisX->append("Y" + QString::number(i+1) + "*", 2*i+1);
+        }
+
     }
     axisX->setTickCount(numberOfGraphPoints);
     //May need to change range back to 0
