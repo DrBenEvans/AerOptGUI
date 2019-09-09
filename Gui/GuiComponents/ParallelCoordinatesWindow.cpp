@@ -16,9 +16,7 @@ ParallelCoordinatesWindow::ParallelCoordinatesWindow(QWidget *parent) :
     ui(new Ui::ParallelCoordinatesWindow)
 {
     ui->setupUi(this);
-    //Possibly draw blank graph here
     chartView = new ChartView();
-    //chartView->setRubberBand(QChartView::RectangleRubberBand);
     ui->verticalLayout->addWidget(chartView, 1);
     drawGraph(BLANK);
 
@@ -286,7 +284,7 @@ double ParallelCoordinatesWindow::normalise(double x, double xMin, double xMax){
     return (x-xMin) / (xMax - xMin);
 }
 
-
+// Credit: https://stackoverflow.com/questions/40629345/fill-array-dynamicly-with-gradient-color-c
 QColor* ParallelCoordinatesWindow::rgb(double ratio)
 {
     //Flip so red is high and blue is low

@@ -123,7 +123,6 @@ private:
 
     /**
      * @brief rgb Returns a QColor between Red and Blue based on a normalised value
-     * https://stackoverflow.com/questions/40629345/fill-array-dynamicly-with-gradient-color-c
      * @param ratio Normalised value between 0 and 1 where 0 is Red and 1 is Blue
      * @return QColor
      */
