@@ -128,6 +128,7 @@ void MainWindow::setLogText() {
 void MainWindow::optimisationFitnessChanged(int index) {
     if(mCurrentOptimisationIndex == index) {
         ui->fitnessPlot->updatePlot();
+        pcWindow->update();
     }
 }
 

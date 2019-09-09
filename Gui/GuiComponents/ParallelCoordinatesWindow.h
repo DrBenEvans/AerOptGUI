@@ -49,6 +49,11 @@ public:
 
     };
 
+    /**
+     * @brief update Refreshes the graph
+     */
+    void update();
+
 private slots:
 
     /**
@@ -100,6 +105,11 @@ private:
      * @brief chartView The Parallel Coordinates Graph
      */
     ChartView *chartView = nullptr;
+
+    /**
+     * @brief currentlyDisplayedGraph The type of graph we are currently displaying.
+     */
+    GraphType currentlyDisplayedGraph = BLANK;
 
     /**
      * @brief normalise Simple feature scaling method of normalisation that transforms x into a value between 0 and 1,

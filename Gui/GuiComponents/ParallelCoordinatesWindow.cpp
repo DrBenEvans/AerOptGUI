@@ -18,6 +18,7 @@ ParallelCoordinatesWindow::ParallelCoordinatesWindow(QWidget *parent) :
     ui->setupUi(this);
     //Possibly draw blank graph here
     chartView = new ChartView();
+    //chartView->setRubberBand(QChartView::RectangleRubberBand);
     ui->verticalLayout->addWidget(chartView, 1);
     drawGraph(BLANK);
 
@@ -34,8 +35,13 @@ void ParallelCoordinatesWindow::setOptimisationModel(OptimisationModel* model){
 
 void ParallelCoordinatesWindow::setCurrentOptimisationIndex(int index){
     if(index != mCurrentOptimisationIndex){
+
+        // If displaying for first time
+        if (mCurrentOptimisationIndex == -1){
+            currentlyDisplayedGraph = CONTROL_POINT;
+        }
         mCurrentOptimisationIndex = index;
-        drawGraph(CONTROL_POINT);
+        update();
     }
 }
 
@@ -46,11 +52,11 @@ Optimisation* ParallelCoordinatesWindow::currentOptimisation() {
 void ParallelCoordinatesWindow::on_switchGraphButton_clicked()
 {
     if (ui->switchGraphButton->isChecked()){
-        drawGraph(BOUNDARY_POINT);
+        currentlyDisplayedGraph = BOUNDARY_POINT;
     } else {
-        drawGraph(CONTROL_POINT);
+        currentlyDisplayedGraph = CONTROL_POINT;
     }
-    chartView->repaint();
+    update();
 
 }
 
@@ -85,6 +91,8 @@ void ParallelCoordinatesWindow::drawGraph(GraphType type){
     // If either the optimsation model or index is not set then draw blank graph
     if (mOptimisationModel == nullptr || mCurrentOptimisationIndex < 0) {
         type = BLANK;
+    } else {
+        currentlyDisplayedGraph = type;
     }
 
 
@@ -113,6 +121,7 @@ void ParallelCoordinatesWindow::drawGraph(GraphType type){
     // Render widget
     chartView->setChart(chart);
     chartView->setRenderHint(QPainter::Antialiasing);
+
     //chartView->setParent(this);
 }
 
@@ -290,4 +299,9 @@ QColor* ParallelCoordinatesWindow::rgb(double ratio)
     }
 
     return new QColor(red, grn, blu);
+}
+
+void ParallelCoordinatesWindow::update(){
+    drawGraph(currentlyDisplayedGraph);
+    chartView->repaint();
 }
