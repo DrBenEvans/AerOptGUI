@@ -3,7 +3,7 @@
 
 #include <QDialog>
 #include "OptimisationModel.h"
-#include <QtCharts/QChartView>
+#include "ChartView.h"
 #include "chart.h"
 
 
@@ -93,7 +93,7 @@ private:
     /**
      * @brief chartView The Parallel Coordinates Graph
      */
-    QChartView *chartView = nullptr;
+    ChartView *chartView = nullptr;
 
     /**
      * @brief normalise Simple feature scaling method of normalisation that transforms x into a value between 0 and 1,

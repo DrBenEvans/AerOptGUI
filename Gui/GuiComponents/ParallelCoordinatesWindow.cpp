@@ -4,7 +4,7 @@
 #include <QtCharts/QCategoryAxis>
 #include <QtCharts/QValueAxis>
 #include <QtCharts/QLineSeries>
-#include <QtCharts/QChartView>
+#include "ChartView.h"
 
 #include "OptimisationModel.h"
 #include "Optimisation.h"
@@ -17,7 +17,7 @@ ParallelCoordinatesWindow::ParallelCoordinatesWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     //Possibly draw blank graph here
-    chartView = new QChartView();
+    chartView = new ChartView();
     ui->verticalLayout->addWidget(chartView, 1);
 }
 

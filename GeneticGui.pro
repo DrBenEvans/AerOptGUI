@@ -49,6 +49,7 @@ TARGET = AerOptGui
 TEMPLATE = app
 
 SOURCES += \
+    Gui/GuiComponents/ChartView.cpp \
     Gui/GuiComponents/ParallelCoordinatesWindow.cpp \
     Gui/GuiComponents/chart.cpp \
     main.cpp \
@@ -86,6 +87,7 @@ SOURCES += \
 HEADERS  += \
     Gui/DebugOutput.h \
     Gui/Dialogs/MeshDialog.h \
+    Gui/GuiComponents/ChartView.h \
     Gui/GuiComponents/ParallelCoordinatesWindow.h \
     Gui/GuiComponents/chart.h \
     Gui/Plotter/qcustomplot.h \
