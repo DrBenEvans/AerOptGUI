@@ -19,6 +19,8 @@ ParallelCoordinatesWindow::ParallelCoordinatesWindow(QWidget *parent) :
     //Possibly draw blank graph here
     chartView = new ChartView();
     ui->verticalLayout->addWidget(chartView, 1);
+    drawGraph(BLANK);
+
 }
 
 ParallelCoordinatesWindow::~ParallelCoordinatesWindow()
@@ -43,19 +45,36 @@ Optimisation* ParallelCoordinatesWindow::currentOptimisation() {
 
 void ParallelCoordinatesWindow::on_switchGraphButton_clicked()
 {
-    //ui->verticalLayout->removeItem(ui->verticalLayout->itemAt(1));
     if (ui->switchGraphButton->isChecked()){
-        ui->switchGraphButton->setText("Show Control Points Only");
         drawGraph(BOUNDARY_POINT);
     } else {
-        ui->switchGraphButton->setText("Show All Boundary Points");
         drawGraph(CONTROL_POINT);
     }
     chartView->repaint();
+
 }
 
 QChartView* ParallelCoordinatesWindow::getGraph(){
     return chartView;
+}
+
+Chart* ParallelCoordinatesWindow::blankGraph(){
+    Chart *chart = new Chart();
+    chart->legend()->setVisible(false);
+    chart->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+    QCategoryAxis *axisX = new QCategoryAxis;
+    axisX->setTitleText("Control Points");
+    chart->addAxis(axisX, Qt::AlignBottom);
+
+    QValueAxis *axisY = new QValueAxis;
+    axisY->setTickCount(11);
+    axisY->setRange(0,1); // values are normalised
+    axisY->setTitleText("Normalised Displacement Values");
+    chart->addAxis(axisY, Qt::AlignLeft);
+
+    return chart;
+
 }
 
 void ParallelCoordinatesWindow::drawGraph(GraphType type){
@@ -63,19 +82,33 @@ void ParallelCoordinatesWindow::drawGraph(GraphType type){
     // Set up chart object
     Chart *chart;
 
+    // If either the optimsation model or index is not set then draw blank graph
+    if (mOptimisationModel == nullptr || mCurrentOptimisationIndex < 0) {
+        type = BLANK;
+    // If the optimisation is set, but incomplete then draw blank graph
+    } else if (currentOptimisation()->allfitness().size() < currentOptimisation()->noGens()){
+        type = BLANK;
+    }
+
+
     switch(type){
         case CONTROL_POINT:
             chart = plotGraph(false);
             chart->setTitle("Control Point Displacement");
+            ui->switchGraphButton->setText("Show All Boundary Points");
             break;
 
         case BOUNDARY_POINT:
             chart = plotGraph(true);
             chart->setTitle("Boundary Point Displacement");
+            ui->switchGraphButton->setText("Show Control Points Only");
             break;
 
+        case BLANK:
         default:
             chart = blankGraph();
+            chart->setTitle("Control Point Displacement");
+            ui->switchGraphButton->setText("No Data Available");
             break;
 
     }

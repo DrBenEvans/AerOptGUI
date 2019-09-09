@@ -91,6 +91,12 @@ private:
     Chart* plotGraph(bool showAll);
 
     /**
+     * @brief blankGraph Draws a blank graph for display purposes
+     * @return Modified chart
+     */
+    Chart* blankGraph();
+
+    /**
      * @brief chartView The Parallel Coordinates Graph
      */
     ChartView *chartView = nullptr;
