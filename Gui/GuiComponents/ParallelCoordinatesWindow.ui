@@ -42,7 +42,7 @@
        <item>
         <widget class="QLabel" name="lowLabel">
          <property name="text">
-          <string>LOW</string>
+          <string>LOW FITNESS</string>
          </property>
         </widget>
        </item>
@@ -86,7 +86,7 @@
        <item>
         <widget class="QLabel" name="highLabel">
          <property name="text">
-          <string>HIGH</string>
+          <string>HIGH FITNESS</string>
          </property>
         </widget>
        </item>
