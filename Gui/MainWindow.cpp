@@ -287,3 +287,8 @@ void MainWindow::on_actionVisualSettings_triggered()
 void MainWindow::openParallelCoordinatesWindow(){
     pcWindow->show();
 }
+
+void MainWindow::on_actionShow_triggered()
+{
+    openParallelCoordinatesWindow();
+}

@@ -42,6 +42,8 @@ private slots:
 
     void on_actionVisualSettings_triggered();
 
+    void on_actionShow_triggered();
+
 private:
     void setMeshViewSimulation(int iGen, int agent);
     void setLogText();
