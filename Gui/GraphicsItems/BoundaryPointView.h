@@ -55,6 +55,13 @@ public slots:
      */
     void refreshControlPointState(int index, bool ctl);
 
+private slots:
+
+    /**
+     * @brief timerTimeout When a the single shot timer times out, then toggle whether point is a control point.
+     */
+    void timerTimeout();
+
 private:
     /**
      * @brief activated Returns whether this Boundary Point is currently activated (selected) (AKA mActive).
@@ -106,6 +113,10 @@ private:
      */
     ViewScaler* mScale;
 
+    /**
+     * @brief timer Time for long mouse presses.
+     */
+    QTimer *timer;
 protected:
 
     /**
@@ -131,6 +142,18 @@ protected:
      * @param event QGraphicsSceneMouseEvent Mouse Click event
      */
     void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) override;
+
+    /**
+     * @brief BoundaryPointView::mousePressEvent Starts a singleshot timer on mouse click that if triggered will call timerTimeout().
+     * @param event
+     */
+    void mousePressEvent(QGraphicsSceneMouseEvent *event) override;
+
+    /**
+     * @brief BoundaryPointView::mouseReleaseEvent Stops the timer activated by the mouse press
+     * @param event
+     */
+    void mouseReleaseEvent(QGraphicsSceneMouseEvent *event) override;
 };
 
 #endif // CONTROLPOINTGRAPHICSITEM_H
