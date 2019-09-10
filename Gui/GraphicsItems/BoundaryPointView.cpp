@@ -31,7 +31,7 @@ BoundaryPointView::BoundaryPointView(BoundaryPointModel *model, int index, ViewS
     // Set up click and hold timer
     timer = new QTimer(this);
     timer->setSingleShot(true);
-    timer->setInterval(400);
+    timer->setInterval(300);
     connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
 
 }
@@ -154,10 +154,12 @@ void BoundaryPointView::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
 
 void BoundaryPointView::mousePressEvent(QGraphicsSceneMouseEvent *event) {
     timer->start();
+    QGraphicsItem::mousePressEvent(event);
 }
 
 void BoundaryPointView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
     timer->stop();
+    QGraphicsItem::mouseReleaseEvent(event);
 }
 
 void BoundaryPointView::timerTimeout(){
