@@ -164,4 +164,9 @@ void BoundaryPointView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
 
 void BoundaryPointView::timerTimeout(){
     mBoundaryPointModel->setControlPointState(mBoundaryPointIndex, !mControl);
+    if (isControlPoint())
+        timer->setInterval(500);
+    else {
+        timer->setInterval(300);
+    }
 }
