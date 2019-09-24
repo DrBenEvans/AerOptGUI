@@ -3814,6 +3814,7 @@ protected:
   virtual void mouseMoveEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   virtual void mouseReleaseEvent(QMouseEvent *event) Q_DECL_OVERRIDE;
   virtual void wheelEvent(QWheelEvent *event) Q_DECL_OVERRIDE;
+  virtual bool event( QEvent *event ) Q_DECL_OVERRIDE;
   
   // introduced virtual methods:
   virtual void draw(QCPPainter *painter);
@@ -3845,6 +3846,10 @@ protected:
   friend class QCPAbstractPlottable;
   friend class QCPGraph;
   friend class QCPAbstractItem;
+
+private:
+    QPointF currentTouchPointPos;
+
 };
 Q_DECLARE_METATYPE(QCustomPlot::LayerInsertMode)
 Q_DECLARE_METATYPE(QCustomPlot::RefreshPriority)

@@ -12889,6 +12889,8 @@ QCustomPlot::QCustomPlot(QWidget *parent) :
   mOpenGlAntialiasedElementsBackup(QCP::aeNone),
   mOpenGlCacheLabelsBackup(true)
 {
+  setAttribute( Qt::WA_AcceptTouchEvents );
+  grabGesture( Qt::PinchGesture );
   setAttribute(Qt::WA_NoMousePropagation);
   setAttribute(Qt::WA_OpaquePaintEvent);
   setFocusPolicy(Qt::ClickFocus);
@@ -12969,6 +12971,50 @@ QCustomPlot::~QCustomPlot()
   mLayers.clear();
 }
 
+// Credit: https://www.qcustomplot.com/index.php/support/forum/638
+bool QCustomPlot::event( QEvent *event ){
+    switch( event->type() ){
+        case QEvent::Gesture: {
+            QGestureEvent *gestureEve = static_cast<QGestureEvent*>(event);
+            if( QGesture *pinch = gestureEve->gesture(Qt::PinchGesture) ){
+                QPinchGesture *pinchEve = static_cast<QPinchGesture *>(pinch);
+                qreal scaleFactor = pinchEve->totalScaleFactor();
+                if( scaleFactor > 1.0 ){
+                    scaleFactor *= 10;
+                }else {
+                    scaleFactor *= -10;
+                }
+                QWheelEvent *wheelEve = new QWheelEvent( currentTouchPointPos, scaleFactor, Qt::NoButton, Qt::NoModifier, Qt::Vertical );
+                this->wheelEvent( wheelEve );
+            }
+            return true;
+        }
+        case QEvent::TouchBegin:
+        case QEvent::TouchUpdate:
+        case QEvent::TouchEnd: {
+            QTouchEvent *touchEvent = static_cast<QTouchEvent *>( event );
+            QList<QTouchEvent::TouchPoint> touchPoints = touchEvent->touchPoints( );
+            if( touchPoints.count( ) == 1 ){
+                const QTouchEvent::TouchPoint &touchPoint0 = touchPoints.first( );
+                currentTouchPointPos = touchPoint0.pos();
+                QMouseEvent *mouseEve = new QMouseEvent(QEvent::MouseButtonPress,currentTouchPointPos,Qt::LeftButton,Qt::LeftButton,Qt::NoModifier);
+                if( touchEvent->touchPointStates() == (Qt::TouchPointStates)Qt::TouchPointPressed ){
+                    this->mousePressEvent( mouseEve );
+                }else if( touchEvent->touchPointStates() == (Qt::TouchPointStates)Qt::TouchPointMoved ){
+                    this->mouseMoveEvent( mouseEve );
+                }else if( touchEvent->touchPointStates() == (Qt::TouchPointStates)Qt::TouchPointReleased ){
+                    this->mouseReleaseEvent( mouseEve );
+                }
+            }
+            return true;
+        }
+        default: {
+            break;
+        }
+    }
+
+    return QWidget::event( event );
+}
 /*!
   Sets which elements are forcibly drawn antialiased as an \a or combination of QCP::AntialiasedElement.
   
