@@ -179,7 +179,7 @@ Chart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
     }
     axisX->setTickCount(numberOfGraphPoints);
     //May need to change range back to 0
-    axisX->setRange(-1, numberOfGraphPoints*2);
+    axisX->setRange(0, (numberOfGraphPoints*2)-1);
     axisX->setLabelsPosition(axisX->AxisLabelsPositionOnValue);
     chart->addAxis(axisX, Qt::AlignBottom);
 
