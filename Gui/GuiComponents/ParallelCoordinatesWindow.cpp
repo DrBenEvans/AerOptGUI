@@ -281,7 +281,13 @@ Chart* ParallelCoordinatesWindow::plotGraph(bool showAll) {
 
 
 double ParallelCoordinatesWindow::normalise(double x, double xMin, double xMax){
-    return (x-xMin) / (xMax - xMin);
+    //Makes sure a number is returned if all values are the same - to make sure correct colours generated
+    //If all values are the same then default colour is blue (0).
+    if (x == xMin && x == xMax){
+        return 0;
+    } else {
+        return (x-xMin) / (xMax - xMin);
+    }
 }
 
 // Credit: https://stackoverflow.com/questions/40629345/fill-array-dynamicly-with-gradient-color-c
