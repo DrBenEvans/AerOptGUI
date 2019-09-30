@@ -12971,43 +12971,37 @@ QCustomPlot::~QCustomPlot()
   mLayers.clear();
 }
 
+/*
 // Credit: https://www.qcustomplot.com/index.php/support/forum/638
-bool QCustomPlot::event( QEvent *event ){
+bool QCustomPlot::gestureEvent(QGestureEvent *event ){
     switch( event->type() ){
         case QEvent::Gesture: {
             QGestureEvent *gestureEve = static_cast<QGestureEvent*>(event);
             if( QGesture *pinch = gestureEve->gesture(Qt::PinchGesture) ){
                 QPinchGesture *pinchEve = static_cast<QPinchGesture *>(pinch);
-                qreal scaleFactor = pinchEve->totalScaleFactor();
+
+                qreal scaleFactor = pinchEve->scaleFactor( );
+
+                //qInfo() << "Scale Factor1 = " << scaleFactor;
                 if( scaleFactor > 1.0 ){
-                    scaleFactor *= 10;
-                }else {
-                    scaleFactor *= -10;
+                    //scaleFactor = fabs(1.0 - scaleFactor) - 1.0;
+                }else if( scaleFactor < 1.0 ){
+                    //scaleFactor = fabs(1.0 - scaleFactor) + 1.0;
                 }
-                QWheelEvent *wheelEve = new QWheelEvent( currentTouchPointPos, scaleFactor, Qt::NoButton, Qt::NoModifier, Qt::Vertical );
-                this->wheelEvent( wheelEve );
+                qInfo() << "Scale Factor2 = " << scaleFactor;
+
+                //if( scaleFactor < 0.97 )
+                 //   scaleFactor = 0.97;
+               // else if( scaleFactor > 1.03 )
+//                    scaleFactor = 1.03;
+
+                this->yAxis->scaleRange(scaleFactor);
+                this->xAxis->scaleRange(scaleFactor);
+                this->replot();
             }
             return true;
         }
-        case QEvent::TouchBegin:
-        case QEvent::TouchUpdate:
-        case QEvent::TouchEnd: {
-            QTouchEvent *touchEvent = static_cast<QTouchEvent *>( event );
-            QList<QTouchEvent::TouchPoint> touchPoints = touchEvent->touchPoints( );
-            if( touchPoints.count( ) == 1 ){
-                const QTouchEvent::TouchPoint &touchPoint0 = touchPoints.first( );
-                currentTouchPointPos = touchPoint0.pos();
-                QMouseEvent *mouseEve = new QMouseEvent(QEvent::MouseButtonPress,currentTouchPointPos,Qt::LeftButton,Qt::LeftButton,Qt::NoModifier);
-                if( touchEvent->touchPointStates() == (Qt::TouchPointStates)Qt::TouchPointPressed ){
-                    this->mousePressEvent( mouseEve );
-                }else if( touchEvent->touchPointStates() == (Qt::TouchPointStates)Qt::TouchPointMoved ){
-                    this->mouseMoveEvent( mouseEve );
-                }else if( touchEvent->touchPointStates() == (Qt::TouchPointStates)Qt::TouchPointReleased ){
-                    this->mouseReleaseEvent( mouseEve );
-                }
-            }
-            return true;
-        }
+
         default: {
             break;
         }
@@ -13015,6 +13009,36 @@ bool QCustomPlot::event( QEvent *event ){
 
     return QWidget::event( event );
 }
+
+*/
+
+bool QCustomPlot::event(QEvent *event)
+{
+    if (event->type() == QEvent::Gesture)
+        return gestureEvent(static_cast<QGestureEvent *>(event));
+    return QWidget::event( event );
+}
+
+bool QCustomPlot::gestureEvent(QGestureEvent *event)
+{
+    if (QGesture *gesture = event->gesture(Qt::PanGesture)) {
+        QPanGesture *pan = static_cast<QPanGesture *>(gesture);
+        this->scroll(-(pan->delta().x()), pan->delta().y());
+    }
+
+    if (QGesture *gesture = event->gesture(Qt::PinchGesture)) {
+        QPinchGesture *pinch = static_cast<QPinchGesture *>(gesture);
+        if (pinch->changeFlags() & QPinchGesture::ScaleFactorChanged)
+
+            qreal scaleFactor = pinch->scaleFactor();
+            this->yAxis->scaleRange(pinch->scaleFactor());
+            this->xAxis->scaleRange(pinch->scaleFactor());
+            this->replot();
+    }
+
+    return true;
+}
+
 /*!
   Sets which elements are forcibly drawn antialiased as an \a or combination of QCP::AntialiasedElement.
   
