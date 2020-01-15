@@ -27,6 +27,13 @@ BoundaryPointView::BoundaryPointView(BoundaryPointModel *model, int index, ViewS
 
     connect(mBoundaryPointModel, &BoundaryPointModel::activeIndexChanged, this, &BoundaryPointView::setActivePoint);
     connect(mBoundaryPointModel, &BoundaryPointModel::controlPointStateChanged, this, &BoundaryPointView::refreshControlPointState);
+
+    // Set up click and hold timer
+    timer = new QTimer(this);
+    timer->setSingleShot(true);
+    timer->setInterval(300);
+    connect(timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
+
 }
 
 qreal BoundaryPointView::radius() const {
@@ -143,4 +150,23 @@ void BoundaryPointView::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event) {
     }
 
     QGraphicsItem::mouseDoubleClickEvent(event);
+}
+
+void BoundaryPointView::mousePressEvent(QGraphicsSceneMouseEvent *event) {
+    timer->start();
+    QGraphicsItem::mousePressEvent(event);
+}
+
+void BoundaryPointView::mouseReleaseEvent(QGraphicsSceneMouseEvent *event) {
+    timer->stop();
+    QGraphicsItem::mouseReleaseEvent(event);
+}
+
+void BoundaryPointView::timerTimeout(){
+    mBoundaryPointModel->setControlPointState(mBoundaryPointIndex, !mControl);
+    if (isControlPoint())
+        timer->setInterval(500);
+    else {
+        timer->setInterval(300);
+    }
 }

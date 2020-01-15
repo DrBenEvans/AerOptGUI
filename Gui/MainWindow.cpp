@@ -9,6 +9,7 @@
 #include "Mesh.h"
 #include "windowsizing.h"
 #include "ViewConfigureDialog.h"
+#include "ParallelCoordinatesWindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -25,6 +26,9 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionShowCurrentOptimisationFiles, &QAction::triggered, this, &MainWindow::revealFilesCurrentOptimisation);
 
     setupGraphicsView();
+
+    pcWindow = new ParallelCoordinatesWindow(this);
+
 }
 
 void MainWindow::setSplitterSizes() {
@@ -101,6 +105,7 @@ void MainWindow::setOptimisationModel(OptimisationModel* optimisationModel) {
     mOptimisationModel = optimisationModel;
     ui->optimisationComboBox->setModel(mOptimisationModel);
     ui->fitnessPlot->setOptimisationModel(mOptimisationModel);
+    pcWindow->setOptimisationModel(optimisationModel);
     connect(ui->optimisationComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &MainWindow::setCurrentOptimisationIndex);
     connect(mOptimisationModel, &OptimisationModel::optimisationFitnessChanged, this, &MainWindow::optimisationFitnessChanged);
     connect(mOptimisationModel, &OptimisationModel::optimisationOutputChanged, this, &MainWindow::optimisationOutputChanged);
@@ -123,6 +128,7 @@ void MainWindow::setLogText() {
 void MainWindow::optimisationFitnessChanged(int index) {
     if(mCurrentOptimisationIndex == index) {
         ui->fitnessPlot->updatePlot();
+        pcWindow->update();
     }
 }
 
@@ -132,6 +138,9 @@ void MainWindow::setCurrentOptimisationIndex(int index) {
 
         // update fitness plot
         ui->fitnessPlot->setCurrentOptimisationIndex(index);
+
+        pcWindow->setCurrentOptimisationIndex(index);
+        openParallelCoordinatesWindow();
 
         // update log text
         setLogText();
@@ -187,6 +196,7 @@ void MainWindow::newOptimisation() {
         ConfigSimulationDialog diag(opt, this);
         if(diag.exec() == QDialog::Accepted) {
 
+            opt->setBoundaryPoints(meshDialog.boundaryPoints());
             opt->setControlPoints(meshDialog.controlPoints());
             bool success = mOptimisationModel->run(opt);
 
@@ -272,4 +282,13 @@ void MainWindow::on_actionVisualSettings_triggered()
 
         ui->fitnessPlot->configureView(lineSize, pointSize);
     }
+}
+
+void MainWindow::openParallelCoordinatesWindow(){
+    pcWindow->show();
+}
+
+void MainWindow::on_actionShow_triggered()
+{
+    openParallelCoordinatesWindow();
 }

@@ -7,6 +7,7 @@
 #include "MeshModel.h"
 #include "OptimisationModel.h"
 #include "ProfileView.h"
+#include "ParallelCoordinatesWindow.h"
 
 namespace Ui {
 class MainWindow;
@@ -41,9 +42,18 @@ private slots:
 
     void on_actionVisualSettings_triggered();
 
+    void on_actionShow_triggered();
+
 private:
     void setMeshViewSimulation(int iGen, int agent);
     void setLogText();
+
+    /**
+     * @brief openParallelCoordinatesWindow Opens a parallel coordinate in a new window
+     */
+    void openParallelCoordinatesWindow();
+
+
     Optimisation* currentOptimisation();
     Ui::MainWindow *ui;
     ProfileModel mProfileModel;
@@ -52,6 +62,8 @@ private:
     MeshModel* mCurrentMeshViewModel;
     ProfileView* mProfileView = nullptr;
     QString mClusterPassword="";
+
+    ParallelCoordinatesWindow* pcWindow;
 };
 
 #endif // MAINWINDOW_H

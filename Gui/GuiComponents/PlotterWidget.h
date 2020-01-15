@@ -15,7 +15,17 @@ public:
     void setCurrentOptimisationIndex(int index);
     void setCurrentlySelectedPoint(int iGen, int agent);
     void clearCurrentSelection();
+
+    /**
+     * @brief getLineSize Returns the thickness of plotted lines.
+     * @return The line thickness
+     */
     int getLineSize();
+
+    /**
+     * @brief getPointSize Returns the diameter of plotted points
+     * @return Return the point
+     */
     int getPointSize();
     void configureView(int lineSize, int pointSize);
 
@@ -33,7 +43,14 @@ private:
     double mMinRange = 3;
 
     // Display size
+    /**
+     * @brief mPointSize The diameter of plotted points
+     */
     int mPointSize = 15;
+
+    /**
+     * @brief mLineSize The thickness of plotted lines
+     */
     int mLineSize = 5;
 
     void signalCurrentlySelectedPoint();

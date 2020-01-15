@@ -7,6 +7,7 @@
 QT  += \
     core \
     widgets \
+    charts \
     printsupport
 
 CONFIG(debug, debug|release) {
@@ -48,6 +49,9 @@ TARGET = AerOptGui
 TEMPLATE = app
 
 SOURCES += \
+    Gui/GuiComponents/ChartView.cpp \
+    Gui/GuiComponents/ParallelCoordinatesWindow.cpp \
+    Gui/GuiComponents/chart.cpp \
     main.cpp \
     Gui/DebugOutput.cpp \
     Gui/Dialogs/MeshDialog.cpp \
@@ -83,6 +87,9 @@ SOURCES += \
 HEADERS  += \
     Gui/DebugOutput.h \
     Gui/Dialogs/MeshDialog.h \
+    Gui/GuiComponents/ChartView.h \
+    Gui/GuiComponents/ParallelCoordinatesWindow.h \
+    Gui/GuiComponents/chart.h \
     Gui/Plotter/qcustomplot.h \
     Gui/Dialogs/ConfigSimulationDialog.h \
     Gui/MainWindow.h \
@@ -117,6 +124,7 @@ HEADERS  += \
 FORMS    += \
     Gui/DebugOutput.ui \
     Gui/Dialogs/ConfigSimulationDialog.ui \
+    Gui/GuiComponents/ParallelCoordinatesWindow.ui \
     Gui/MainWindow.ui \
     Gui/Dialogs/MeshDialog.ui \
     Gui/GuiComponents/ControlPointView.ui \

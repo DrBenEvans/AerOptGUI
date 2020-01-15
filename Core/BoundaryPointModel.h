@@ -100,6 +100,13 @@ public:
      */
     std::vector<BoundaryPoint *> controlPoints();
 
+    /**
+     * @brief boundaryPoints Returns ths list of all boundary points in the model.
+     * @return List of boundary points
+     */
+    std::vector<BoundaryPoint*> boundaryPoints();
+
+
 signals:
     /**
      * @brief boundaryPointsReset Emits when a new / blank list of boundary points is instantaited.

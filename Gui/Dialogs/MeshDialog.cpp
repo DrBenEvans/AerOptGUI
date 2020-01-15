@@ -1,4 +1,3 @@
-
 #include "MeshDialog.h"
 #include "ui_MeshDialog.h"
 #include "ControlPointView.h"
@@ -40,6 +39,9 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidg
     connect(ui->zoomSlider,&QSlider::valueChanged,[this](int scale) {
         ui->graphicsView->setTransform(QTransform::fromScale(float(scale)/100, float(scale)/100));;
     });
+
+    connect(ui->graphicsView, &ZoomPanView::scaleChanged,
+            this, &MeshDialog::scaleZoomBarValue);
 
     connect(&mProfileModel, &ProfileModel::newProfileAdded, [this](int index) {
         ui->profile->setCurrentIndex(index);
@@ -85,6 +87,11 @@ MeshDialog::MeshDialog(ProfileModel &profileModel, MeshDialogModel* model, QWidg
     centerAndResizeWindow(this, 0.8, 0.8);
 }
 
+
+void MeshDialog::scaleZoomBarValue(double value){
+    ui->zoomSlider->setValue(ui->zoomSlider->value() * value);
+}
+
 void MeshDialog::setProfile() {
 
     Mesh* mesh = mMeshDialogModel->currentMesh();
@@ -105,6 +112,10 @@ MeshDialog::~MeshDialog()
 
 std::vector<BoundaryPoint*> MeshDialog::controlPoints() {
     return mMeshDialogModel->boundaryPointModel()->controlPoints();
+}
+
+std::vector<BoundaryPoint*> MeshDialog::boundaryPoints() {
+    return mMeshDialogModel->boundaryPointModel()->boundaryPoints();
 }
 
 void MeshDialog::runMesher() {

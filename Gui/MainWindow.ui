@@ -388,9 +388,16 @@
     </property>
     <addaction name="actionVisualSettings"/>
    </widget>
+   <widget class="QMenu" name="menuParallel_Coordinates_Graph">
+    <property name="title">
+     <string>Parallel Coordinates Graph</string>
+    </property>
+    <addaction name="actionShow"/>
+   </widget>
    <addaction name="menuOptimisations"/>
    <addaction name="menuLog"/>
    <addaction name="menuSettings"/>
+   <addaction name="menuParallel_Coordinates_Graph"/>
   </widget>
   <action name="actionNewOptimisation">
    <property name="text">
@@ -436,6 +443,11 @@
    </property>
    <property name="toolTip">
     <string>Visual settings</string>
+   </property>
+  </action>
+  <action name="actionShow">
+   <property name="text">
+    <string>Show</string>
    </property>
   </action>
  </widget>

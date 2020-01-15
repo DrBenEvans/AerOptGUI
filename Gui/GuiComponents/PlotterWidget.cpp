@@ -24,7 +24,7 @@ PlotterWidget::PlotterWidget(QWidget *parent) :
 }
 
 void PlotterWidget::validateXRangeChanged(const QCPRange &range, const QCPRange &oldRange) {
-    fixAxisRange(xAxis, range, mXMin, mXMax, mMinRange);
+    //fixAxisRange(xAxis, range, mXMin, mXMax, mMinRange);
 }
 
 void PlotterWidget::fixAxisRange(QCPAxis *axis, QCPRange range, double lowerBound, double upperBound, double minRange)
@@ -119,7 +119,6 @@ void PlotterWidget::setCurrentOptimisationIndex(int index) {
 
 void PlotterWidget::updatePlot()
 {
-    bool r = true;
 
     //Get data for display
     Optimisation *opt = currentOptimisation();
@@ -131,50 +130,48 @@ void PlotterWidget::updatePlot()
     }
     int noColumns = fitness.back().size();
 
-    if (r)
+
+    //Compute ranges
+    QVector<double> x(nGens);
+    for (int i = 0; i < nGens; ++i)
     {
-
-        //Compute ranges
-        QVector<double> x(nGens);
-        for (int i = 0; i < nGens; ++i)
-        {
-            // generations are 1-indexed in GUI
-            x[i] = i + 1;
-        }
-
-
-        //for each fitness column do this
-        for (int agent = 0; agent < graphCount(); ++agent)
-        {
-            if(agent < noColumns) {
-                QVector<double> y(nGens);
-                for (int i = 0; i < nGens; ++i)
-                {
-                    y[i] = fitness.at(i).at(agent);
-                }
-                //Build graph
-                graph(agent)->setData(x, y);
-                graph(agent)->setVisible(true);
-            } else {
-                graph(agent)->setVisible(false);
-            }
-        //end do this
-        }
-
-
-        // give the axes some labels:
-        xAxis->setLabel("Generation No.");
-        yAxis->setLabel("Fitness");
-        // set axes ranges, so we see all data:
-        rescaleAxes(true);
-
-        std::pair<double, double> range = opt->fitnessRange();
-        double rangeNorm = range.second - range.first;
-        double max = range.second + rangeNorm*0.1;
-        double min = range.first - rangeNorm*0.1;
-
-        yAxis->setRange(min, max);
+        // generations are 1-indexed in GUI
+        x[i] = i + 1;
     }
+
+
+    //for each fitness column do this
+    for (int agent = 0; agent < graphCount(); ++agent)
+    {
+        if(agent < noColumns) {
+            QVector<double> y(nGens);
+            for (int i = 0; i < nGens; ++i)
+            {
+                y[i] = fitness.at(i).at(agent);
+            }
+            //Build graph
+            graph(agent)->setData(x, y);
+            graph(agent)->setVisible(true);
+        } else {
+            graph(agent)->setVisible(false);
+        }
+    //end do this
+    }
+
+
+    // give the axes some labels:
+    xAxis->setLabel("Generation No.");
+    yAxis->setLabel("Fitness");
+    // set axes ranges, so we see all data:
+    rescaleAxes(true);
+
+    std::pair<double, double> range = opt->fitnessRange();
+    double rangeNorm = range.second - range.first;
+    double max = range.second + rangeNorm*0.1;
+    double min = range.first - rangeNorm*0.1;
+
+    yAxis->setRange(min, max);
+
 
     if(opt) {
         int genRange = opt->noGens() + 1;

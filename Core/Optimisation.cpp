@@ -204,6 +204,10 @@ QString Optimisation::simulationDirectoryName() {
     return fileName;
 }
 
+std::vector<BoundaryPoint*> Optimisation::initialBoundaryPoints() {
+    return mBoundaryPoints;
+}
+
 std::vector<BoundaryPoint*> Optimisation::controlPoints() {
     return mControlPoints;
 }
@@ -214,6 +218,10 @@ void Optimisation::setControlPoints(std::vector<BoundaryPoint*> controlPoints) {
 
 int Optimisation::controlPointCount() {
     return mControlPoints.size();
+}
+
+void Optimisation::setBoundaryPoints(std::vector<BoundaryPoint*> boundaryPoints) {
+    mBoundaryPoints = boundaryPoints;
 }
 
 QString Optimisation::simulationDirectoryPath() {
@@ -267,6 +275,7 @@ bool Optimisation::readProfilePointsFromSimulationDir() {
     Profile profile;
     bool success = profile.setFile(filePath);
     mProfilePoints = profile.getProfile();
+
     return success;
 }
 
@@ -286,6 +295,7 @@ bool Optimisation::run() {
     QSettings settings;
     QString AerOptInFile = settings.value("AerOpt/inputFile").toString();
     QString AerOptNodeFile = settings.value("AerOpt/nodeFile").toString();
+    QString AerOptBoundaryFile = settings.value("AerOpt/boundaryFile").toString();
     QString meshDatFile = settings.value("mesher/initMeshFile").toString();
     QString AerOpt = settings.value("AerOpt/executable").toString();
     QString AerOptWorkDir = settings.value("AerOpt/workingDirectory").toString();
@@ -306,6 +316,7 @@ bool Optimisation::run() {
     //Set input files in input directory
     r &= createAerOptInFile(AerOptInFile);
     r &= createAerOptNodeFile(AerOptNodeFile);
+    r &= createAerOptBoundaryPointFile(AerOptBoundaryFile);
 
     //then run aeropt
     if (r)
@@ -331,6 +342,7 @@ bool Optimisation::run() {
         }
         copyFileToSimulationDir(AerOptInFile);
         copyFileToSimulationDir(AerOptNodeFile);
+        copyFileToSimulationDir(AerOptBoundaryFile);
         writeProfilePointsToSimulationDir();
     }
     else
@@ -357,6 +369,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
 
     if (r)
     {
+
         std::string xrange;
         std::string mxrange;
         std::string yrange;
@@ -365,18 +378,11 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
 
         for (auto& point : controlPoints())
         {
-            QRectF rect = point->controlPointRect();
-            float smoothFactor = point->getSmoothFactor();
-
-            xrange += " " + std::to_string(rect.right());
-
-            yrange += " " + std::to_string(rect.bottom());
-
-            mxrange += " " + std::to_string(rect.left());
-
-            myrange += " " + std::to_string(rect.top());
-
-            smoothing += " " + std::to_string(smoothFactor);
+            xrange += " " + std::to_string(point->controlPointRect().right());
+            yrange += " " + std::to_string(point->controlPointRect().bottom());
+            mxrange += " " + std::to_string(point->controlPointRect().left());
+            myrange += " " + std::to_string(point->controlPointRect().top());
+            smoothing += " " + std::to_string(point->getSmoothFactor());
         }
 
         Enum::OptMethod optMethod = getOptimisationMethod();
@@ -395,6 +401,7 @@ bool Optimisation::createAerOptInFile(const QString& filePath)
             optMethodIndex = -1;
             break;
         }
+
 
         outfile << "&inputVariables" << std::endl;
         outfile << "IV%Ma = " << std::to_string( machNo() ) << std::endl;
@@ -517,13 +524,61 @@ bool Optimisation::createAerOptNodeFile(const QString& filePath)
         std::string yrange;
         std::string myrange;
 
+
         for (auto& point : controlPoints())
         {
             outfile << std::to_string(point->x())
-                    << "	"
+                    << "\t"
                     << std::to_string(point->y())
                     << std::endl;
         }
+    }
+    outfile.close();
+
+    return r;
+}
+
+bool Optimisation::createAerOptBoundaryPointFile(const QString &filePath) {
+
+    bool r = true;
+
+    std::ofstream outfile(filePath.toStdString(), std::ofstream::out);
+    r &= outfile.is_open();
+
+    if (r)
+    {
+        std::string xcoord;
+        std::string ycoord;
+        std::string controlPoint;
+        std::string smoothingFactor;
+        std::string xmin;
+        std::string xmax;
+        std::string ymin;
+        std::string ymax;
+
+        for (auto& point : mBoundaryPoints)
+        {
+            xcoord += std::to_string(point->x()) + "\t";
+            ycoord += std::to_string(point->y()) + "\t";
+            controlPoint += std::to_string(point->isControlPoint()) + "\t";
+            smoothingFactor += std::to_string(point->getSmoothFactor()) + "\t";
+            xmin += std::to_string(point->controlPointRect().left()) + "\t";
+            xmax += std::to_string(point->controlPointRect().right()) + "\t";
+            ymin += std::to_string(point->controlPointRect().top()) + "\t";
+            ymax += std::to_string(point->controlPointRect().bottom()) + "\t";
+
+        }
+
+        // Boundary Point Info
+        outfile << "IV%x = " << xcoord << std::endl;
+        outfile << "IV%y = " << ycoord << std::endl;
+        outfile << "IV%isCP = " << controlPoint << std::endl;
+        outfile << "IV%smoothingFactor = " << smoothingFactor << std::endl;
+        outfile << "IV%xMin = " << xmin << std::endl;
+        outfile << "IV%xMax = " << xmax << std::endl;
+        outfile << "IV%yMin = " << ymin << std::endl;
+        outfile << "IV%yMax = " << ymax << std::endl;
+
     }
     outfile.close();
 
@@ -740,6 +795,20 @@ std::pair<double,double> Optimisation::fitnessRange() {
     return minMax;
 }
 
+std::pair<double,double> Optimisation::fitnessRangeBestAgents() {
+    std::pair<double,double> minMax;
+    minMax.first = std::numeric_limits<double>::infinity();
+    minMax.second = -std::numeric_limits<double>::infinity();
+
+    for(auto& gen : mFitness){
+        if(gen.at(0) < minMax.first)
+            minMax.first = gen.at(0);
+        if(gen.at(0) > minMax.second)
+            minMax.second = gen.at(0);
+    }
+    return minMax;
+}
+
 QString Optimisation::outputText() {
     return mOutputLog;
 }
@@ -861,6 +930,7 @@ bool Optimisation::load(QString aerOptInputFilePath) {
     success &= readAerOptSettings(aerOptInputFilePath);
     success &= readFitness();
     success &= readProfilePointsFromSimulationDir();
+    success &= readInitialBoundaryPoints();
     success &= readLogFromFile();
 
     return success;
@@ -910,4 +980,112 @@ bool Optimisation::readLogFromFile() {
     }
 
     return true;
+}
+
+bool Optimisation::readInitialBoundaryPoints() {
+
+    QString filePath = simulationDirectoryPath() + "/Boundary_Points.txt";
+    bool success = true;
+    std::ifstream infile(filePath.toStdString(), std::ifstream::in);
+    success &= infile.is_open();
+
+    QString qline, value;
+    QStringList strList;
+    std::string variable;
+
+    if (success)
+    {
+        std::string line("");
+
+        QStringList x;
+        QStringList y;
+        QStringList isCP;
+        QStringList sf;
+        QStringList xMin;
+        QStringList xMax;
+        QStringList yMin;
+        QStringList yMax;
+
+        while (std::getline(infile, line))
+        {
+            qline = QString::fromStdString(line);
+            strList = qline.split(QRegExp("\\s*=\\s*"));
+
+            if(strList.length()==2) {
+                variable = strList.at(0).toStdString();
+                value = strList.at(1);
+
+                if(variable == "IV%x") {
+                    x = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                } else if(variable == "IV%y") {
+                    y = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                } else if(variable == "IV%isCP") {
+                    isCP = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                } else if(variable == "IV%smoothingFactor") {
+                    sf = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                } else if(variable == "IV%xMin") {
+                    xMin = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                } else if(variable == "IV%xMax") {
+                    xMax = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                } else if(variable == "IV%yMin") {
+                    yMin = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                } else if(variable == "IV%yMax") {
+                    yMax = strList.at(1).split("\t", QString::SkipEmptyParts);
+
+                }
+            }
+        }
+
+        std::vector<BoundaryPoint*> boundaryPs;
+        std::vector<BoundaryPoint*> controlPs;
+
+        for (int i = 0; i< x.size(); i++) {
+            QString xstr = x.at(i);
+            QString ystr = y.at(i);
+            QString isCPstr = isCP.at(i);
+            QString sfstr = sf.at(i);
+            QString xMinstr = xMin.at(i);
+            QString xMaxstr = xMax.at(i);
+            QString yMinstr = yMin.at(i);
+            QString yMaxstr = yMax.at(i);
+            double xVal = xstr.toDouble();
+            double yVal = ystr.toDouble();
+            bool isCPVal = false;
+                if (isCPstr.toInt() == 1) isCPVal = true;
+            double sfVal = sfstr.toDouble();
+            double xMinVal = xMinstr.toDouble();
+            double xMaxVal = xMaxstr.toDouble();
+            double yMinVal = yMinstr.toDouble();
+            double yMaxVal = yMaxstr.toDouble();
+
+            BoundaryPoint* bp = new BoundaryPoint(xVal,yVal);
+            bp->setControlPoint(isCPVal);
+            bp->setSmoothing(sfVal);
+
+            QRectF boundingBox = *new QRectF(xMinVal, yMinVal, xMaxVal - xMinVal, yMaxVal - yMinVal);
+
+            bp->setControlPointRect(boundingBox);
+            boundaryPs.push_back(bp);
+            if (isCPVal){
+                controlPs.push_back(bp);
+            }
+
+        }
+
+        this->setBoundaryPoints(boundaryPs);
+        this->setControlPoints(controlPs);
+
+        // Add Bounding Boxes to Control Points
+        QString inputFilePath = simulationDirectoryPath() + "/AerOpt_InputParameters.txt";
+        std::ifstream bbInfile(inputFilePath.toStdString(), std::ifstream::in);
+        success &= bbInfile.is_open();
+
+    }
 }
