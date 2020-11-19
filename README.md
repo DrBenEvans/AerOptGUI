@@ -42,7 +42,7 @@ in your home folder (generally this is 'C:\Users\YOUR_USERNAME'), which is where
 
 Copy the following commands in to the command prompt and press Enter
 ```
-git clone https://github.com/sa2c/AerOptGUI
+git clone https://github.com/DrBenEvans/AerOptGUI
 cd AerOptGUI
 ```
 
