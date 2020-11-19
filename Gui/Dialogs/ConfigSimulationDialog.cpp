@@ -106,6 +106,7 @@ void ConfigSimulationDialog::accept()
 
 void ConfigSimulationDialog::on_optmethod_currentIndexChanged(int index)
 {
+    //This line isn't too effective as if the enum indexing changes it breaks
     bool isMCS = (static_cast<Enum::OptMethod>(index) == Enum::OptMethod::MCS);
 
     if(isMCS) {

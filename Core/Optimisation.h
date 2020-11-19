@@ -46,10 +46,11 @@ public:
 	 */
 	bool boundary() const;
 	/**
-	 * @brief setBoundary
+     * @brief setBoundary Set list of mesh boundary points
 	 * @param boundary Sets the boundary.
 	 */
-	void setBoundary(bool boundary);
+    void setBoundaryPoints(std::vector<BoundaryPoint*> boundaryPoints);
+
 	/**
 	 * @brief optimiser
 	 * @return True if optimiser is set.
@@ -160,11 +161,15 @@ public:
      * @param returns the method index as defined by ordering in OptimiserDialog.ui.
      */
     Enum::OptMethod getOptimisationMethod() const;
-    /**
-     * @brief readFitness
-     * @param read the fitness for this optimisation
-     */
+
+
     bool readFitness();
+
+    /**
+     * @brief getProfile Returns the initial optimisation Profile
+     * @return
+     */
+    ProfilePoints getProfile();
     /**
      * @brief mesh
      * @param getter method for meshes
@@ -179,24 +184,91 @@ public:
     int getNoTop() const;
     void setNoTop(int noTop);
 
+    /**
+     * @brief label Returns the identification label / optimisation name.
+     * @return Optimisation identification label.
+     */
     QString label() const;
     QString simulationDirectoryName();
     QString simulationDirectoryPath();
+
+    /**
+     * @brief setLabel Set the identification label
+     * @param label Optimisation label.
+     */
     void setLabel(QString label);
     Mesh *initMesh();
 
     // control nodes
+    /**
+     * @brief controlPoints Returns a vector of all Boundary Points that are control nodes.
+     * @return Vector of Boundary Points that are control nodes
+     */
     std::vector<BoundaryPoint*> controlPoints();
+
+    /**
+     * @brief boundaryPoints Returns a vector of all boundary points of the initial mesh.
+     * @return
+     */
+    std::vector<BoundaryPoint*> initialBoundaryPoints();
+
+    /**
+     * @brief setControlPoints Sets the vector of control nodes.
+     * @param controlPoints A vector of Boundary Points for which isControlPoint == true
+     */
     void setControlPoints(std::vector<BoundaryPoint*> controlPoints);
+
+    /**
+     * @brief controlPointCount Returns the number of control points to optimise.
+     * @return The number of control points
+     */
     int controlPointCount();
 
     bool run();
+
+    /**
+     * @brief setModel Set the model that this optimisation belongs to.
+     * @param model
+     */
     void setModel(OptimisationModel* model);
+
+    /**
+     * @brief allfitness Returns a 2D vector of the fitnesses for all agents in each generation.
+     * @return 2D Vector of fitness values
+     */
     std::vector<std::vector<double>> allfitness();
+
+    /**
+     * @brief fitness Returns the fitness of a given agent within a specified generation.
+     * @param generationIndex Generation number
+     * @param agentIndex Agent index
+     * @return The fitness of the given agent in the specified generation
+     */
     double fitness(int generationIndex, int agentIndex);
+
+    /**
+     * @brief outputText Returns the output log.
+     * @return The output log
+     */
     QString outputText();
+
+    /**
+     * @brief fitnessRange Returns the minimum and maximum fitness values for this optimisation, across all generations.
+     * @return A pair of double values of the format <minimum, maximum>.
+     */
     std::pair<double,double> fitnessRange();
 
+    /**
+     * @brief fitnessRange Returns the minimum and maximum fitness values for the
+     * best agents of each generation in this optimisation.
+     * @return A pair of double values of the format <minimum, maximum>.
+     */
+    std::pair<double,double> fitnessRangeBestAgents();
+
+    /**
+     * @brief initProfilePoints Returns the initial profile.
+     * @return mProfilePoints
+     */
     ProfilePoints initProfilePoints();
 
     bool runOnCluster = false;
@@ -204,18 +276,61 @@ public:
 
 private:
     void optimiserFinished(int exitCode, QProcess::ExitStatus exitStatus);
+
+    /**
+     * @brief createAerOptInFile Writes optimisation data to an external file.
+     * @param filePath File location
+     * @return true iff file written successfully
+     */
     bool createAerOptInFile(const QString &filePath);
+
+    /**
+     * @brief createAerOptNodeFile Writes control node coordinates to an external file.
+     * @param filePath File location
+     * @return true iff file written successfully
+     */
     bool createAerOptNodeFile(const QString &filePath);
+
+    /**
+     * @brief createAerOptBoundaryPointFile Writes boundary point information for initial mesh.
+     * @param filePath File location
+     * @return true iff file written successfully
+     */
+    bool createAerOptBoundaryPointFile(const QString &filePath);
     bool saveCurrentProfile(const QString& path);
     QString outputDataDirectory();
     bool readAerOptSettings(QString filePath);
+
+    /**
+     * @brief addToOutputLog Adds a line to mOutputLog and the output log file.
+     * @param line Text to add to output log
+     */
     void addToOutputLog(const QString line);
 
     void writeProfilePointsToSimulationDir();
     bool readProfilePointsFromSimulationDir();
+
+    /**
+     * @brief setInitProfilePoints Set the initial profile.
+     * @param profilePoints The initial profile.
+     */
     void setInitProfilePoints(ProfilePoints profilePoints);
 
+    /**
+     * @brief readLogFromFile Load the output log into mOutputLog from the log file as defined in logCacheFileName().
+     * @return true iff file loaded successfully
+     */
     bool readLogFromFile();
+
+    /**
+     * @brief readInitialBoundaryPoints Load the initial boundary points.
+     * @return true iff file loaded successfully.
+     */
+    bool readInitialBoundaryPoints();
+    /**
+     * @brief logCacheFileName Returns the file path for the output log file.
+     * @return Output log file directory path.
+     */
     QString logCacheFileName();
 
     // copy files
@@ -223,34 +338,98 @@ private:
     QString aerOptNodeFileCopyPath();
     QString aerOptInputFileCopyPath();
 
+    /**
+     * Identification label / optimisation name
+    */
     QString mLabel = "";
 
 	//Objective function attributes
+    /**
+     * @brief mObjFunc Fitness function that agents are being optimised for.
+     */
     Enum::ObjFunc mObjFunc;
 
 	//Boundary condition attributes
+    /**
+     * @brief mMachNo Mach number
+     */
 	float mMachNo;
+
+    /**
+     * @brief mReNo Reynolds Number
+     */
 	float mReNo;
+
+    /**
+     * @brief mFreeAlpha Angle of Attack
+     */
 	float mFreeAlpha;
+
+    /**
+     * @brief mFreePress Pressure Absolute
+     */
 	float mFreePress;
+
+    /**
+     * @brief mFreeTemp Temperature Absolute
+     */
 	float mFreeTemp;
 
 	//Optimiser parameters
+    /**
+     * @brief mOptimisationMethod Optimisation Algorithm
+     */
     Enum::OptMethod mOptimisationMethod;
+
+    /**
+     * @brief mNoAgents Number of agents
+     */
 	int mNoAgents;
+
+    /**
+     * @brief mNoGens Number of generations
+     */
 	int mNoGens;
+
+    /**
+     * @brief mNoTop
+     */
     int mNoTop;
 
     Mesh* mInitMesh;
+
+    /**
+     * @brief mControlPoints Vector of Boundary Points that are also optimisable control nodes.
+     */
     std::vector<BoundaryPoint*> mControlPoints;
+
+    /**
+     * @brief mBoundaryPoints Vector of all Boundary Points.
+     */
+    std::vector<BoundaryPoint*> mBoundaryPoints;
+
+    /**
+     * @brief mFitness 2D vector of fitnesses for all agents across all generations.
+     * Indexed by <generation number<agent index>>.
+     */
     std::vector<std::vector<double>> mFitness;
 
     ProcessManager* mProcess = nullptr;
 
+    /**
+     * @brief mOptimisationModel Model that this optimisation belongs to.
+     */
     OptimisationModel* mOptimisationModel;
 
+    /**
+     * @brief mOutputLog Process output log
+     */
     QString mOutputLog = "";
 
+    /**
+     * @brief mProfilePoints The original profile before any optimisation.
+     * E.g. NACA0024 or NACA21120
+     */
     ProfilePoints mProfilePoints;
 
     clusterManager* clusterChecker = nullptr;

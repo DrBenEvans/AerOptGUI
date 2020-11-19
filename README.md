@@ -1,5 +1,6 @@
 # The AerOpt GUI
 
+<<<<<<< HEAD
 ## Compiling statically with Docker
 If you are compiling on windows the new recommended way of compiling the AerOpt GUI is to use Docker to create a Docker
 container based of the included DockerFile "DockerFile.mxe". This has been setup to create a single
@@ -117,11 +118,17 @@ again at a later date. Since this, as discussed earlier this can take several ho
 At this point you have everything you need. What follows are the old instructions to compile dynamically with QT creator
 should you wish to use it.
 
+=======
+>>>>>>> fc85bcc3edf634aa789cbc9675ff561c8f4c36cf
 ## Compiling in QT Creator
 
 ### Install Compilation Requirements
 
+<<<<<<< HEAD
 
+=======
+The recommended way of compiling the AerOpt GUI is using the QT Creator IDE.
+>>>>>>> fc85bcc3edf634aa789cbc9675ff561c8f4c36cf
 You can download the IDE on the [QT website](https://www.qt.io/download).
 Choose the open source option and download the installer.
 In the installer, you will need to create a QT account if you don't already have one.
@@ -213,12 +220,27 @@ You should now be able to run jobs on the cluster using the GUI.
 
 ## Deploying
 
+<<<<<<< HEAD
 I you followed the docker instructions the compiled executable you created can be distributed without needing any additional libraries or tools. 
 However, if you compiled the code dynamically using QT creator you will need to do some extra work.
 
 There are two deployed releases in [Jarno's github page](https://github.com/rantahar/AerOpt-gui/releases). All you need to do to run this version
 of AerOpt is to donwload AerOptGui.zip, extract the file and run AerOptGui.exe in the new folder. This is much easier for a user than compiling 
 QT statically.
+=======
+Deploying is essentially creating a compiled executable you can distribute without needing any additional libraries or tools.
+There are two deployed releases in [Jarno's github page](https://github.com/rantahar/AerOpt-gui/releases).
+All you need to do to run this version of AerOpt is to donwload AerOptGui.zip, extract the file and run AerOptGui.exe in the new folder.
+To be able to run on a cluster, you also need to download AerOpt.tar.gz
+on the cluster.
+```
+mv AerOpt AerOpt_backup
+wget https://github.com/rantahar/AerOpt-gui/releases/download/0.2/AerOpt.tar.gz
+tar -xvf AerOpt.tar.gz
+```
+
+This is much easier for a user than compiling the whole thing.
+>>>>>>> fc85bcc3edf634aa789cbc9675ff561c8f4c36cf
 
 To create a new release compile the program using `release` setting in QT Creator.
 This is above the play symbol on the bottom left in QT Creator 4.9.

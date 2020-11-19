@@ -25,11 +25,29 @@ public:
     explicit MeshDialog(ProfileModel &profileModel, MeshDialogModel *model, QWidget* parent = 0);
     ~MeshDialog();
     void accept();
+
+    /**
+     * @brief controlPoints Returns the list of boundary points that are control points.
+     * @return List of control points
+     */
     std::vector<BoundaryPoint*> controlPoints();
+
+    /**
+     * @brief controlPoints Returns the full list of boundary points.
+     * @return List of boundary points
+     */
+    std::vector<BoundaryPoint*> boundaryPoints();
 
 public slots:
     void runMesher();
     void setProfile();
+
+    /**
+     * @brief scaleZoomBarValue Scale the value of the zoom bar slider in response to changed in the view transformation.
+     * Included validation check which places a limit on hte
+     * @param value Scaling value
+     */
+    void scaleZoomBarValue(double value);
 
 private slots:
     void on_profile_currentIndexChanged(int index);

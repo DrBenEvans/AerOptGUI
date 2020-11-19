@@ -35,10 +35,10 @@ namespace Enum
      */
     enum OptMethod
     {
-        METHODNOTSET = 0,
         MCS,            // Modified Cuckoo search
-        DE,             // Differential Evolution
-        PSO             // Particle Swarm Optimisation
+        DE,             //Differential Evolution
+        PSO,            // Particle Swarm Optimisation
+        METHODNOTSET
     };
 
     /**

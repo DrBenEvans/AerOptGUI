@@ -24,6 +24,12 @@ public slots:
     void accept();
 
 private slots:
+
+    /**
+     * @brief on_optmethod_currentIndexChanged When the index of the optmethod dropdown box changes, then enable ndiscard,
+     * otherwise disable ndiscard as MCS is the only optimisation method that has this parameter
+     * @param index Index of item in selected in dropdown box
+     */
     void on_optmethod_currentIndexChanged(int index);
 
 private:

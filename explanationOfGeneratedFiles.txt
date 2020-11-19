@@ -1,0 +1,12 @@
+AerOpt_InputParameters: Input parameters for an optimisation
+			In particular,
+			IV%NoCN = number of control nodes
+			IV%xrange = control point x boundary coordinates in format "minimumx maximumx"
+			IV%yrange = control point y boundary coordinates in format "minimumy maximumy"
+			IV%NoNests = number of agents
+			IV%NoG = number of generations
+Control_Nodes: Coordinates of control points in format: "X	Y"
+
+profilePoints: Initial profile that is being optimised. E.g. NACA0024 or NACA21120
+Fitness_0: Fitness of initial profile
+FitnessAll: Fitness of each agent in each generation in format "generationNumber     Ag1     ...	Agn"

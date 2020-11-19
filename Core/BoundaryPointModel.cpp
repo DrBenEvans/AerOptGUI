@@ -30,6 +30,15 @@ std::vector<BoundaryPoint*> BoundaryPointModel::controlPoints() {
     return ctlPoints;
 }
 
+std::vector<BoundaryPoint*> BoundaryPointModel::boundaryPoints() {
+    std::vector<BoundaryPoint*> boundaryPoints;
+    for( auto& bp : mBoundaryPoints) {
+        boundaryPoints.push_back(&bp);
+    }
+
+    return boundaryPoints;
+}
+
 void BoundaryPointModel::setPoints(std::list<std::pair<float, float> > points)
 {
     for (auto coord : points)
